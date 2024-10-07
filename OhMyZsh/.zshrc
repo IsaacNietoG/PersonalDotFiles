@@ -105,12 +105,13 @@ source $ZSH/oh-my-zsh.sh
 alias pls="sudo"
 
 # PATH variables
-PATH=$PATH:~/.config/emacs/bin
-PATH=$PATH:/usr/bin/flutter/bin
-ANDROID_HOME=$HOME/Android/Sdk
-PATH=$PATH:$HOME/Android/Sdk/platform-tools
-PATH=$PATH:$HOME/Android/Sdk/tools
-PATH=$PATH:$HOME/.local/bin
+PATH=$PATH:~/.config/emacs/bin 				# Doom Emacs
+PATH=$PATH:/usr/bin/flutter/bin				# Flutter
+ANDROID_HOME=$HOME/Android/Sdk				# Android SDK
+PATH=$PATH:$HOME/Android/Sdk/platform-tools 		# Android SDK
+PATH=$PATH:$HOME/Android/Sdk/tools 			# Android SDK
+PATH=$PATH:$HOME/.local/bin 				# No se lol
+PATH=$PATH:$HOME/.local/share/gem/ruby/3.2.0/bin 	# Ruby Gems
 
 
 
