@@ -103,6 +103,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias pls="sudo"
+alias arcli="arduino-cli"
 
 # PATH variables
 PATH=$PATH:~/.config/emacs/bin 				# Doom Emacs
@@ -113,7 +114,12 @@ PATH=$PATH:$HOME/Android/Sdk/tools 			# Android SDK
 PATH=$PATH:$HOME/.local/bin 				# No se lol
 PATH=$PATH:$HOME/.local/share/gem/ruby/3.2.0/bin 	# Ruby Gems
 
-
+# ENV variables
+export GEM_HOME=$HOME/.gem
+# PYENV
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
