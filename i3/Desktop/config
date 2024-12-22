@@ -32,6 +32,9 @@ exec --no-startup-id ~/.fehbg
 # Mount google drive
 exec --no-startup-id ~/PersonalDotFiles/Scripts/mount_google_drive.sh
 
+# Starting dunst notification service
+exec --no-startup-id dunst &
+
 # The combination of xss-lock, nm-applet and pactl is a popular choice, so
 # they are included here as an example. Modify as you see fit.
 
