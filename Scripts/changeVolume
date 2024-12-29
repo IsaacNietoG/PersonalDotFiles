@@ -27,10 +27,10 @@ mute=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
 
 if [[ $mute == "yes" || $volume == 0 ]]; then
     # Show the sound muted notification
-    dunstify -a "changeVolume" -u low -i audio-volume-muted -h string:x-dunst-stack-tag:$msgTag "Volume muted"
+    dunstify -a "Volume" -u low -i audio-volume-muted -h string:x-dunst-stack-tag:$msgTag "Volume muted"
 else
     # Show the volume notification
-    dunstify -a "changeVolume" -u low -i audio-volume-high -h string:x-dunst-stack-tag:$msgTag \
+    dunstify -a "Volume" -u low -i audio-volume-high -h string:x-dunst-stack-tag:$msgTag \
     -h int:value:"$volume" "Volume: ${volume}%"
 fi
 
