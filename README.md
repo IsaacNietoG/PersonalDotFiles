@@ -8,10 +8,14 @@ Este repositorio contiene mis configuraciones personalizadas para diversas herra
 - **i3 Desktop Setup**: Configuración de i3 para mi computadora de escritorio.
 - **i3 Laptop Setup**: Configuración de i3 optimizada para mi laptop.
 - **Oh My ZSH**: Mi configuración de ZSH usando el framework Oh My ZSH para una shell más productiva y estilizada.
+- **Dunst**: Configuraciones para el servicio de notificaciones Dunst que uso en mis dos setups
+- **Polybar**: Configuraciones para polybar, que es la barra que uso para mis dos setups. Dos configuraciones una para cada setup.
+- **Scripts**: Scripts personalizados para acciones varias
 
 ## Instalación
 
 Para utilizar cualquiera de estas configuraciones, simplemente clona este repositorio en tu máquina y crea enlaces simbólicos (symlinks) en los directorios correspondientes.
+Si necesitas más información, cada carpeta contiene un README con la información correspondiente.
 
 ```bash
 git clone https://github.com/usuario/dotfiles.git ~/dotfiles
@@ -75,20 +79,32 @@ pero sientete libre de usarlo como inspiración jaja
 - Atomic Chrome para poder invocar instancias de emacs y editar textos dentro del navegador (no puedo vivir sin los bindings de emacs)
 - Evil Mode
 - LSP Java
+- LSP C y C++
 - Magit
 - Fondo con cierta transparencia para que se vea fancy
 
 ### i3 Desktop
 - Configuracion de monitores ajustada a mis necesidades
-- i3 status bar ajustada a mis necesidades
+- Polybar configurada a mis necesidades en Desktop
 - Bindings de VIM ajustados
 - Invocación de Picom y feh para el fondo de pantalla y el compositor
+- Uso de dunst para las notificaciones, con configuración incluida
+- Script para montar mi Drive en $HOME, para más facil acceso.
 
 ### i3 Laptop
-- i3 status bar ajustada a mis necesidades
+- Polybar configurada a mis necesidades en Laptop
 - Bindings de VIM ajustados
-- Compatibilidad con KDE
+- Compatibilidad con KDE (en realidad no lo uso mucho lol)
 - Invocacion de Picom y feh para el fondo de pantalla y el compositor
+- Uso de dunst para las notificaciones, con configuración incluida
+- Script para subir y bajar volumen con notificación cool
 
 ### Oh my ZSH
 - Temas custom y variables de entorno
+
+### Dunst
+- Notifiaciones perronas
+
+### Polybar
+- Configuraciones custom para cada una de las setups.
+- Script de inicio ajustado para multiples monitores
