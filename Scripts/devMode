@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# Definir variables
+CONTAINER_NAME="temporalDev"
+USER="mrtaichi"
+MAX_WAIT=30  # Tiempo máximo de espera en segundos para que el contenedor obtenga IP
+
+# Colores para una mejor legibilidad
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${YELLOW}Verificando estado del contenedor ${CONTAINER_NAME}...${NC}"
+
+# Comprobar si el contenedor está corriendo
+CONTAINER_STATE=$(sudo lxc-info -n ${CONTAINER_NAME} | grep State | awk '{print $2}')
+
+# Si el contenedor no está activo, iniciarlo
+if [ "$CONTAINER_STATE" != "RUNNING" ]; then
+    echo -e "${YELLOW}El contenedor no está activo. Iniciando...${NC}"
+    sudo lxc-start -n ${CONTAINER_NAME}
+    
+    # Esperar a que el contenedor se inicie completamente
+    echo -e "${YELLOW}Esperando a que el contenedor se inicie...${NC}"
+    sleep 3
+else
+    echo -e "${GREEN}El contenedor ya está activo.${NC}"
+fi
+
+# Obtener la IP del contenedor
+echo -e "${YELLOW}Obteniendo la dirección IP del contenedor...${NC}"
+
+SECONDS=0
+while [ $SECONDS -lt $MAX_WAIT ]; do
+    CONTAINER_IP=$(sudo lxc-info -n ${CONTAINER_NAME} | grep "IP:" | head -1 | awk '{print $2}')
+    
+    if [ -n "$CONTAINER_IP" ]; then
+        break
+    fi
+    
+    echo -e "${YELLOW}Esperando a que el contenedor obtenga una IP... (${SECONDS}s)${NC}"
+    sleep 1
+done
+
+# Verificar si se obtuvo una IP
+if [ -z "$CONTAINER_IP" ]; then
+    echo -e "${YELLOW}No se pudo obtener la IP del contenedor después de ${MAX_WAIT} segundos.${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}IP del contenedor: ${CONTAINER_IP}${NC}"
+
+# Intentar conectar por SSH con X11 forwarding
+echo -e "${YELLOW}Conectando por SSH a ${USER}@${CONTAINER_IP} con soporte X11...${NC}"
+ssh -X ${USER}@${CONTAINER_IP}
+
+exit 0
