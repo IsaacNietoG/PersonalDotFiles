@@ -22,6 +22,12 @@ font pango:monospace 8
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
+
+#Polkit KDE
+exec --no-startup-id ~/usr/lib/polkit-kde-authentication-agent-1 &
+
+# Xrandr setup
+exec --no-startup-id ~/.screenlayout/layout.sh
 # Picom calling
 exec_always picom -f
 # Wallpaper
