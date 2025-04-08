@@ -136,3 +136,5 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+# GHCUP
+[ -f "/home/mrtaichi/.ghcup/env" ] && . "/home/mrtaichi/.ghcup/env" # ghcup-env
