@@ -25,10 +25,6 @@ exec --no-startup-id dex --autostart --environment i3
 
 # Picom calling
 exec --no-startup-id picom -cCFb
-
-# Wallpaper
-exec --no-startup-id ~/.fehbg
-
 # Mount google drive
 exec --no-startup-id ~/PersonalDotFiles/Scripts/mount_google_drive.sh
 
@@ -203,4 +199,8 @@ for_window [title="Desktop @ QRect.*"] kill, floating enable, border none
     for_window [window_type="dialog"] floating enable
     for_window [window_type="menu"] floating enable
     for_window [instance="__scratchpad"] floating enable
+
+# Wallpaper
+exec --no-startup-id ~/.fehbg
+
 
