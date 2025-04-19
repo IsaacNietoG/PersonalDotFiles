@@ -138,3 +138,6 @@ unset __conda_setup
 
 # GHCUP
 [ -f "/home/mrtaichi/.ghcup/env" ] && . "/home/mrtaichi/.ghcup/env" # ghcup-env
+
+# Alacritty ftw
+export TERMINAL="alacritty"
