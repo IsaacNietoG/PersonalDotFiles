@@ -10,6 +10,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Function to create backup of existing file
+# param: $1 - file to backup
 backup_file() {
     if [ -e "$1" ]; then
         echo -e "${YELLOW}Backing up $1 to $1.bak${NC}"
@@ -18,6 +19,8 @@ backup_file() {
 }
 
 # Function to create symlink
+# param: $1 - source file
+# param: $2 - target file
 create_symlink() {
     local source="$1"
     local target="$2"
@@ -67,7 +70,7 @@ fi
 
 # Install i3 config
 echo -e "\n${GREEN}Installing i3 config...${NC}"
-create_symlink "i3/${i3_config^}/config" ~/.config/i3/config
+create_symlink "$(pwd)/i3/${i3_config^}/config" ~/.config/i3/config
 
 # Select polybar configuration
 echo -e "\n${GREEN}Select polybar configuration type:${NC}"
@@ -75,27 +78,27 @@ polybar_config=$(select_config)
 
 # Install polybar config
 echo -e "\n${GREEN}Installing polybar config...${NC}"
-create_symlink "polybar/${polybar_config}/config" ~/.config/polybar/config
-create_symlink "polybar/launch.sh" ~/.config/polybar/launch.sh
+create_symlink "$(pwd)/polybar/${polybar_config}/config" ~/.config/polybar/config
+create_symlink "$(pwd)/polybar/launch.sh" ~/.config/polybar/launch.sh
 
 # Install dunst config
 echo -e "\n${GREEN}Installing dunst config...${NC}"
-create_symlink "dunst/dunstrc" ~/.config/dunst/dunstrc
+create_symlink "$(pwd)/dunst/dunstrc" ~/.config/dunst/dunstrc
 
 # Install Doom Emacs config
 echo -e "\n${GREEN}Installing Doom Emacs config...${NC}"
-create_symlink "doomEmacs/config.el" ~/.doom.d/config.el
-create_symlink "doomEmacs/init.el" ~/.doom.d/init.el
-create_symlink "doomEmacs/packages.el" ~/.doom.d/packages.el
+create_symlink "$(pwd)/doomEmacs/config.el" ~/.doom.d/config.el
+create_symlink "$(pwd)/doomEmacs/init.el" ~/.doom.d/init.el
+create_symlink "$(pwd)/doomEmacs/packages.el" ~/.doom.d/packages.el
 
 # Install Oh My Zsh config
 echo -e "\n${GREEN}Installing Oh My Zsh config...${NC}"
-create_symlink "OhMyZsh/.zshrc" ~/.zshrc
-create_symlink "OhMyZsh/custom" ~/.oh-my-zsh/custom
+create_symlink "$(pwd)/OhMyZsh/.zshrc" ~/.zshrc
+create_symlink "$(pwd)/OhMyZsh/custom" ~/.oh-my-zsh/custom
 
 # Install scripts
 echo -e "\n${GREEN}Installing scripts...${NC}"
-create_symlink "Scripts" ~/.local/bin
+create_symlink "$(pwd)/Scripts" ~/.local/bin
 
 echo -e "\n${GREEN}Installation complete!${NC}"
 echo -e "${YELLOW}Note: You may need to restart your applications for changes to take effect.${NC}" 
