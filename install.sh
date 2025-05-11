@@ -34,7 +34,7 @@ create_symlink() {
     
     echo -e "${GREEN}Creating symlink: $target -> $source${NC}"
     backup_file "$target"
-    ln -sf "$(pwd)/$source" "$target"
+    ln -sf "$source" "$target"
 }
 
 # Function to select configuration type
@@ -98,10 +98,15 @@ create_symlink "$(pwd)/doomEmacs/config.el" ~/.doom.d/config.el
 create_symlink "$(pwd)/doomEmacs/init.el" ~/.doom.d/init.el
 create_symlink "$(pwd)/doomEmacs/packages.el" ~/.doom.d/packages.el
 
+# Sync Doom Emacs
+echo -e "\n${GREEN}Syncing Doom Emacs...${NC}"
+~/.config/emacs/bin/doom sync
+
 # Install Oh My Zsh config
 echo -e "\n${GREEN}Installing Oh My Zsh config...${NC}"
 create_symlink "$(pwd)/OhMyZsh/.zshrc" ~/.zshrc
 create_symlink "$(pwd)/OhMyZsh/custom" ~/.oh-my-zsh/custom
+source ~/.zshrc
 
 # Install scripts
 echo -e "\n${GREEN}Installing scripts...${NC}"
