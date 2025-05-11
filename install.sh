@@ -22,6 +22,13 @@ create_symlink() {
     local source="$1"
     local target="$2"
     
+    # Create target directory if it doesn't exist
+    local target_dir=$(dirname "$target")
+    if [ ! -d "$target_dir" ]; then
+        echo -e "${YELLOW}Creating directory: $target_dir${NC}"
+        mkdir -p "$target_dir"
+    fi
+    
     echo -e "${GREEN}Creating symlink: $target -> $source${NC}"
     backup_file "$target"
     ln -sf "$(pwd)/$source" "$target"
