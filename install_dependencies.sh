@@ -44,6 +44,19 @@ install_package "oh-my-zsh-git"
 install_package "emacs"
 install_package "rofi"
 
+# Install adi1090x's rofi themes
+echo -e "\n${GREEN}Installing adi1090x's rofi themes...${NC}"
+if [ ! -d "$HOME/.config/rofi" ]; then
+    git clone --depth 1 https://github.com/adi1090x/rofi.git /tmp/rofi
+    cd /tmp/rofi
+    chmod +x setup.sh
+    ./setup.sh
+    cd - > /dev/null
+    rm -rf /tmp/rofi
+else
+    echo -e "${YELLOW}Rofi themes are already installed${NC}"
+fi
+
 # Language support
 echo -e "\n${GREEN}Installing language support...${NC}"
 install_package "jdk-openjdk"
@@ -62,8 +75,8 @@ install_package "plasma-desktop"
 # Install Doom Emacs
 echo -e "\n${GREEN}Installing Doom Emacs...${NC}"
 if [ ! -d "$HOME/.emacs.d" ]; then
-    git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
-    ~/.emacs.d/bin/doom install
+    git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.config/emacs
+    ~/.config/emacs/bin/doom install
 else
     echo -e "${YELLOW}Doom Emacs is already installed${NC}"
 fi
