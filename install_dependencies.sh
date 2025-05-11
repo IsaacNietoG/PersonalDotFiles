@@ -43,7 +43,6 @@ install_package "zsh"
 install_package "oh-my-zsh-git"
 install_package "emacs"
 install_package "rofi"
-install_package "rofi-themes-collection"
 
 # Language support
 echo -e "\n${GREEN}Installing language support...${NC}"
