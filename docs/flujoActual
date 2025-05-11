@@ -1,0 +1,14 @@
+## Navegador web: Microsoft Edge
+
+- Instalar navegador
+- Iniciar sesion
+- Con el paso anterior se deberían de instalar las extensiones, pero si no es asi instalar Bitwarden (gestor de Contraseñas) y Vimium C (accesibilidad)
+
+## Entorno de escritorio: Plasma + i3
+- Importar repositorio de dotfiles (este mero)
+- Instalar dependencias con install_dependencies.sh
+- Crear el servicio a nivel usuario que habilita i3 como gestor de ventanas de Plasma (ver guia de heckelson)
+
+
+## QOL: TODO
+- Configuración automática de Git (user.email, user.name, core.editor)
