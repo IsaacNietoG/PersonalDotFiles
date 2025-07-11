@@ -79,18 +79,10 @@ fi
 echo -e "\n${GREEN}Installing i3 config...${NC}"
 create_symlink "$(pwd)/i3/${i3_config^}/config" ~/.config/i3/config
 
-# Select polybar configuration
-echo -e "\n${GREEN}Select polybar configuration type:${NC}"
-polybar_config=$(select_config)
-
-# Install polybar config
-echo -e "\n${GREEN}Installing polybar config...${NC}"
-create_symlink "$(pwd)/polybar/${polybar_config}/config" ~/.config/polybar/config
-create_symlink "$(pwd)/polybar/launch.sh" ~/.config/polybar/launch.sh
-
-# Install dunst config
-echo -e "\n${GREEN}Installing dunst config...${NC}"
-create_symlink "$(pwd)/dunst/dunstrc" ~/.config/dunst/dunstrc
+# Configure Plasma to use i3
+echo -e "\n${GREEN}Configuring Plasma to use i3 as window manager...${NC}"
+chmod +x "$(pwd)/i3/configure-plasma-i3.sh"
+"$(pwd)/i3/configure-plasma-i3.sh"
 
 # Install Doom Emacs config
 echo -e "\n${GREEN}Installing Doom Emacs config...${NC}"
@@ -108,9 +100,11 @@ create_symlink "$(pwd)/OhMyZsh/.zshrc" ~/.zshrc
 create_symlink "$(pwd)/OhMyZsh/custom" ~/.oh-my-zsh/custom
 source ~/.zshrc
 
-# Install scripts
-echo -e "\n${GREEN}Installing scripts...${NC}"
-create_symlink "$(pwd)/Scripts" ~/.local/bin
+# Install essential scripts only
+echo -e "\n${GREEN}Installing essential scripts...${NC}"
+create_symlink "$(pwd)/Scripts/mount_google_drive.sh" ~/.local/bin/mount_google_drive.sh
 
 echo -e "\n${GREEN}Installation complete!${NC}"
-echo -e "${YELLOW}Note: You may need to restart your applications for changes to take effect.${NC}" 
+echo -e "${YELLOW}Note: You may need to restart your applications for changes to take effect.${NC}"
+echo -e "${GREEN}Your i3 + Plasma setup is ready!${NC}"
+echo -e "${YELLOW}To start using i3 with Plasma, log out and log back in, or restart your session.${NC}" 

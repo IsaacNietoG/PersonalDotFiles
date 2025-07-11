@@ -32,17 +32,37 @@ install_package() {
 echo -e "${GREEN}Updating system...${NC}"
 sudo pacman -Syu --noconfirm
 
-# Core packages
-echo -e "\n${GREEN}Installing core packages...${NC}"
+# Core i3 + Plasma packages
+echo -e "\n${GREEN}Installing core i3 + Plasma packages...${NC}"
 install_package "i3-wm"
-install_package "polybar"
-install_package "dunst"
 install_package "feh"
 install_package "picom"
+install_package "rofi"
+install_package "wmctrl"
+
+# Shell and terminal
+echo -e "\n${GREEN}Installing shell and terminal packages...${NC}"
 install_package "zsh"
 install_package "oh-my-zsh-git"
+
+# Editor
+echo -e "\n${GREEN}Installing editor...${NC}"
 install_package "emacs"
-install_package "rofi"
+
+# KDE/Plasma integration packages
+echo -e "\n${GREEN}Installing KDE/Plasma integration packages...${NC}"
+install_package "plasma-desktop"
+install_package "kde-applications"
+
+# Language support
+echo -e "\n${GREEN}Installing language support...${NC}"
+install_package "jdk-openjdk"
+install_package "python"
+
+# Optional utilities
+echo -e "\n${GREEN}Installing utility packages...${NC}"
+install_package "curl"
+install_package "git"
 
 # Install adi1090x's rofi themes
 echo -e "\n${GREEN}Installing adi1090x's rofi themes...${NC}"
@@ -56,21 +76,6 @@ if [ ! -d "$HOME/.config/rofi" ]; then
 else
     echo -e "${YELLOW}Rofi themes are already installed${NC}"
 fi
-
-# Language support
-echo -e "\n${GREEN}Installing language support...${NC}"
-install_package "jdk-openjdk"
-install_package "python"
-
-# Optional packages
-echo -e "\n${GREEN}Installing optional packages...${NC}"
-install_package "i3status"
-install_package "curl"
-install_package "git"
-
-# For KDE integration (optional)
-echo -e "\n${GREEN}Installing KDE integration packages...${NC}"
-install_package "plasma-desktop"
 
 # Install Doom Emacs
 echo -e "\n${GREEN}Installing Doom Emacs...${NC}"
@@ -90,4 +95,5 @@ else
 fi
 
 echo -e "\n${GREEN}All dependencies have been installed!${NC}"
-echo -e "${YELLOW}Note: You may need to log out and log back in for some changes to take effect.${NC}" 
+echo -e "${YELLOW}Note: You may need to log out and log back in for some changes to take effect.${NC}"
+echo -e "${GREEN}Your system is now ready for i3 + Plasma setup!${NC}" 
