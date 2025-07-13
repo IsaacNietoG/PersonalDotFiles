@@ -67,22 +67,22 @@ REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Install Doom Emacs
 echo -e "\n${GREEN}Installing Doom Emacs...${NC}"
-if [ ! -e "~/.config/emacs/bin/doom" ]; then
-    git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
-    ~/.config/emacs/bin/doom install
+if [ ! -f "$HOME/.config/emacs/bin/doom" ]; then
+    git clone --depth 1 https://github.com/doomemacs/doomemacs "$HOME/.config/emacs"
+    "$HOME/.config/emacs/bin/doom" install
 else
     echo -e "${YELLOW}Doom Emacs is already installed${NC}"
 fi
 
 # Install Doom Emacs config
 echo -e "\n${GREEN}Installing Doom Emacs config...${NC}"
-create_symlink "$REPO_ROOT/doomEmacs/config.el" ~/.doom.d/config.el
-create_symlink "$REPO_ROOT/doomEmacs/init.el" ~/.doom.d/init.el
-create_symlink "$REPO_ROOT/doomEmacs/packages.el" ~/.doom.d/packages.el
+create_symlink "$REPO_ROOT/doomEmacs/config.el" ~/.config/doom/config.el
+create_symlink "$REPO_ROOT/doomEmacs/init.el" ~/.config/doom/init.el
+create_symlink "$REPO_ROOT/doomEmacs/packages.el" ~/.config/doom/packages.el
 
 # Sync Doom Emacs
 echo -e "\n${GREEN}Syncing Doom Emacs...${NC}"
-~/.config/emacs/bin/doom sync
+"$HOME/.config/emacs/bin/doom" sync
 
 echo -e "\n${GREEN}=== Doom Emacs Installation Complete ===${NC}"
 echo -e "${YELLOW}Note: You may need to restart Emacs for all changes to take effect.${NC}" 
