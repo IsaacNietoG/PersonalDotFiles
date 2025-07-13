@@ -1,3 +1,9 @@
+# I use .profile for some custom scripts that are dependent on the modules installed by the playbooks
+
+if [ -f ~/.profile ]; then
+    . ~/.profile
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
