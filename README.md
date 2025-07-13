@@ -14,65 +14,14 @@ Este repositorio contiene mis configuraciones personalizadas para diversas herra
 
 ## Instalación
 
-Para utilizar cualquiera de estas configuraciones, simplemente clona este repositorio en tu máquina y crea enlaces simbólicos (symlinks) en los directorios correspondientes.
-Si necesitas más información, cada carpeta contiene un README con la información correspondiente.
-
-```bash
-git clone https://github.com/usuario/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-```
-
-### Configuración de Doom Emacs
-
-1. Instala Doom Emacs siguiendo las instrucciones oficiales: [Doom Emacs](https://github.com/hlissner/doom-emacs).
-2. Crea un symlink hacia la configuración de Emacs:
-
-   ```bash
-   ln -sf ~/dotfiles/doomEmacs/config.el ~/.doom.d/config.el
-   ln -sf ~/dotfiles/doomEmacs/init.el ~/.doom.d/init.el
-   ln -sf ~/dotfiles/doomEmacs/packages.el ~/.doom.d/packages.el
-   ```
-
-3. Recarga la configuración de Doom Emacs:
-
-   ```bash
-   doom sync
-   ```
-
-### Configuración de i3 (Desktop & Laptop)
-
-1. Para la computadora de escritorio:
-
-   ```bash
-   ln -sf ~/dotfiles/i3/Desktop/config ~/.config/i3/config
-   sudo ln -sf ~/dotfiles/i3/Desktop/i3status/config/i3status.conf /etc/i3status.conf
-   ```
-
-2. Para la laptop:
-
-   ```bash
-   ln -sf ~/dotfiles/i3/Laptop/config ~/.config/i3/config
-   sudo ln -sf ~/dotfiles/i3/Laptop/i3status/config/i3status.conf /etc/i3status.conf
-   ```
-
-### Configuración de Oh My ZSH
-
-1. Instala **Oh My ZSH** si no lo tienes ya instalado:
-
-   ```bash
-   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-   ```
-
-2. Crea un symlink para la configuración de ZSH:
-
-   ```bash
-   ln -sf ~/dotfiles/OhMyZsh/.zshrc ~/.zshrc
-   ```
+La organización de este repositorio está modularizada en "playbooks" (medio inspirado en Ansible lol), cada uno de los cuales instala una o varias de las configuraciones que contiene este repositorio, te recomiendo que las explores y declarativamente las uses para crear selectivamente el entorno de trabajo que buscas.
 
 ## Personalización
 
 Este repositorio está configurado particularmente para mis necesidades en mis equipos, por lo que es probable que si quieres utilizarlo en tu computadora tengas que realizar modificaciones al mismo para ajustarlo a tus necesidades (baterías no incluídas)
 pero sientete libre de usarlo como inspiración jaja
+
+Todas las configuraciones dan por hecho que están en un ambiente basado en Arch Linux, instalando paquetes usando pacman y dando por hecho la existencia de los que existen en los repositorios oficiales de Arch Linux
 
 ## Lista de features en cada programa
 ### Doom Emacs
@@ -108,3 +57,6 @@ pero sientete libre de usarlo como inspiración jaja
 ### Polybar
 - Configuraciones custom para cada una de las setups.
 - Script de inicio ajustado para multiples monitores
+
+### Y más
+Dependiendo del playbook que utilices. (TODO: Documentar esto jaja)
