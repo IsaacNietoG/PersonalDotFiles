@@ -119,6 +119,7 @@ PATH=$PATH:$HOME/Android/Sdk/platform-tools 		# Android SDK
 PATH=$PATH:$HOME/Android/Sdk/tools 			# Android SDK
 PATH=$PATH:$HOME/.local/bin 				# No se lol
 PATH=$PATH:$HOME/.local/share/gem/ruby/3.2.0/bin 	# Ruby Gems
+PATH=$PATH:$HOME/go/bin
 
 # ENV variables
 export GEM_HOME=$HOME/.gem
@@ -147,3 +148,12 @@ unset __conda_setup
 
 # Alacritty ftw
 export TERMINAL="alacritty"
+
+# NVM set up
+source /usr/share/nvm/init-nvm.sh
+
+# Github aliases
+alias gis='git status'
+alias gia='git add .'
+alias gic='git commit'
+alias gipu='git push'
