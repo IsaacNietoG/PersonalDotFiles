@@ -78,9 +78,17 @@
 ;;Configuration of copilot.el
 ;; accept completion from copilot and fallback to company
 (require 'atomic-chrome)
-(set-frame-parameter (selected-frame) 'alpha '(85 85))
-(add-to-list 'default-frame-alist '(alpha 85 85))
+(set-frame-parameter (selected-frame) 'alpha '(95 95))
+(add-to-list 'default-frame-alist '(alpha 95 95))
 (atomic-chrome-start-server)
 ;; Configuration for LaTeX mode
 (setq +latex-viewers '(okular))
-
+;; Configurations for Literate Programming
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (go . t)
+   (haskell . t)
+   (sql . t)
+   ))
+(setq org-startup-with-inline-images t)
