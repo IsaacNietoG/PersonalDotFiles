@@ -92,3 +92,9 @@
    (sql . t)
    ))
 (setq org-startup-with-inline-images t)
+(setq org-agenda-files '("~/Documents/agendaORG"))
+(setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
+(setq org-deadline-warning-days 14)
+(setq org-agenda-skip-scheduled-if-done t
+      org-agenda-skip-deadline-if-done t
+      org-agenda-skip-timestamp-if-done t)
