@@ -1,0 +1,43 @@
+#+title: PersonalDotFiles Index
+#+author: mrtaichi
+
+* Introducción
+Bienvenido a mis dotfiles de uso personal! En este repositorio puedes encontrar todas las dotfiles que utilizo para mi flujo de trabajo en mi día a día. Espero que vayan evolucionando a lo largo del tiempo, conforme mis formas de trabajar vayan evolucionando a lo largo de los años. Aunque también espero que, eventualmente, lleguemos a una versión final, ya que eso sería señal de una metodología de trabajo curada y terminada.
+
+** Acerca del estilo de este repositorio
+En este repositorio vas a encontrar varias cosas -obviamente mis dotfiles-, pero todas nacen en esencia de este documento que estás leyendo.
+
+Todas mis dotfiles nacen de este documento, pues mis dotfiles, para cuando termine de hacer este documento, están hechas usando el paradigma de programación Literate Programming.
+
+*** Qué es el Literate Programming? O Programación Letrada, en español.
+La programación letrada es un paradigma -o estilo- de programación propuesto por Donald Knuth allá por el año de 1984 en el paper homónimo publicado por él. Este estilo de programación tiene muchas implicaciones muy bonitas, por lo que lo mejor sería que fueras a leer el paper que te comento, así que a grosso modo lo que te puedo decir es que, bajo este estilo de programación, la documentación y el código nacen de la misma fuente: un archivo /tangleable/ (compilable a código) y /weaveable/ (compilable a documentación) que combina ambas cosas en una sola.
+Esto nos ofrece de ventaja que nuestros programas prácticamente se autodocumentan, pues al estarlos realizando deberemos de cambiar nuestro set mental a escribir el *por qué* de lo que estamos haciendo a la par que lo hacemos. Esto nos ahorra el "voy a documentar después" al que muchas personas caen cuando están realizando un proyecto de programación. Y además, hay que considerar que muchas veces nuestro código será leído por humanos muchas veces, entonces debemos de pensar en realizar no para la máquina, si no para estos humanos.
+
+*** Implementación en este proyecto.
+Para seguir el estilo de programación dicho anteriormente en este proyecto, he decidio hacerlo utilizando org-mode, el cual es un sistema para editar, formatear y organizar documentos dentro de Emacs. Este sistema, mediante algunos plugins, puede -y de manera bastante poderosa- utilizarse para escribir "programas letrados".
+
+** Acerca de la estructura de este repositorio
+Podemos segmentar en este proyecto tres partes principales, las cuales son:
+
+*** Parte letrada
+Todos los archivos .org que se encuentran bajo la carpeta docs son la parte realmente viva de este proyecto, pues es la parte letrada de la que emanan las otras dos partes de este proyecto.
+Estos son archivos en donde iré explicando mis dotfiles, parte por parte y de manera detallada, para que se entienda cada decisión de diseño y linea de código que escriba en los mismos. A opinión personal, si eres un visitante de este repositorio, quisiera exhortarte a que instales Emacs e intentes leer este proyecto utilizando esta parte, pues considero que es la mejor forma de entender y utilizar este proyecto de un solo vistazo. Esta parte, al puro estilo del estilo de programación bajo el que se crea este proyecto, es compilable al código final y a la documentación. Es la parte maestra y sobre la que realizaré todas las modificaciones y explicaciones necesarias. Viendose reflejado esto en el resto de las partes, pero como un efecto secundario de la modificación bajo esta parte.
+
+*** Parte documentación
+El archivo PDF que vive bajo docs, el cual es la documentación autogenerada de todo el proyecto.
+
+*** Parte código (dotfiles)
+Las dotfiles mismas, las cuales son generadas automáticamente a partir de la parte letrada. Son la parte realmente usable por la computadora, pero la parte de este proyecto menos hecha para ser leída por el humano. Por la naturaleza de este proyecto, la parte de código no contiene ni un solo comentario dentro de sí, toda cosa que se le tenga que decir al humano que está leyendo el código se le va a decir en las otras dos partes.
+
+** Recomendación personal para leer este repositorio.
+Para entender realmente este repositorio, la mejor forma siempre va a ser mediante su parte letrada y bajo el entorno de trabajo que pueda exprimir esta parte letrada al máximo. Para lograr esto, mi recomendación es que, si eres nuevo en esto de la programación letrada, realices lo siguiente:
+
+- Instala Emacs
+- Instala Doom Emacs
+- Carga mis dotfiles de Emacs, las cuales (obviamente) están diseñadas para poder cargar la parte letrada de este repositorio y consultarla.
+
+Para estos pasos puedes encontrar instrucciones bajo este mismo repositorio.
+
+* Doom Emacs
+
+Si todo este proyecto utiliza programación letrada, es imperativo que las primeras dotfiles que se creen sean las necesarias para hacer mi entorno de trabajo de programación letrada. Entonces comencemos con la herramienta principal, la cual es Doom Emacs. Si estás leyendo este documento en org, abajo verás el enlace al archivo org de toda esta herramienta, si estás leyendo PDF... pues sigue leyendo lol.
