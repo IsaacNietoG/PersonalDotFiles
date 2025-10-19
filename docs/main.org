@@ -36,8 +36,154 @@ Para entender realmente este repositorio, la mejor forma siempre va a ser median
 - Instala Doom Emacs
 - Carga mis dotfiles de Emacs, las cuales (obviamente) están diseñadas para poder cargar la parte letrada de este repositorio y consultarla.
 
-Para estos pasos puedes encontrar instrucciones bajo este mismo repositorio.
+Para estos pasos puedes encontrar instrucciones bajo este mismo repositorio y archivo.
+
+* Playbooks
+
+Los playbooks son scripts de instalacion modulares para los diferentes componentes de mis dotfiles. Cada herramienta de este proyecto está ligada a un playbook, y cada playbook tiene como objetivos lo siguiente:
+
+- Instalar la herramienta en cuestión, junto con sus dependencias
+- Cargar los dotfiles respectivos que va a consumir la herramienta.
+
+Esto nos ofrece una forma más rápida y eficiente de cargar mis dotfiles en un nuevo equipo. A cada una de las herramientas que vaya a configurar en este proyecto le va a corresponder un playbook que iré definiendo conforme vayamos pasando por el capítulo dedicado a dicha herramienta del libro. Pero antes de comenzar con ello, quiero definir algunas cosillas que voy a estar utilizando todo el tiempo en todos los playbooks, algo así como la plantilla base de cosas que me han funcionado en todos los playbooks que había creado antes de migrar mis dotfiles a programación letrada.
+
+** Cabecera común de un playbook
+
+La cabecera más común para todos los playbooks del proyecto es la siguiente:
+
+#+NAME: cabecera_Minima_De_Un_Playbook
+#+begin_src bash
+<<shebang_de_Bash>>
+
+<<exit_On_Error>>
+
+<<colores_Default_Playbook>>
+
+<<funcion_Para_Verificar_Si_Un_Paquete_Esta_Instalado>>
+
+<<funcion_Para_Instalar_Un_Paquete>>
+
+<<funcion_Para_Crear_Backup_De_Un_Archivo_Existente>>
+
+<<funcion_Para_Crear_Un_Enlace_Simbolico>>
+
+#+end_src
+
+Esto nos da varias de las funcionalidades comunes que necesitaremos en todos los playbooks para comenzar a hacerlos útiles. A continuación, vamos a concretarlas todas.
+
+*** Shebang
+
+Todos los playbooks son scripts hechos en bash, porque es casi que lo único que tenemos garantizado en un equipo Linux virgen. Para hacerlos ejecutables, necesitamos definirle a Linux mediante un shebang que son archivos ejecutables por bash.
+
+#+NAME: shebang_Bash
+#+begin_src bash
+#!/bin/bash
+#+end_src
+
+*** Exit on Error
+
+Los playbooks van a estar cambiando configuraciones del equipo, así que por definición, son scripts delicados. Nos interesa entonces que, si ocurre un error en cualquiera de los pasos, por mínimo que sea, el script detenga su ejecución y no siga más. Esto lo podemos hacer con /set -e/.
+
+#+NAME: exit_On_Error
+#+begin_src bash
+set -e
+#+end_src
+
+*** Colores
+
+Para que quede bonita la salida de los playbooks :3
+
+#+NAME: colores_Default_Playbook
+#+begin_src bash
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+#+end_src
+
+*** Verificar si un paquete está instalado
+Nos queremos ahorrar las instalaciones manuales de las dependencias necesarias para una herramienta -y la instalación de la herramienta en sí- lo más posible, por lo que queremos que nuestros playbooks posean la funcionalidad necesaria para ahorrarnos esto, trabajando con el gestor de paquetes de nuestra distribución siempre que sea posible.
+
+Primero, para ahorrarnos ciertos edge cases, crearemos una función que verifique con nuestro gestor de paquetes si el paquete dado se encuentra ya instalado.
+
+#+NAME: funcion_Para_Verificar_Si_Un_Paquete_Esta_Instalado
+#+begin_src bash
+check_package() {
+    if pacman -Qi "$1" &>/dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+#+end_src
+
+Cabe decir que debido a que uso Arch (btw) esta función y la siguiente están acomodadas para pacman, que es el gestor de paquetes que usa esta distro. Si en un futuro cambio de gestor de paquetes, debería de ser relativamente sencillo ajustar todo, cambiando la definición de esta función y la siguiente.
+
+*** Instalar un paquete
+Luego, vamos a crear un pequeño wrap para pacman (o el gestor de paquetes que nos toque en el futuro) para instalar paquetes automáticamente.
+
+#+NAME: funcion_Para_Instalar_Un_Paquete
+#+begin_src bash
+install_package() {
+    if ! check_package "$1"; then
+        echo -e "${GREEN}Installing $1...${NC}"
+        sudo pacman -S --noconfirm "$1"
+    else
+        echo -e "${YELLOW}$1 is already installed${NC}"
+    fi
+}
+#+end_src
+
+*** Crear backup de un archivo existente
+
+#+NAME: funcion_Para_Crear_Backup_De_Un_Archivo_Existente
+#+begin_src bash
+backup_file() {
+    if [ -e "$1" ]; then
+        echo -e "${YELLOW}Backing up $1 to $1.bak${NC}"
+        mv "$1" "$1.bak"
+    fi
+}
+#+end_src
+
+*** Crear enlaces simbólicos
+
+No vamos a copiar los archivos de configuración a sus respectivos lugares según la herramienta, porque eso nos obligaría a modificarlos individualmente cada vez que actualicemos estas configuraciones. En su lugar, vamos a crear enlaces simbólicos del lugar en el que deberían de estar hacia nuestra configuración en el repositorio del proyecto.
+
+#+NAME: funcion_Para_Crear_Un_Enlace_Simbolico
+#+begin_src bash
+create_symlink() {
+    local source="$1"
+    local target="$2"
+
+    # Create target directory if it doesn't exist
+    local target_dir=$(dirname "$target")
+    if [ ! -d "$target_dir" ]; then
+        echo -e "${YELLOW}Creating directory: $target_dir${NC}"
+        mkdir -p "$target_dir"
+    fi
+
+    echo -e "${GREEN}Creating symlink: $target -> $source${NC}"
+    backup_file "$target"
+    ln -sf "$source" "$target"
+}
+#+end_src
 
 * Doom Emacs
 
 Si todo este proyecto utiliza programación letrada, es imperativo que las primeras dotfiles que se creen sean las necesarias para hacer mi entorno de trabajo de programación letrada. Entonces comencemos con la herramienta principal, la cual es Doom Emacs. Si estás leyendo este documento en org, abajo verás el enlace al archivo org de toda esta herramienta, si estás leyendo PDF... pues sigue leyendo lol.
+
+** Introducción
+Doom Emacs es mi principal editor de texto. Emacs en sí es el editor de texto que llevo usando desde que inicié la carrera -por influencia de la cultura de mi facultad-. El problema con Emacs es que es, a mi gusto, difícil de configurar en su versión básica. Por esto decidí usar Doom Emacs, el cual es un framework de configuración que me sirve para tener todo el poder de Emacs de una manera sencilla y que, además, no me hace perder la configurabilidad que me provee un Emacs vainilla.
+
+** Instalación
+Vamos a generar un playbook para poder instalar doom emacs de manera sencilla en cualquier dispositivo que vaya a utilizar.
+De base necesitamos Emacs vanilla, el cual, tenemos la gran suerte de que existe en los repositorios de casi cualquier distribución de Linux que exista. A la fecha no conozco una distro de linux que no lo incluya.
+Comenzamos importando la cabecera mínima del playbook y un pequeño mensaje al usuario para indicarle que este es el playbook para instalar Doom Emacs.
+
+#+begin_src bash :tangle ../playbooks/install-doom-emacs.sh :noweb yes
+<<cabecera_Minima_De_Un_Playbook>>
+
+echo -e "${GREEN}=== Installing Doom Emacs ===${NC}"
+
+#+end_src
