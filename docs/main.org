@@ -187,3 +187,445 @@ Comenzamos importando la cabecera mínima del playbook y un pequeño mensaje al 
 echo -e "${GREEN}=== Installing Doom Emacs ===${NC}"
 
 #+end_src
+
+*** Instalación de dependencias
+
+Según la página de instalación de Doom Emacs, las dependencias requeridas para Doom Emacs son:
+#+begin_quote
+- **Required:**
+  - GNU Emacs 27.1–30.2
+    - 30.2 is recommended (fastest and most stable)
+    - Doom's modules require >=28.1
+      - Tree-sitter support requires >= 29.1
+      - JS(X)/TS(X) support is far better on >= 30.1 (w/ tree-sitter)
+    - Doom's core requires >=27.1
+  - Git >= 2.23
+  - [ripgrep] >= 11.0
+- **Optional, but recommended:**
+  - [fd] 7.3.0+ (used to improve file indexing performance)
+  - GNU variants of `find`, `ls`, and `tar` (on MacOS and BSD *nix)
+  - Symbola font (Emacs' fallback font for glyphs it can't display)
+#+end_quote
+
+Quiero de inmediato obviar el tema de las versiones, porque uso Arch (btw) y, por ser rolling release, en la mayoría e los casos el upstream de esta distro suele tener siempre las versiones más recientes de los paquetes; por lo que en muy raros casos vamos a necesitar alguna versión distinta a la del upstream.
+
+Luego, obviamos inmediatamente las "GNU Variants" porque por tener Linux ya las tenemos, idem con la symbola font que en la mayoría de los casos la solemos tener, y de todas formas es una fuente fallback.
+
+Nos quedamos entonces con:
+- Emacs
+- Git
+- Ripgrep
+- Fd
+
+Hacemos nuestra tarea para buscar los nombres de los paquetes para nuestra distribución, los cuales son los siguientes:
+
+- Emacs = emacs
+- Git = git
+- Ripgrep = ripgrep
+- Fd = fd
+
+Dicho esto, podemos instalar los requerimentos usando las funciones definidas en la cabecera de nuestros playbooks. Lo agregamos al playbook:
+
+#+begin_src bash :tangle ../playbooks/install-doom-emacs.sh :noweb yes :eval never
+
+echo -e "${GREEN}Installing Doom Emacs dependencies...${NC}"
+install_package "emacs"
+install_package "git"
+install_package "ripgrep"
+install_package "fd"
+
+#+end_src
+
+
+Una vez instaladas las dependencias, podemos comenzar a prepararnos para instalar todo lo necesario. Las instrucciones para instalar Doom Emacs en el repositorio son las siguientes:
+#+begin_quote
+# Install
+``` sh
+git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+~/.config/emacs/bin/doom install
+```
+
+Then [read our Getting Started guide][getting-started] to be walked through
+installing, configuring and maintaining Doom Emacs.
+
+It's a good idea to add `~/.config/emacs/bin` to your `PATH`! Other `bin/doom`
+commands you should know about:
+
++ `doom sync` to synchronize your private config with Doom by installing missing
+  packages, removing orphaned packages, and regenerating caches. Run this
+  whenever you modify your private `init.el` or `packages.el`, or install/remove
+  an Emacs package through your OS package manager (e.g. mu4e or agda).
++ `doom upgrade` to update Doom to the latest release & all installed packages.
++ `doom doctor` to diagnose common issues with your system and config.
++ `doom env` to dump a snapshot of your shell environment to a file that Doom
+  will load at startup. This allows Emacs to inherit your `PATH`, among other
+  things.
+
+#+end_quote
+
+Las instrucciones las podemos resumir a:
+- Clonar el repositorio en el directorio de configuraciones de emacs (generalmente, y en mi caso particular, .config/...)
+- Corremos el binario doom install que vendría en el contenido que acabamos de clonar.
+
+#+begin_src bash :tangle ../playbooks/install-doom-emacs.sh :eval never
+echo -e "\n${GREEN}Installing Doom Emacs...${NC}"
+if [ ! -f "$HOME/.config/emacs/bin/doom" ]; then
+    git clone --depth 1 https://github.com/doomemacs/doomemacs "$HOME/.config/emacs"
+    "$HOME/.config/emacs/bin/doom" install
+else
+    echo -e "${YELLOW}Doom Emacs is already installed${NC}"
+fi
+
+#+end_src
+
+Una vez instalado Doom Emacs, podemos comenzar a importar las configuraciones incluídas en este repositorio.
+
+Para esto creamos los enlaces simbólicos respectivos.
+
+#+begin_src bash :tangle ../playbooks/install-doom-emacs.sh :eval never
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+
+echo -e "\n${GREEN}Installing Doom Emacs config...${NC}"
+create_symlink "$REPO_ROOT/doomEmacs/config.el" ~/.config/doom/config.el
+create_symlink "$REPO_ROOT/doomEmacs/init.el" ~/.config/doom/init.el
+create_symlink "$REPO_ROOT/doomEmacs/packages.el" ~/.config/doom/packages.el
+
+#+end_src
+
+Doom Emacs provee un mecanismo de "sincronización" el cual debemos correr cada vez que modifiquemos los archivos de configuración, para que estos cambios surtan efecto.
+
+#+begin_src bash :tangle ../playbooks/install-doom-emacs.sh :eval never
+echo -e "\n${GREEN}Syncing Doom Emacs...${NC}"
+"$HOME/.config/emacs/bin/doom" sync
+
+echo -e "\n${GREEN}=== Doom Emacs Installation Complete ===${NC}"
+echo -e "${YELLOW}Note: You may need to restart Emacs for all changes to take effect.${NC}"
+
+#+end_src
+
+** init.el
+
+#+begin_quote
+Where you’ll find your doom! block, which controls what Doom modules are enabled and in what order they will be loaded.
+This file is evaluated early when Emacs is starting up; before any other module has loaded. You generally shouldn’t add code to this file unless you’re targeting Doom’s CLI or something that needs to be configured very early in the startup process.
+#+end_quote
+
+En este archivo seleccionamos los /doom modules/ que vamos a necesitar para el flujo de trabajo. Siendo la lista original la siguiente:
+
+#+begin_src lisp :eval never
+;;; init.el -*- lexical-binding: t; -*-
+
+;; This file controls what Doom modules are enabled and what order they load
+;; in. Remember to run 'doom sync' after modifying it!
+
+;; NOTE Press 'SPC h d h' (or 'C-h d h' for non-vim users) to access Doom's
+;;      documentation. There you'll find a link to Doom's Module Index where all
+;;      of our modules are listed, including what flags they support.
+
+;; NOTE Move your cursor over a module's name (or its flags) and press 'K' (or
+;;      'C-c c k' for non-vim users) to view its documentation. This works on
+;;      flags as well (those symbols that start with a plus).
+;;
+;;      Alternatively, press 'gd' (or 'C-c c d') on a module to browse its
+;;      directory (for easy access to its source code).
+
+(doom! :input
+       ;;bidi              ; (tfel ot) thgir etirw uoy gnipleh
+       ;;chinese
+       ;;japanese
+       ;;layout            ; auie,ctsrnm is the superior home row
+
+       :completion
+       ;;(company +childframe)           ; the ultimate code completion backend
+       ;;helm              ; the *other* search engine for love and life
+       ;;ido               ; the other *other* search engine...
+       ;;ivy               ; a search engine for love and life
+       ;;vertico           ; the search engine of the future
+
+       :ui
+       ;;deft              ; notational velocity for Emacs
+       ;;doom              ; what makes DOOM look the way it does
+       ;;doom-dashboard    ; a nifty splash screen for Emacs
+       ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
+       ;;(emoji +unicode)  ; 🙂
+       ;;hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+       ;;hydra
+       ;;indent-guides     ; highlighted indent columns
+       ;;ligatures         ; ligatures and symbols to make your code pretty again
+       ;;minimap           ; show a map of the code on the side
+       ;;modeline          ; snazzy, Atom-inspired modeline, plus API
+       ;;nav-flash         ; blink cursor line after big motions
+       ;;neotree           ; a project drawer, like NERDTree for vim
+       ;;ophints           ; highlight the region an operation acts on
+       ;;(popup +defaults)   ; tame sudden yet inevitable temporary windows
+       ;;tabs              ; a tab bar for Emacs
+       ;;treemacs          ; a project drawer, like neotree but cooler
+       ;;unicode           ; extended unicode support for various languages
+       ;;(vc-gutter +pretty) ; vcs diff in the fringe
+       ;;vi-tilde-fringe   ; fringe tildes to mark beyond EOB
+       ;;window-select     ; visually switch windows
+       ;;workspaces        ; tab emulation, persistence & separate workspaces
+       ;;zen               ; distraction-free coding or writing
+
+       :editor
+       ;;file-templates    ; auto-snippets for empty files
+       ;;fold              ; (nigh) universal code folding
+       ;;(format +onsave)  ; automated prettiness
+       ;;god               ; run Emacs commands without modifier keys
+       ;;lispy             ; vim for lisp, for people who don't like vim
+       ;;multiple-cursors  ; editing in many places at once
+       ;;objed             ; text object editing for the innocent
+       ;;parinfer          ; turn lisp into python, sort of
+       ;;rotate-text       ; cycle region at point between text candidates
+       ;;snippets            ; my elves. They type so I don't have to
+       ;;(evil +everywhere)
+       ;;word-wrap         ; soft wrapping with language-aware indent
+
+       :emacs
+       ;;dired             ; making dired pretty [functional]
+       ;;electric          ; smarter, keyword-based electric-indent
+       ;;ibuffer         ; interactive buffer management
+       ;;undo              ; persistent, smarter undo for your inevitable mistakes
+       ;;vc                ; version-control and Emacs, sitting in a tree
+
+       :term
+       ;;eshell            ; the elisp shell that works everywhere
+       ;;shell             ; simple shell REPL for Emacs
+       ;;term              ; basic terminal emulator for Emacs
+       ;;vterm             ; the best terminal emulation in Emacs
+
+       :checkers
+       ;;syntax              ; tasing you for every semicolon you forget
+       ;;(spell +flyspell) ; tasing you for misspelling mispelling
+       ;;grammar           ; tasing grammar mistake every you make
+
+       :tools
+       ;;ansible
+       ;;biblio            ; Writes a PhD for you (citation needed)
+       ;;collab            ; buffers with friends
+       ;;debugger          ; FIXME stepping through code, to help you add bugs
+       ;;direnv
+       ;;docker
+       ;;editorconfig      ; let someone else argue about tabs vs spaces
+       ;;ein               ; tame Jupyter notebooks with emacs
+       ;;(eval +overlay)     ; run code, run (also, repls)
+       ;;lookup              ; navigate your code and its documentation
+       ;;lsp               ; M-x vscode
+       ;;magit             ; a git porcelain for Emacs
+       ;;make              ; run make tasks from Emacs
+       ;;pass              ; password manager for nerds
+       ;;pdf               ; pdf enhancements
+       ;;prodigy           ; FIXME managing external services & code builders
+       ;;rgb               ; creating color strings
+       ;;taskrunner        ; taskrunner for all your projects
+       ;;terraform         ; infrastructure as code
+       ;;tmux              ; an API for interacting with tmux
+       ;;tree-sitter       ; syntax and parsing, sitting in a tree...
+       ;;upload            ; map local to remote projects via ssh/ftp
+
+       :os
+       ;;(:if (featurep :system 'macos) macos)  ; improve compatibility with macOS
+       ;;tty               ; improve the terminal Emacs experience
+
+       :lang
+       ;;agda              ; types of types of types of types...
+       ;;beancount         ; mind the GAAP
+       ;;(cc +lsp)         ; C > C++ == 1
+       ;;clojure           ; java with a lisp
+       ;;common-lisp       ; if you've seen one lisp, you've seen them all
+       ;;coq               ; proofs-as-programs
+       ;;crystal           ; ruby at the speed of c
+       ;;csharp            ; unity, .NET, and mono shenanigans
+       ;;data              ; config/data formats
+       ;;(dart +flutter)   ; paint ui and not much else
+       ;;dhall
+       ;;elixir            ; erlang done right
+       ;;elm               ; care for a cup of TEA?
+       ;;emacs-lisp        ; drown in parentheses
+       ;;erlang            ; an elegant language for a more civilized age
+       ;;ess               ; emacs speaks statistics
+       ;;factor
+       ;;faust             ; dsp, but you get to keep your soul
+       ;;fortran           ; in FORTRAN, GOD is REAL (unless declared INTEGER)
+       ;;fsharp            ; ML stands for Microsoft's Language
+       ;;fstar             ; (dependent) types and (monadic) effects and Z3
+       ;;gdscript          ; the language you waited for
+       ;;(go +lsp)         ; the hipster dialect
+       ;;(graphql +lsp)    ; Give queries a REST
+       ;;(haskell +lsp)    ; a language that's lazier than I am
+       ;;hy                ; readability of scheme w/ speed of python
+       ;;idris             ; a language you can depend on
+       ;;json              ; At least it ain't XML
+       ;;(java +lsp)       ; the poster child for carpal tunnel syndrome
+       ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
+       ;;julia             ; a better, faster MATLAB
+       ;;kotlin            ; a better, slicker Java(Script)
+       ;;latex             ; writing papers in Emacs has never been so fun
+       ;;lean              ; for folks with too much to prove
+       ;;ledger            ; be audit you can be
+       ;;lua               ; one-based indices? one-based indices
+       ;;markdown          ; writing docs for people to ignore
+       ;;nim               ; python + lisp at the speed of c
+       ;;nix               ; I hereby declare "nix geht mehr!"
+       ;;ocaml             ; an objective camel
+       ;;org               ; organize your plain life in plain text
+       ;;php               ; perl's insecure younger brother
+       ;;plantuml          ; diagrams for confusing people more
+       ;;purescript        ; javascript, but functional
+       ;;python            ; beautiful is better than ugly
+       ;;qt                ; the 'cutest' gui framework ever
+       ;;racket            ; a DSL for DSLs
+       ;;raku              ; the artist formerly known as perl6
+       ;;rest              ; Emacs as a REST client
+       ;;rst               ; ReST in peace
+       ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
+       ;;(rust +lsp)       ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+       ;;scala             ; java, but good
+       ;;(scheme +guile)   ; a fully conniving family of lisps
+       ;;sh                ; she sells {ba,z,fi}sh shells on the C xor
+       ;;sml
+       ;;solidity          ; do you need a blockchain? No.
+       ;;swift             ; who asked for emoji variables?
+       ;;terra             ; Earth and Moon in alignment for performance.
+       ;;web               ; the tubes
+       ;;yaml              ; JSON, but readable
+       ;;zig               ; C, but simpler
+
+       :email
+       ;;(mu4e +org +gmail)
+       ;;notmuch
+       ;;(wanderlust +gmail)
+
+       :app
+       ;;calendar
+       ;;emms
+       ;;everywhere        ; *leave* Emacs!? You must be joking
+       ;;irc               ; how neckbeards socialize
+       ;;(rss +org)        ; emacs as an RSS reader
+       ;;twitter           ; twitter client https://twitter.com/vnought
+
+       :config
+       ;;literate
+       ;;(default +bindings +smartparens))
+
+#+end_src
+
+Para formar nuestra propia sección de init.el, iremos seleccionando los módulos necesarios. Considerando primero que nada que, todo lo que existe aquí es parte del bloque /doom!/. Entonces, nuestra primera declaración de este archivo debe de ser este bloque.
+
+#+begin_src lisp :tangle ../doomEmacs/init.el :noweb yes :eval never
+(doom!
+ <<modulos_Elegidos>>
+ )
+
+#+end_src
+
+Luego, dentro de los módulos elegidos, necesitamos considerar que existen varias categorías de módulos para personalizar nuestra configuración de Doom Emacs, siendo las principales:
+
+#+NAME: modulos_Elegidos
+#+begin_src lisp :eval never
+<<modulos_Input>>
+<<modulos_Completion>>
+<<modulos_Ui>>
+<<modulos_Editor>>
+<<modulos_Emacs>>
+<<modulos_Term>>
+<<modulos_Checkers>>
+<<modulos_Tools>>
+<<modulos_Os>>
+<<modulos_Lang>>
+<<modulos_Email>>
+<<modulos_App>>
+<<modulos_Config>>
+#+end_src
+
+Vamos a movernos entre cada categoría para armar nuestros selectos módulos.
+
+*** Módulos Input
+
+Esta categoría de módulos no posee una descripción oficial, y sus módulos tampoco están documentados, pero podemos asumir que son módulos que tienen que ver con soluciones de compatibilidad con layouts o idiomas con caracteres de entrada extraños (sea Chino o Japonés). Así que por el momento, no necesitamos nada de aquí.
+
+#+NAME: modulos_Input
+#+begin_src lisp :eval never
+:input
+#+end_src
+
+*** Módulos Completion
+
+#+begin_quote
+Modules that provide new interfaces or frameworks for completion, including code completion.
+#+end_quote
+
+Los dos módulos que incluye Doom Emacs en su configuración por defecto y que me han servido bastante hasta el momento han sido Company y vertico, la verdad es que no he probado los otros que ofrece, aunque no descarto hacerlo en un futuro.
+
+#+NAME: modulos_Completion
+#+begin_src lisp :eval never
+:completion
+(company +childframe)
+vertico
+
+#+end_src
+
+*** Módulos UI
+
+#+begin_quote
+Aesthetic modules that affect the Emacs interface or user experience.
+#+end_quote
+
+En esta sección también tengo por ahora una configuración directamente default, aunque al estar escribiendo este documento, me pongo a leer las descripciones de los módulos que puedo elegir para mejorar mi interfaz de usuario, y me tientan. Tal vez otro día me pongo a seleccionarlos como se debe.
+
+#+NAME: modulos_Ui
+#+begin_src lisp :eval never
+:ui
+doom
+doom-dashboard
+hl-todo
+modeline
+ophints
+(popup + defaults)
+(vc-gutter +pretty)
+vi-tilde-fringe
+workspaces
+#+end_src
+
+*** Módulos Editor
+
+#+begin_quote
+Modules that affect and augment your ability to manipulate or insert text.
+#+end_quote
+
+Aquí ya le agregamos un poco más de salsa al asunto, porque esta es la parte donde decido confesar que llevo un año o más usando Emacs en evil mode. Porque -al César lo que es del César- la verdad es que me encantan los atajos de Vim, a lo largo de estos últimos años he intentado integrarlos a cualquier parte de mi flujo de trabajo que se dejara. Y no sé si sentirme orgulloso de decir que, es muy probable que una persona que no sepa usar Vim no sepa usar mis computadoras.
+
+#+NAME: modulos_Editor
+#+begin_src lisp :eval never
+:editor
+file-templates
+fold
+snippets
+(evil +everywhere)
+
+#+end_src
+
+*** Módulos Emacs
+
+#+begin_quote
+Modules that reconfigure or augment packages or features built into Emacs.
+#+end_quote
+
+En esta categoría también tenemos los defaults por ahora.
+
+#+NAME: modulos_Emacs
+#+begin_src lisp :eval never
+:emacs
+dired
+electric
+undo
+vc
+
+#+end_src
+
+*** Módulos Term
+
+#+begin_quote
+Modules that offer terminal emulation.
+#+end_quote
