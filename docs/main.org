@@ -52,7 +52,7 @@ Esto nos ofrece una forma más rápida y eficiente de cargar mis dotfiles en un 
 La cabecera más común para todos los playbooks del proyecto es la siguiente:
 
 #+NAME: cabecera_Minima_De_Un_Playbook
-#+begin_src bash
+#+begin_src bash :noweb yes
 <<shebang_de_Bash>>
 
 <<exit_On_Error>>
@@ -515,15 +515,15 @@ Para formar nuestra propia sección de init.el, iremos seleccionando los módulo
 
 #+begin_src lisp :tangle ../doomEmacs/init.el :noweb yes :eval never
 (doom!
- <<modulos_Elegidos>>
- )
+    <<modulos_Elegidos>>
+)
 
 #+end_src
 
 Luego, dentro de los módulos elegidos, necesitamos considerar que existen varias categorías de módulos para personalizar nuestra configuración de Doom Emacs, siendo las principales:
 
 #+NAME: modulos_Elegidos
-#+begin_src lisp :eval never
+#+begin_src lisp :eval never :noweb yes
 <<modulos_Input>>
 <<modulos_Completion>>
 <<modulos_Ui>>
