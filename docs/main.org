@@ -11,7 +11,7 @@ Todas mis dotfiles nacen de este documento, pues mis dotfiles, para cuando termi
 
 *** Qué es el Literate Programming? O Programación Letrada, en español.
 La programación letrada es un paradigma -o estilo- de programación propuesto por Donald Knuth allá por el año de 1984 en el paper homónimo publicado por él. Este estilo de programación tiene muchas implicaciones muy bonitas, por lo que lo mejor sería que fueras a leer el paper que te comento, así que a grosso modo lo que te puedo decir es que, bajo este estilo de programación, la documentación y el código nacen de la misma fuente: un archivo /tangleable/ (compilable a código) y /weaveable/ (compilable a documentación) que combina ambas cosas en una sola.
-Esto nos ofrece de ventaja que nuestros programas prácticamente se autodocumentan, pues al estarlos realizando deberemos de cambiar nuestro set mental a escribir el *por qué* de lo que estamos haciendo a la par que lo hacemos. Esto nos ahorra el "voy a documentar después" al que muchas personas caen cuando están realizando un proyecto de programación. Y además, hay que considerar que muchas veces nuestro código será leído por humanos muchas veces, entonces debemos de pensar en realizar no para la máquina, si no para estos humanos.
+Esto nos ofrece de ventaja que nuestros programas prácticamente se autodocumentan, pues al estarlos realizando deberemos de cambiar nuestro set mental a escribir el *por qué* de lo que estamos haciendo a la par que lo hacemos. Esto nos ahorra el "voy a documentar después" al que muchas personas caen cuando están realizando un proyecto de programación. Y además, hay que considerar que muchas veces nuestro código será leído por humanos más veces de lo que será leído por la máquina, entonces debemos de pensar en realizarlo no para la máquina, si no para estos humanos.
 
 *** Implementación en este proyecto.
 Para seguir el estilo de programación dicho anteriormente en este proyecto, he decidio hacerlo utilizando org-mode, el cual es un sistema para editar, formatear y organizar documentos dentro de Emacs. Este sistema, mediante algunos plugins, puede -y de manera bastante poderosa- utilizarse para escribir "programas letrados".
@@ -660,16 +660,16 @@ Small modules that give Emacs access to external tools & services.
 
 Dentro de esta categoría incluiremos los siguientes módulos:
 
-*** Eval
+**** Eval
 Para realizar evaluaciones de bloques de código en el momento. Me parece que este es uno de los módulos habilitados por default, así que desconozco realmente la funcionalidad de tenerlo habilitado.
 
-*** Lookup
+**** Lookup
 Para navegar a través del código, buscando "símbolos" y definiciones.
 
-*** Lsp
+**** Lsp
 Mi favorito, con este podemos tener servidores de lenguaje, que nos implementan varias de las funcionalidades que podríamos extrañar de un IDE convencional. Con este módulo, junto con los correspondientes a cada lenguaje que necesitemos (en Módulos Lenguajes), convertimos a Emacs en un IDE completo.
 
-*** Magit
+**** Magit
 Agrega integración con Git, principalmente lo uso para ver en el lateral izquierdo los cambios que he introducido a un archivo y que no he commiteado.
 
 Finalmente, esta sección queda de la siguiente forma:
@@ -683,7 +683,7 @@ magit
 
 #+end_src
 
-** Módulos OS
+*** Módulos OS
 
 #+begin_quote
 Modules to improve integration into your OS, system, or devices.
@@ -698,7 +698,7 @@ El módulo que viene por default es el de MacOS, bajo el condicional de activars
 
 #+end_src
 
-** Módulos de lenguajes
+*** Módulos de lenguajes
 
 #+begin_quote
 Modules that bring support for a language or group of languages to Emacs.
@@ -725,7 +725,7 @@ sh
 
 #+end_src
 
-** Módulos de Email
+*** Módulos de Email
 
 Esta categoría no posee una descripción oficial, pero proporciona los medios para poder conectar un cliente de correo a Emacs.
 
@@ -737,7 +737,7 @@ Me parece un campo sin dudar bastante atractivo poder usar mi correo electrónic
 
 #+end_src
 
-** Módulos de Apps
+*** Módulos de Apps
 
 #+begin_quote
 Application modules are complex and opinionated modules that transform Emacs toward a specific purpose. They may have additional dependencies and should be loaded last, before :config modules.
@@ -752,7 +752,7 @@ everywhere
 
 #+end_src
 
-** Config
+*** Módulos de configuración
 
 #+begin_quote
 Modules that configure Emacs one way or another, or focus on making it easier for you to customize it yourself. It is best to load these last.
@@ -770,3 +770,44 @@ Así que nos quedamos solamente con el módulo default, el cual *obviamente* vie
 (default +bindings +smartparens)
 
 #+end_src
+
+** config.el
+
+#+begin_quote
+Here is where 99.99% of your private configuration should go. Anything in here is evaluated after all other modules have loaded, when starting up Emacs.
+#+end_quote
+
+Esta es la parte más sabrosa de la configuración de Doom Emacs en cuanto a usabilidad se trata. Una vez hemos elegido los módulos que vamos a utilizar dentro de nuestro /init.el/, podemos empezar a ajustar nuestras configuraciones.
+
+Vamos a dividir la estructura de este archivo por las features a las que aportan las configuraciones necesarias. La estructura actual se verá de la siguiente forma, separando la configuración por features:
+
+#+begin_src lisp :tangle ../doomEmacs/config.el :noweb yes :eval never
+<<esteticaYEstilo>>
+<<orgMode>>
+<<atomicChrome>>
+<<latex>>
+<<programacionLetrada>>
+#+end_src
+
+*** Estética y estilo
+
+Primero comenzamos con la elección de tema, la cual hacemos cambiando el nombre de la variable /doom-theme/. No recuerdo bien si he cambiado este tema o el que estoy usando es el default, pero en todo caso, actualmente utilizo doom-one, y no he tenido ninguna queja hasta el momento.
+
+#+begin_src lisp :eval never :noweb-ref esteticaYEstilo
+(setq doom-theme 'doom-one)
+#+end_src
+
+Luego definimos la variable display-line-numbers-type, la cual nos permite controlar como se va a mostrar la barra lateral que nos indica la línea del documento sobre la que estamos. Existen varias configuraciones posibles, incluso para hacerla relativa. Yo prefiero quedarme con la sencilla, la cual simplemente marca en el lado izquierdo la línea en la que nos hallamos.
+
+#+begin_src lisp :eval never :noweb-ref esteticaYEstilo
+(setq display-line-numbers-type t)
+#+end_src
+
+Luego está el tema de las transparencias. A mí me gusta definir una ligera transparencia en el marco principal de Emacs, porque esto me permite poder ver ligeramente la ventana que tenga acomodada detrás de la ventana de Emacs. Esto me deja tener Emacs en pantalla completa y tener atrás algún documento para consulta, lo cual me ha resultado útil en muchos casos.
+
+#+begin_src lisp :eval never :noweb-ref esteticaYEstilo
+(set-frame-parameter (selected-frame) 'alpha '(95 95))
+(add-to-list 'default-frame-alist '(alpha 95 95))
+#+end_src
+
+La transparencia la tengo definida a 95, pues es el valor que considero lo suficientemente opaco para no perder el texto de la ventana de Emacs, pero lo suficientemente transparente para poder ver texto detrás.
