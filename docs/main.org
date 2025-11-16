@@ -629,3 +629,144 @@ vc
 #+begin_quote
 Modules that offer terminal emulation.
 #+end_quote
+
+Para esta categoría vamos a incluir el módulo de vterm, que presumiblemente es el mejor emulador de terminal hasta el momento que tenemos disponible para Doom Emacs.
+
+#+NAME: modulos_Term
+#+begin_src lisp :eval never
+:term
+vterm
+
+#+end_src
+
+*** Módulos Checkers
+
+Esta categoría de módulos no tiene una descripción oficial, pero podemos decir que engloba aquellos módulos relacionados con la corrección de ortografía.
+
+Y pues por ahora solamente utilizo el verificador de syntax.
+
+#+NAME: modulos_Checkers
+#+begin_src lisp :eval never
+:checkers
+syntax
+
+#+end_src
+
+*** Módulos Tools
+
+#+begin_quote
+Small modules that give Emacs access to external tools & services.
+#+end_quote
+
+Dentro de esta categoría incluiremos los siguientes módulos:
+
+*** Eval
+Para realizar evaluaciones de bloques de código en el momento. Me parece que este es uno de los módulos habilitados por default, así que desconozco realmente la funcionalidad de tenerlo habilitado.
+
+*** Lookup
+Para navegar a través del código, buscando "símbolos" y definiciones.
+
+*** Lsp
+Mi favorito, con este podemos tener servidores de lenguaje, que nos implementan varias de las funcionalidades que podríamos extrañar de un IDE convencional. Con este módulo, junto con los correspondientes a cada lenguaje que necesitemos (en Módulos Lenguajes), convertimos a Emacs en un IDE completo.
+
+*** Magit
+Agrega integración con Git, principalmente lo uso para ver en el lateral izquierdo los cambios que he introducido a un archivo y que no he commiteado.
+
+Finalmente, esta sección queda de la siguiente forma:
+
+#+NAME: modulos_Tools
+#+begin_src lisp :eval never
+:tools
+lookup
+lsp
+magit
+
+#+end_src
+
+** Módulos OS
+
+#+begin_quote
+Modules to improve integration into your OS, system, or devices.
+#+end_quote
+
+El módulo que viene por default es el de MacOS, bajo el condicional de activarse solamente si detecta que estamos bajo dicho sistema operativo. Lo dejo activo, solamente porque así, si un día cambio a MacOS, no me ocurra que me confunda porque no funciona y me de cuenta que fué por desactivar este módulo.
+
+#+NAME: modulos_Os
+#+begin_src lisp :eval never
+:os
+(:if (featurep :system 'macos) macos)
+
+#+end_src
+
+** Módulos de lenguajes
+
+#+begin_quote
+Modules that bring support for a language or group of languages to Emacs.
+#+end_quote
+
+Esta es una de las categorías más importantes para un programador, pues literalmente aquí podemos encontrar los paquetes de soporte para lenguajes de programación que nos proporciona Emacs. Me encantaría poder activar todos de una vez, porque sé que al ritmo que voy eventualmente los terminaría usando; pero la traba es que mientras más módulos tenga activos en esta setup, me exhibo más a tiempos de arranque reducidos y posibles pérdidas de rendimiento. Por este motivo, prefiero solamente activar estos módulos conforme los vaya necesitando.
+
+#+NAME: modulos_Lang
+#+begin_src lisp :eval never
+:lang
+(cc +lsp)
+clojure
+(dart +flutter)
+emacs-lisp
+(go +lsp)
+(haskell +lsp)
+json
+(java +lsp)
+javascript
+latex
+markdown
+(rust +lsp)
+sh
+
+#+end_src
+
+** Módulos de Email
+
+Esta categoría no posee una descripción oficial, pero proporciona los medios para poder conectar un cliente de correo a Emacs.
+
+Me parece un campo sin dudar bastante atractivo poder usar mi correo electrónico dentro de Emacs. Pero por ahora creo que prefiero quedarme así, tal vez en un futuro decida utilizar esta posible feature.
+
+#+NAME: modulos_Email
+#+begin_src lisp :eval never
+:email
+
+#+end_src
+
+** Módulos de Apps
+
+#+begin_quote
+Application modules are complex and opinionated modules that transform Emacs toward a specific purpose. They may have additional dependencies and should be loaded last, before :config modules.
+#+end_quote
+
+Por ahora, sólo utilizo emacs-everywhere, que me permite abrir frames de Emacs para editar cualquier recuadro de texto en mi computadora usando Emacs. Esto es algo bastante útil que no uso tan seguido como podría hacerlo, pero definitivamente cada que lo uso +siento como pierdo sex appeal+ me siento como un power user.
+
+#+NAME: modulos_App
+#+begin_src lisp :eval never
+:app
+everywhere
+
+#+end_src
+
+** Config
+
+#+begin_quote
+Modules that configure Emacs one way or another, or focus on making it easier for you to customize it yourself. It is best to load these last.
+#+end_quote
+
+Nada interesante aquí, excepto señalar que esta categoría contiene dentro de sí al módulo literate. Este módulo nos permite tanglear automáticamente un archivo config.org al iniciar nuestro Emacs. Esto con el propósito de que este config.org funcione como nuestra configuración letrada para Doom Emacs.
+
+Podría haber usado este módulo para tanglear la configuración de Doom Emacs particularmente, pero siempre tuve pensado este archivo .org como algo que comprendiera completamente a mis dotfiles, como una especie de libro maestro para mi flujo de trabajo. Entonces, tener mi configuración de Doom Emacs viviendo en otro archivo .org me hubiera resultado conflictivo. Y evidentemente usar este config.org para el libro maestro y así tanglear todas mis dotfiles cada que abra Emacs tampoco hubiera sido una opción a considerar...
+
+Así que nos quedamos solamente con el módulo default, el cual *obviamente* viene activado por default.
+
+#+NAME: modulos_Config
+#+begin_src lisp :eval never
+:config
+(default +bindings +smartparens)
+
+#+end_src
