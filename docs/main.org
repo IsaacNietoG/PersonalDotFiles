@@ -811,3 +811,130 @@ Luego está el tema de las transparencias. A mí me gusta definir una ligera tra
 #+end_src
 
 La transparencia la tengo definida a 95, pues es el valor que considero lo suficientemente opaco para no perder el texto de la ventana de Emacs, pero lo suficientemente transparente para poder ver texto detrás.
+
+
+*** Org Mode
+
+Para poder tener un espacio de trabajo adecuado a mis necesidades, necesito realizar ciertas configuraciones a los plugins de mi Emacs relacionados con Org-Mode. Debo de admitir que, por ahora, mi setup de trabajo de org-mode, aunque funcional, sigue siendo bastante rudimentaria a comparación de varios sistemas que he visto en Internet.
+
+En general solamente uso algunas cosillas básicas como org-agenda y babel para mis necesidades de literate programming. Comencemos con org-agenda.
+
+La variable org-directory define la ruta por defecto en la que vamos a guardar todos los archivos .org que pueda necesitar para mi flujo de trabajo. Esto NO es lo mismo que la variable org-agenda-files, la cual explicaré en su momento. Por ahora no uso mucho este directorio, pero nunca está de más tener su definición clara para más adelante.
+
+En un futuro, aquí podría colocar notas, planificación, gestión de proyectos, y en general los archivos auxiliares que necesite cuando enriquezca mi flujo de trabajo GTD.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-directory "~/org/")
+#+end_src
+
+Luego defino org-agenda-files, la cual es la variable que org-agenda utiliza para encontrar los archivos .org de los que va a construir la agenda. Es decir, de los archivos .org que vivan dentro de este directorio es donde la Agenda va a extraer los TODOs, tareas, proyectos, deadlines, etc que tenga en el momento y me los va a mostrar en la Org Agenda View.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-agenda-files '("~/Documents/agendaORG"))
+#+end_src
+
+Tal vez luego debería de documentar también mis flujos de trabajo, pero eso por ahora se escapa al enfoque de este proyecto.
+
+Algo que necesito que org-mode respete para mi agenda son los siguientes puntos:
+
+- Me gusta planificar mi semana con antelación, y para ello me gusta siempre tener claro cuáles de mis tareas con Deadline próxima ya fueron consideradas en esta planeación y cuáles no. Quiero olvidarme de las que ya fueron Scheduled hasta que llegue el día que planee para hacerlas, por desgracia, org-mode gusta de mostrar siempre las Deadlines próximas, sin importarle esto, lo cual me estresa. Para esto, configuro Emacs para que solamente me avise de las tareas que tienen una Deadline proxíma pero no hayan sido Scheduleds, pues esto significa que no las he considerado dentro de mi planeación.
+
+  #+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
+  #+end_src
+
+- Mi método de planificación es semanal, es decir, cada domingo me siento a revisar todos mis archivos de orgAgenda para revisar qué pendientes necesito planificar y construyo mi semana en base a eso. Particularmente me interesa darle énfasis a los pendientes cuya deadline caiga dentro de la semana y no haya planeado, me gusta entonces que org-mode me avise de estos. Pero también me gusta ir pensando en los pendientes cuya deadline se aproxima a la siguiente semana; solamente en caso de que sea necesario comenzar a trabajarlos con dos semanas de antelación. Para esto defino la variable org-deadline-warning-days como 14, esto combinado con la variable pasada me permite tener una visión más clara de mis pendientes planeados, no planeados, y particularmente de los pendientes cuya deadline es próxima y no he planeado.
+
+  #+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-deadline-warning-days 14)
+  #+end_src
+
+- Otra cosa que uso para eliminar ruido de la vista de Agenda es asegurarme de que los pendientes que ya tengo hechos (marcados como DONE) desaparezcan de mi vista, esto me ayuda a concentrarme en los que no he terminado. Para esto cambio tres variables.
+
+  #+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-agenda-skip-scheduled-if-done t
+      org-agenda-skip-deadline-if-done t
+      org-agenda-skip-timestamp-if-done t)
+  #+end_src
+
+Estas son las especificaciones principales de mi flujo de trabajo, luego solamente agrego un pequeño detalle de calidad de vida para poder usar atajos de teclado para cambiar los estados de mis tareas rápidamente.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-use-fast-todo-selection t)
+#+end_src
+
+Y finalmente, los estados que utilizo para mis tareas. Estos están directamente inspirados del flujo de trabajo de otra persona, pero no recuerdo quién jajaja. Tal vez cuando haga mi documentación sobre mi flujo de trabajo lo defina de manera más clara.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "|" "DONE(d)")
+	(sequence "TASK(T)")
+	(sequence "WAITING(w@/!)" "INACTIVE(i)" "SOMEDAY(s)" "|" "CANCELLED(c@/!)")))
+
+(setq org-todo-keyword-faces
+      '(("TODO" :foreground "red" :weight bold)
+	("TASK" :foreground "#5C888B" :weight bold)
+	("NEXT" :foreground "blue" :weight bold)
+	("PROJ" :foreground "magenta" :weight bold)
+	("DONE" :foreground "forest green" :weight bold)
+	("WAITING" :foreground "orange" :weight bold)
+	("INACTIVE" :foreground "magenta" :weight bold)
+	("SOMEDAY" :foreground "cyan" :weight bold)
+	("CANCELLED" :foreground "forest green" :weight bold)))
+#+end_src
+
+De una vez también defino los colores para cada estado.
+
+
+*** Atomic Chrome
+
+Esta es una configuración que viene de tiempos en los que me hice directamente dependiente de los atajos de Vim y me sentía un completo inútil en entornos donde no los pudiera usar (me sigue pasando, pero ahora uso Vimium C). Particularmente, para editar texto en el navegador me gustaba poder abrir un buffer de Emacs, editar el texto ahí y regresar a la aburrida vida del navegador. Esto ha ido cayendo en desuso por mi flujo de trabajo debido a que poco a poco he usado cosas como Vimium C y me he vuelto a acostumbrar a usar el mouse, pero conservo estas configuraciones por si algún día las necesito.
+
+#+begin_quote
+This is the Emacs version of Atomic Chrome which is an extension for Google Chrome browser that allows you to edit text areas of the browser in Emacs. It's similar to Edit with Emacs, but has some advantages as below with the help of websocket.
+#+end_quote
+
+Para esto, no se necesita más que requerir (obviamente) el susodicho plugin Atomic Chrome y habilitar el servidor cada vez que abra emacs.
+
+#+begin_src lisp :eval never :noweb-ref atomic-Chrome
+(require 'atomic-chrome)
+(atomic-chrome-start-server)
+#+end_src
+
+
+*** LaTeX
+
+Por ahora no realizo otra configuración que no sea ajustar mi visor preferido para mis compilados de LaTeX, el cual es KDE Okular, porque honestamente es una chulada de visor.
+
+#+begin_src lisp :eval never :noweb-ref latex
+(setq +latex-viewers '(okular))
+#+end_src
+
+
+*** Programación Letrada
+
+Mis configuraciones relacionadas con Literate Programming y los documentos letrados que genero con este precioso paradigma de programación (o marco de trabajo?)
+
+Por ahora tengo un flujo de trabajo bastante sencillo, por lo que solamente defino dos cosas:
+
+- Los lenguajes de programación que uso para mis documentos letrados, esta lista es extremadamente mutable conforme van creciendo mis proyectos.
+
+  #+begin_src lisp :eval never :noweb-ref programacionLetrada
+ (org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (go . t)
+   (haskell . t)
+   (sql . t)
+   ))
+ #+end_src
+
+- Me gusta ponerle imágenes a mis proyectos (no se nota en este lol) y me gusta que se vean no solamente en sus versiones imprimibles, pero también en el mismo editor.
+
+#+begin_src lisp :eval never :noweb-ref programacionLetrada
+(setq org-startup-with-inline-images t)
+#+end_src
+
+Con esto terminamos la subsección dedicada a mi config.el, ya casi nos falta poco para terminar la sección de Doom Emacs, solamente nos falta la sección de packages.el
+
+** packages.el
