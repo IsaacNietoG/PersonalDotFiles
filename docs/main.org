@@ -937,4 +937,15 @@ Por ahora tengo un flujo de trabajo bastante sencillo, por lo que solamente defi
 
 Con esto terminamos la subsección dedicada a mi config.el, ya casi nos falta poco para terminar la sección de Doom Emacs, solamente nos falta la sección de packages.el
 
+
 ** packages.el
+
+#+begin_quote
+This file is where package declarations belong. It’s also a good place to look if you want to see what packages a module manages (and where they are installed from).
+#+end_quote
+
+Aquí, según la documentación oficial de Doom Emacs, definiremos los packages que vamos a usar y que no se encuentran en alguno de los módulos definidos previamente. Por ahora, es una sección bastante reducida de este texto porque en realidad lo único que uso fuera de los módulos es Atomic Chrome (el cual explico para qué es en la sección de config.el)
+
+#+begin_src lisp :eval never :tangle ../doomEmacs/packages.el
+(package! atomic-chrome)
+#+end_src
