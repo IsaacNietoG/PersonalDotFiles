@@ -1044,6 +1044,7 @@ echo -e "${YELLOW}Note: You may need to restart your terminal for all changes to
 
 Y listo, tenemos listo el playbook necesario para instalar Oh My ZSH. A continuación, voy a proceder a crear el .zshrc.
 
+
 ** Configuraciones preliminares
 
 Comenzaremos a ensamblar mi configuración para la shell de ZSH. En este capítulo vamos a abordar algunas configuraciones preliminares que no entran bajo ninguna categoría y en general solamente sirven para preparar el terreno para las features posteriores.
@@ -1075,6 +1076,7 @@ source $ZSH/oh-my-zsh.sh
 
 #+end_src
 
+
 ** Aliases
 
 Un alias es, como su mismo nombre lo dice, un nombre corto para un comando largo que podemos definir usando el comando alias.
@@ -1097,6 +1099,7 @@ Cuando utilizo la CLI de Arduino siempre se me hace una tortura poner el nombre 
 alias arcli="arduino-cli"
 
 #+end_src
+
 
 ** PATH
 
@@ -1144,6 +1147,7 @@ export GEM_HOME=$HOME/.gem
 
 #+end_src
 
+
 ** Pyenv
 
 Pyenv es una herramienta que he usado durante algo de tiempo -probablemente más de un año- porque me permite cambiar entre versiones de Python de una manera bastante rápida y conveniente. Es, como [[https://github.com/pyenv/pyenv][su página]] lo dice, "simple, unobtrusive, and follows the UNIX tradition of single-purpose tools that do one thing well.".
@@ -1157,6 +1161,7 @@ eval "$(pyenv init -)"
 #+end_src
 
 Con estas líneas, estoy preparado para poder instalar Pyenv en cualquier momento sin hacer otro paso que sea pedir el paquete con mi gestor de paquetes predilecto.
+
 
 ** Conda
 
@@ -1183,6 +1188,7 @@ unset __conda_setup
 
 #+end_src
 
+
 ** GHCUP
 
 GHCUP es una herramienta que nos permite manejar varias versiones de Haskell y su GHC, en general, es el equivalente de [[*Pyenv]] pero para Haskell.
@@ -1190,6 +1196,7 @@ GHCUP es una herramienta que nos permite manejar varias versiones de Haskell y s
 #+begin_src bash :tangle ../OhMyZsh/.zshrc
 [ -f "/home/mrtaichi/.ghcup/env" ] && . "/home/mrtaichi/.ghcup/env"
 #+end_src
+
 
 ** Terminal
 
@@ -1199,6 +1206,7 @@ Mi terminal predilecta es Alacritty, y para que i3 pueda invocar esta terminal a
 export TERMINAL="alacritty"
 #+end_src
 
+
 ** NVM
 
 Finalmente tenemos a NVM, el cual es un manejador de versiones pero para Node, al igual que los anteriores [[*GHCUP]]
@@ -1207,3 +1215,98 @@ y [[*Pyenv]]
 #+begin_src bash :tangle ../OhMyZsh/.zshrc
 source /usr/share/nvm/init-nvm.sh
 #+end_src
+
+
+* i3
+
+** Introducción
+
+Desde que conozco los gestores de ventanas y la gran ventaja que te dan de rapidez (porque inherentemente manejar la computadora con el teclado es más rápido que con el mouse), no he logrado escaparme de usar uno en ninguna de las encarnaciones de mis estaciones de trabajo. De hecho, si eres lector de mi blog, puedes observar que mi admiración por los gestores de ventanas llega a tal punto que [[https://isaacnietog.github.io/blog/250114gestorDeVentanas/][mi primera publicación en mi blog]] tiene exactamente que ver con esto.
+
+Entonces, lo primero que suelo hacer cuando llega una nueva computadora a mis manos es buscar la forma de reemplazar su entorno de escritorio por un gestor de ventanas. En caso de computadoras con Linux (que es hacia donde se construye este proyecto), lo que busco siempre es generar mi configuración preferida para esto: un entorno de escritorio Plasma al cual le reemplazo KWin (el gestor de ventanas que utiliza generalmente Plasma) por i3. Esto me permite conservar todas las ventajas de ambos mundos: las herramientas e integraciones que te ofrece un entorno de escritorio completo y maduro como lo es KDE Plasma, junto con la sencilleza y agilidad de poder manejar tus ventanas con puros atajos de teclado, y ese ajuste automático entre ellas que te permite trabajar con varias ventanas sin casi necesidad de preocuparte por acomodarlas tú mismo.
+
+Y eso es exactamente lo que vamos a explorar generar en este capítulo: mi configuración curada de i3 + Plasma con la que he estado trabajando cerca de un año y me ha demostrado funcionar de manera eficiente.
+
+** Sobre el orden lógico de este capítulo
+
+Por la complejidad de esta setup, creo que esta vez el enfoque de secciones de este capítulo cambiará; en los capítulos anteriores he estado intentando que cada sección se dedique a un archivo o, en caso necesario, a un propósito de la configuración. En este capítulo, para poder generar una mejor comprensión de la generación de esta configuración y sus enfoques, creo que se perderá un poco este enfoque en archivos, para cambiar a un enfoque por ideas.
+
+A qué me refiero con esto? Pues a que para construir esta configuración, voy a enfocarme en hacer que el estructurado de la misma vaya surgiendo de manera natural a como nuestro cerebro debe de irla entendiendo; esto va a tener la desventaja de que todas las secciones de este capítulo van a contribuir a varios archivos a la vez; por dar un ejemplo, probablemente el playbook sea solamente finalizado hasta que termine el capítulo, contrario a el resto de capítulos hasta el momento, donde es de hecho lo primero que hago y termino.
+
+Finalmente y para ponerme manos a la obra, pensándolo bien, creo que así es como todo el libro debió de haber sido generado, pues esta es la ventaja real del paradigma de Programación Letrada que estoy utilizando. "El humano es el ciudadano de primera clase, el código es el accidente que necesitamos para que el compilador construya el producto final."
+
+** Dependencias
+
+Vamos a construir nuestra orden de compra para nuestros queridos repositorios de Linux, de las dependencias que vamos a necesitar para generar esta configuración.
+
+Primero que nada, decir que esta orden de compra es el primer paso de nuestro playbook para generar esta configuración, por lo que lo primero que vamos a llevar a nuestro playbook es lo que siempre hemos necesitado para generar playbooks: [[Cabecera común de un playbook][nuestra cabecera mínima de un playbook]].
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
+<<cabecera_Minima_De_Un_Playbook>>
+
+echo -e "${GREEN}=== Installing i3 Window Manager ===${NC}"
+
+#+end_src
+
+También insertamos el tradicional texto para aclarar que este es el playbook encargado de instalar la configuración de i3.
+
+Ahora sí, vamos a generar las dependencias necesarias.
+
+Necesitamos, primero que nada y obviamente, i3. El nombre depende de la distro, como siempre, pero en el caso de Arch, el nombre es i3-wm
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "i3-wm"
+#+end_src
+
+También, obviamente, necesitamos el entorno de escritorio de KDE Plasma, más específicamente, lo necesitamos en su versión que utiliza X11. Esto porque, hasta donde mis conocimientos dan, y hasta la investigación que he podido conducir al respecto, esta es la única versión que permite reemplazar KWin; la nueva versión que utiliza Wayland no permite hacer esto. Esto implica que eventualmente deberé de cambiar mi entorno de escritorio, cuando KDE Plasma X11 sea descontinuado (que según [[https://blogs.kde.org/2025/11/26/going-all-in-on-a-wayland-future/][el comunicado oficial al respecto]], se espera que sea a finales de 2026). Pero por lo mientras, sigamos con esta solución.
+
+Para la parte de KDE entonces, vamos a necesitar el paquete plasma-meta para el entorno de escritorio. Y el paquete plasma-x11-session para la sesión de X11 que necesitamos, que, vale la pena aclarar, que justamente por estos esfuerzos de KDE para descontinuarla, [[https://archlinux.org/news/plasma-640-will-need-manual-intervention-if-you-are-on-x11/][ya no es incluida en plasma-meta por default]].
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "plasma-meta"
+install_package "plasma-x11-session"
+#+end_src
+
+Yo siempre he sido muy fan de las transparencias que te permiten ver detrás de ventanas, puedes ver en mi sección dedicada a [[Doom Emacs]] que de hecho las utilizo para poder ver detrás de la misma ventana de Emacs para ubicar ventanas detrás, las cuales generalmente utilizo para leer documentación mientras escribo código.
+
+[[./imgs/img1.png]]
+
+En la imagen de arriba, por ejemplo, a la vez que estoy generando esta sección, tengo de fondo la documentación de org-mode para leer cómo incluir imágenes al archivo.
+
+Y para generar esto, necesitamos un [[https://en.wikipedia.org/wiki/Compositing_manager][compositor]] que nos proporcione los medios para generar este efecto, ya que i3 no es un Window Manager con compositor incluído. Mi compositor actual es picom.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "picom"
+#+end_src
+
+Luego, también necesitamos un programa que funcione como fondo de pantalla, ya que esto es una característica que suele incluirse junto con el gestor de ventanas de KWin. El más sencillo que conozco y que generalmente utilizo es feh
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "feh"
+#+end_src
+
+Como menú de aplicaciones, podría utilizar el menú que ya incluye i3, pero la verdad es que me inclino más a usar rofi con cierto tema que es mi favorito. Para instalar rofi, lo instalamos como un paquete de siempre.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "rofi"
+#+end_src
+
+Luego, el tema que utilizo para rofi (que de hecho me encanta) está incluido dentro del [[https://github.com/adi1090x/rofi][paquete de temas para rofi hechos por adi1090x]]. Estos temas están diseñados para funcionar como un ecosistema completo, así que si voy a usar uno, necesito instalarlos todos como un paquete completo.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+
+echo -e "\n${GREEN}Installing adi1090x's rofi themes...${NC}"
+if [ ! -d "$HOME/.config/rofi" ]; then
+    git clone --depth 1 https://github.com/adi1090x/rofi.git /tmp/rofi
+    cd /tmp/rofi
+    chmod +x setup.sh
+    ./setup.sh
+    cd - > /dev/null
+    rm -rf /tmp/rofi
+else
+    echo -e "${YELLOW}Rofi themes are already installed${NC}"
+fi
+
+#+end_src
+
+** Keybindings
