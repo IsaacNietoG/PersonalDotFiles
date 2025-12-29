@@ -48,24 +48,35 @@ create_symlink() {
 }
 
 
-echo -e "${GREEN}=== Installing Oh My ZSH ===${NC}"
+echo -e "${GREEN}=== Installing i3 Window Manager ===${NC}"
 
-echo -e "${GREEN}Installing Oh My Zsh dependencies...${NC}"
-install_package "zsh"
-install_package "curl"
+install_package "i3-wm"
 
-echo -e "\n${GREEN}Installing Oh My Zsh...${NC}"
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+install_package "plasma-meta"
+install_package "plasma-x11-session"
+
+install_package "picom"
+
+install_package "feh"
+
+install_package "rofi"
+
+echo -e "\n${GREEN}Installing adi1090x's rofi themes...${NC}"
+if [ ! -d "$HOME/.config/rofi" ]; then
+    git clone --depth 1 https://github.com/adi1090x/rofi.git /tmp/rofi
+    cd /tmp/rofi
+    chmod +x setup.sh
+    ./setup.sh
+    cd - > /dev/null
+    rm -rf /tmp/rofi
 else
-    echo -e "${YELLOW}Oh My Zsh is already installed${NC}"
+    echo -e "${YELLOW}Rofi themes are already installed${NC}"
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+create_symlink "$REPO_ROOT/i3/config" ~/.config/i3/config
 
-echo -e "\n${GREEN}Installing Oh My Zsh config...${NC}"
-create_symlink "$REPO_ROOT/OhMyZsh/.zshrc" ~/.zshrc
+create_symlink "$REPO_ROOT/i3/plasma-i3.service" ~/.config/systemd/user
 
-echo -e "\n${GREEN}=== Oh My Zsh Installation Complete ===${NC}"
-echo -e "${YELLOW}Note: You may need to restart your terminal for all changes to take effect.${NC}"
+systemctl mask plasma-kwin_x11.service --user
+
+systemctl enable plasma-i3 --user
