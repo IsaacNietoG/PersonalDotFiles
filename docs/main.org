@@ -1621,3 +1621,14 @@ systemctl enable plasma-i3 --user
 #+end_src
 
 Con esto terminamos de configurar i3wm + Plasma, finalizando estos pasos tenemos completo el entorno de escritorio que utilizo y podemos comenzar a trabajar.
+
+
+* Conclusión
+
+Por ahora, estas son todas las configuraciones que utilizo diariamente para mi flujo de trabajo.
+
+Esta versión letrada de mis dotfiles se reduce bastante a comparación de la versión iletrada anterior, pero es porque varias de mis dotfiles pasadas actualmente las considero código legacy porque ya no las utilizo más, de igual manera, si quieres consultar alguna de mis dotfiles de la versióń anterior, bajo la carpeta legacy de este repositorio tienes todos los scripts, configuraciones y playbooks que en algún momento llegué a utilizar. Tal vez en un futuro los agregue a este libro, bajo un capítulo Legacy -o tal vez no-. Lo que sí, es que cualquier cambio a mi flujo de trabajo será reflejado a este documento; pues al día de hoy, de este documento *nace* mi flujo de trabajo.
+
+Si tienes alguna duda adicional, o comentarios de cómo podría mejorar este texto, siempre puedes contactarte conmigo en mis medios de contacto, los cuales puedes encontrar en mi [[https://github.com/IsaacNietoG][Github]].
+
+Espero que cualquiera que haya leído esto le haya sido útil o al menos entretenido, nos veremos pronto :D

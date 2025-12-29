@@ -1,4 +1,4 @@
-% Created 2025-11-30 Sun 18:48
+% Created 2025-12-29 Mon 00:30
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -14,10 +14,10 @@
 \usepackage{hyperref}
 \author{mrtaichi}
 \date{\today}
-\title{PersonalDotFiles Index}
+\title{PersonalDotFiles}
 \hypersetup{
  pdfauthor={mrtaichi},
- pdftitle={PersonalDotFiles Index},
+ pdftitle={PersonalDotFiles},
  pdfkeywords={},
  pdfsubject={},
  pdfcreator={Emacs 30.2 (Org mode 9.7.29)}, 
@@ -28,35 +28,35 @@
 \tableofcontents
 
 \section{Introducción}
-\label{sec:orgbfc7052}
+\label{sec:org8027589}
 Bienvenido a mis dotfiles de uso personal! En este repositorio puedes encontrar todas las dotfiles que utilizo para mi flujo de trabajo en mi día a día. Espero que vayan evolucionando a lo largo del tiempo, conforme mis formas de trabajar vayan evolucionando a lo largo de los años. Aunque también espero que, eventualmente, lleguemos a una versión final, ya que eso sería señal de una metodología de trabajo curada y terminada.
 \subsection{Acerca del estilo de este repositorio}
-\label{sec:orgc8c2256}
+\label{sec:orgd626734}
 En este repositorio vas a encontrar varias cosas -obviamente mis dotfiles-, pero todas nacen en esencia de este documento que estás leyendo.
 
 Todas mis dotfiles nacen de este documento, pues mis dotfiles, para cuando termine de hacer este documento, están hechas usando el paradigma de programación Literate Programming.
 \subsubsection{Qué es el Literate Programming? O Programación Letrada, en español.}
-\label{sec:orgd031785}
+\label{sec:org2281008}
 La programación letrada es un paradigma -o estilo- de programación propuesto por Donald Knuth allá por el año de 1984 en el paper homónimo publicado por él. Este estilo de programación tiene muchas implicaciones muy bonitas, por lo que lo mejor sería que fueras a leer el paper que te comento, así que a grosso modo lo que te puedo decir es que, bajo este estilo de programación, la documentación y el código nacen de la misma fuente: un archivo \emph{tangleable} (compilable a código) y \emph{weaveable} (compilable a documentación) que combina ambas cosas en una sola.
 Esto nos ofrece de ventaja que nuestros programas prácticamente se autodocumentan, pues al estarlos realizando deberemos de cambiar nuestro set mental a escribir el \textbf{por qué} de lo que estamos haciendo a la par que lo hacemos. Esto nos ahorra el ``voy a documentar después'' al que muchas personas caen cuando están realizando un proyecto de programación. Y además, hay que considerar que muchas veces nuestro código será leído por humanos más veces de lo que será leído por la máquina, entonces debemos de pensar en realizarlo no para la máquina, si no para estos humanos.
 \subsubsection{Implementación en este proyecto.}
-\label{sec:orga0d27cb}
+\label{sec:org3ff4afc}
 Para seguir el estilo de programación dicho anteriormente en este proyecto, he decidio hacerlo utilizando org-mode, el cual es un sistema para editar, formatear y organizar documentos dentro de Emacs. Este sistema, mediante algunos plugins, puede -y de manera bastante poderosa- utilizarse para escribir ``programas letrados''.
 \subsection{Acerca de la estructura de este repositorio}
-\label{sec:orgb38eb30}
+\label{sec:org9f333b3}
 Podemos segmentar en este proyecto tres partes principales, las cuales son:
 \subsubsection{Parte letrada}
-\label{sec:orgaaf12d5}
+\label{sec:orgc91e1a4}
 Todos los archivos .org que se encuentran bajo la carpeta docs son la parte realmente viva de este proyecto, pues es la parte letrada de la que emanan las otras dos partes de este proyecto.
 Estos son archivos en donde iré explicando mis dotfiles, parte por parte y de manera detallada, para que se entienda cada decisión de diseño y linea de código que escriba en los mismos. A opinión personal, si eres un visitante de este repositorio, quisiera exhortarte a que instales Emacs e intentes leer este proyecto utilizando esta parte, pues considero que es la mejor forma de entender y utilizar este proyecto de un solo vistazo. Esta parte, al puro estilo del estilo de programación bajo el que se crea este proyecto, es compilable al código final y a la documentación. Es la parte maestra y sobre la que realizaré todas las modificaciones y explicaciones necesarias. Viendose reflejado esto en el resto de las partes, pero como un efecto secundario de la modificación bajo esta parte.
 \subsubsection{Parte documentación}
-\label{sec:org2cdf8e8}
+\label{sec:orge54f2af}
 El archivo PDF que vive bajo docs, el cual es la documentación autogenerada de todo el proyecto.
 \subsubsection{Parte código (dotfiles)}
-\label{sec:org3aaf891}
+\label{sec:org47869d6}
 Las dotfiles mismas, las cuales son generadas automáticamente a partir de la parte letrada. Son la parte realmente usable por la computadora, pero la parte de este proyecto menos hecha para ser leída por el humano. Por la naturaleza de este proyecto, la parte de código no contiene ni un solo comentario dentro de sí, toda cosa que se le tenga que decir al humano que está leyendo el código se le va a decir en las otras dos partes.
 \subsection{Recomendación personal para leer este repositorio.}
-\label{sec:org5e6cdac}
+\label{sec:orge41c5d6}
 Para entender realmente este repositorio, la mejor forma siempre va a ser mediante su parte letrada y bajo el entorno de trabajo que pueda exprimir esta parte letrada al máximo. Para lograr esto, mi recomendación es que, si eres nuevo en esto de la programación letrada, realices lo siguiente:
 
 \begin{itemize}
@@ -67,7 +67,7 @@ Para entender realmente este repositorio, la mejor forma siempre va a ser median
 
 Para estos pasos puedes encontrar instrucciones bajo este mismo repositorio y archivo.
 \section{Playbooks}
-\label{sec:orgccafd44}
+\label{sec:org4eee5c7}
 
 Los playbooks son scripts de instalacion modulares para los diferentes componentes de mis dotfiles. Cada herramienta de este proyecto está ligada a un playbook, y cada playbook tiene como objetivos lo siguiente:
 
@@ -78,7 +78,7 @@ Los playbooks son scripts de instalacion modulares para los diferentes component
 
 Esto nos ofrece una forma más rápida y eficiente de cargar mis dotfiles en un nuevo equipo. A cada una de las herramientas que vaya a configurar en este proyecto le va a corresponder un playbook que iré definiendo conforme vayamos pasando por el capítulo dedicado a dicha herramienta del libro. Pero antes de comenzar con ello, quiero definir algunas cosillas que voy a estar utilizando todo el tiempo en todos los playbooks, algo así como la plantilla base de cosas que me han funcionado en todos los playbooks que había creado antes de migrar mis dotfiles a programación letrada.
 \subsection{Cabecera común de un playbook}
-\label{sec:org11cbbb2}
+\label{sec:org81af12a}
 
 La cabecera más común para todos los playbooks del proyecto es la siguiente:
 
@@ -101,7 +101,7 @@ La cabecera más común para todos los playbooks del proyecto es la siguiente:
 
 Esto nos da varias de las funcionalidades comunes que necesitaremos en todos los playbooks para comenzar a hacerlos útiles. A continuación, vamos a concretarlas todas.
 \subsubsection{Shebang}
-\label{sec:org58f0c3a}
+\label{sec:orge5f0f12}
 
 Todos los playbooks son scripts hechos en bash, porque es casi que lo único que tenemos garantizado en un equipo Linux virgen. Para hacerlos ejecutables, necesitamos definirle a Linux mediante un shebang que son archivos ejecutables por bash.
 
@@ -109,7 +109,7 @@ Todos los playbooks son scripts hechos en bash, porque es casi que lo único que
 #!/bin/bash
 \end{verbatim}
 \subsubsection{Exit on Error}
-\label{sec:orgc567e59}
+\label{sec:org80f76a7}
 
 Los playbooks van a estar cambiando configuraciones del equipo, así que por definición, son scripts delicados. Nos interesa entonces que, si ocurre un error en cualquiera de los pasos, por mínimo que sea, el script detenga su ejecución y no siga más. Esto lo podemos hacer con \emph{set -e}.
 
@@ -117,7 +117,7 @@ Los playbooks van a estar cambiando configuraciones del equipo, así que por def
 set -e
 \end{verbatim}
 \subsubsection{Colores}
-\label{sec:org827da57}
+\label{sec:org4ebe0d8}
 
 Para que quede bonita la salida de los playbooks :3
 
@@ -128,7 +128,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 \end{verbatim}
 \subsubsection{Verificar si un paquete está instalado}
-\label{sec:org1d3eab9}
+\label{sec:org63701a7}
 Nos queremos ahorrar las instalaciones manuales de las dependencias necesarias para una herramienta -y la instalación de la herramienta en sí- lo más posible, por lo que queremos que nuestros playbooks posean la funcionalidad necesaria para ahorrarnos esto, trabajando con el gestor de paquetes de nuestra distribución siempre que sea posible.
 
 Primero, para ahorrarnos ciertos edge cases, crearemos una función que verifique con nuestro gestor de paquetes si el paquete dado se encuentra ya instalado.
@@ -145,7 +145,7 @@ check_package() {
 
 Cabe decir que debido a que uso Arch (btw) esta función y la siguiente están acomodadas para pacman, que es el gestor de paquetes que usa esta distro. Si en un futuro cambio de gestor de paquetes, debería de ser relativamente sencillo ajustar todo, cambiando la definición de esta función y la siguiente.
 \subsubsection{Instalar un paquete}
-\label{sec:org90eed6d}
+\label{sec:orga18deb4}
 Luego, vamos a crear un pequeño wrap para pacman (o el gestor de paquetes que nos toque en el futuro) para instalar paquetes automáticamente.
 
 \begin{verbatim}
@@ -159,7 +159,7 @@ install_package() {
 }
 \end{verbatim}
 \subsubsection{Crear backup de un archivo existente}
-\label{sec:org6d3a00a}
+\label{sec:org7c66993}
 
 \begin{verbatim}
 backup_file() {
@@ -170,7 +170,7 @@ backup_file() {
 }
 \end{verbatim}
 \subsubsection{Crear enlaces simbólicos}
-\label{sec:orgaeb72f5}
+\label{sec:org0a0359e}
 
 No vamos a copiar los archivos de configuración a sus respectivos lugares según la herramienta, porque eso nos obligaría a modificarlos individualmente cada vez que actualicemos estas configuraciones. En su lugar, vamos a crear enlaces simbólicos del lugar en el que deberían de estar hacia nuestra configuración en el repositorio del proyecto.
 
@@ -192,14 +192,14 @@ create_symlink() {
 }
 \end{verbatim}
 \section{Doom Emacs}
-\label{sec:org56c0fa9}
+\label{sec:org858e5c0}
 
 Si todo este proyecto utiliza programación letrada, es imperativo que las primeras dotfiles que se creen sean las necesarias para hacer mi entorno de trabajo de programación letrada. Entonces comencemos con la herramienta principal, la cual es Doom Emacs. Si estás leyendo este documento en org, abajo verás el enlace al archivo org de toda esta herramienta, si estás leyendo PDF\ldots{} pues sigue leyendo lol.
 \subsection{Introducción}
-\label{sec:org474f332}
+\label{sec:org5386646}
 Doom Emacs es mi principal editor de texto. Emacs en sí es el editor de texto que llevo usando desde que inicié la carrera -por influencia de la cultura de mi facultad-. El problema con Emacs es que es, a mi gusto, difícil de configurar en su versión básica. Por esto decidí usar Doom Emacs, el cual es un framework de configuración que me sirve para tener todo el poder de Emacs de una manera sencilla y que, además, no me hace perder la configurabilidad que me provee un Emacs vainilla.
 \subsection{Instalación}
-\label{sec:org4134802}
+\label{sec:org61bd40a}
 Vamos a generar un playbook para poder instalar doom emacs de manera sencilla en cualquier dispositivo que vaya a utilizar.
 De base necesitamos Emacs vanilla, el cual, tenemos la gran suerte de que existe en los repositorios de casi cualquier distribución de Linux que exista. A la fecha no conozco una distro de linux que no lo incluya.
 Comenzamos importando la cabecera mínima del playbook y un pequeño mensaje al usuario para indicarle que este es el playbook para instalar Doom Emacs.
@@ -211,7 +211,7 @@ echo -e "${GREEN}=== Installing Doom Emacs ===${NC}"
 
 \end{verbatim}
 \subsubsection{Instalación de dependencias}
-\label{sec:orgca78232}
+\label{sec:org3034955}
 
 Según la página de instalación de Doom Emacs, las dependencias requeridas para Doom Emacs son:
 \begin{quote}
@@ -273,7 +273,7 @@ install_package "fd"
 
 \end{verbatim}
 \subsubsection{Instalación de la herramienta}
-\label{sec:orgf8dc2be}
+\label{sec:org35b88d9}
 
 Una vez instaladas las dependencias, podemos comenzar a prepararnos para instalar todo lo necesario. Las instrucciones para instalar Doom Emacs en el repositorio son las siguientes:
 \begin{quote}
@@ -318,7 +318,7 @@ fi
 
 \end{verbatim}
 \subsubsection{Carga de configuraciones}
-\label{sec:org4a4f1ff}
+\label{sec:org379ba49}
 
 Una vez instalado Doom Emacs, podemos comenzar a importar las configuraciones incluídas en este repositorio.
 
@@ -346,7 +346,7 @@ echo -e "${YELLOW}Note: You may need to restart Emacs for all changes to take ef
 
 \end{verbatim}
 \subsection{init.el}
-\label{sec:org80ac8f2}
+\label{sec:org1fcb531}
 
 \begin{quote}
 Where you’ll find your doom! block, which controls what Doom modules are enabled and in what order they will be loaded.
@@ -582,7 +582,7 @@ Luego, dentro de los módulos elegidos, necesitamos considerar que existen varia
 
 Vamos a movernos entre cada categoría para armar nuestros selectos módulos.
 \subsubsection{Módulos Input}
-\label{sec:org56c6ef3}
+\label{sec:org5e52005}
 
 Esta categoría de módulos no posee una descripción oficial, y sus módulos tampoco están documentados, pero podemos asumir que son módulos que tienen que ver con soluciones de compatibilidad con layouts o idiomas con caracteres de entrada extraños (sea Chino o Japonés). Así que por el momento, no necesitamos nada de aquí.
 
@@ -590,7 +590,7 @@ Esta categoría de módulos no posee una descripción oficial, y sus módulos ta
 :input
 \end{verbatim}
 \subsubsection{Módulos Completion}
-\label{sec:org4d35974}
+\label{sec:org5ff005a}
 
 \begin{quote}
 Modules that provide new interfaces or frameworks for completion, including code completion.
@@ -605,7 +605,7 @@ vertico
 
 \end{verbatim}
 \subsubsection{Módulos UI}
-\label{sec:orgf52bc09}
+\label{sec:org8f2ee7c}
 
 \begin{quote}
 Aesthetic modules that affect the Emacs interface or user experience.
@@ -626,7 +626,7 @@ vi-tilde-fringe
 workspaces
 \end{verbatim}
 \subsubsection{Módulos Editor}
-\label{sec:org4d9a9cc}
+\label{sec:org72c5031}
 
 \begin{quote}
 Modules that affect and augment your ability to manipulate or insert text.
@@ -643,7 +643,7 @@ snippets
 
 \end{verbatim}
 \subsubsection{Módulos Emacs}
-\label{sec:orgf288ec5}
+\label{sec:orge685b98}
 
 \begin{quote}
 Modules that reconfigure or augment packages or features built into Emacs.
@@ -660,7 +660,7 @@ vc
 
 \end{verbatim}
 \subsubsection{Módulos Term}
-\label{sec:orgc37642d}
+\label{sec:org73967c1}
 
 \begin{quote}
 Modules that offer terminal emulation.
@@ -674,7 +674,7 @@ vterm
 
 \end{verbatim}
 \subsubsection{Módulos Checkers}
-\label{sec:org92676ae}
+\label{sec:org31b9b6e}
 
 Esta categoría de módulos no tiene una descripción oficial, pero podemos decir que engloba aquellos módulos relacionados con la corrección de ortografía.
 
@@ -686,7 +686,7 @@ syntax
 
 \end{verbatim}
 \subsubsection{Módulos Tools}
-\label{sec:orgd5dab5a}
+\label{sec:org89ad68f}
 
 \begin{quote}
 Small modules that give Emacs access to external tools \& services.
@@ -695,16 +695,16 @@ Small modules that give Emacs access to external tools \& services.
 Dentro de esta categoría incluiremos los siguientes módulos:
 \begin{enumerate}
 \item Eval
-\label{sec:org6b120c0}
+\label{sec:org187cd97}
 Para realizar evaluaciones de bloques de código en el momento. Me parece que este es uno de los módulos habilitados por default, así que desconozco realmente la funcionalidad de tenerlo habilitado.
 \item Lookup
-\label{sec:org27b93a2}
+\label{sec:org5d426a5}
 Para navegar a través del código, buscando ``símbolos'' y definiciones.
 \item Lsp
-\label{sec:orgdbf3482}
+\label{sec:org11c7d2a}
 Mi favorito, con este podemos tener servidores de lenguaje, que nos implementan varias de las funcionalidades que podríamos extrañar de un IDE convencional. Con este módulo, junto con los correspondientes a cada lenguaje que necesitemos (en Módulos Lenguajes), convertimos a Emacs en un IDE completo.
 \item Magit
-\label{sec:org96bdf37}
+\label{sec:org5ba05ba}
 Agrega integración con Git, principalmente lo uso para ver en el lateral izquierdo los cambios que he introducido a un archivo y que no he commiteado.
 
 Finalmente, esta sección queda de la siguiente forma:
@@ -718,7 +718,7 @@ magit
 \end{verbatim}
 \end{enumerate}
 \subsubsection{Módulos OS}
-\label{sec:org23b3f45}
+\label{sec:org5229355}
 
 \begin{quote}
 Modules to improve integration into your OS, system, or devices.
@@ -732,7 +732,7 @@ El módulo que viene por default es el de MacOS, bajo el condicional de activars
 
 \end{verbatim}
 \subsubsection{Módulos de lenguajes}
-\label{sec:orge45208f}
+\label{sec:orge444aee}
 
 \begin{quote}
 Modules that bring support for a language or group of languages to Emacs.
@@ -758,7 +758,7 @@ sh
 
 \end{verbatim}
 \subsubsection{Módulos de Email}
-\label{sec:org1381b5c}
+\label{sec:orgf25ce58}
 
 Esta categoría no posee una descripción oficial, pero proporciona los medios para poder conectar un cliente de correo a Emacs.
 
@@ -769,7 +769,7 @@ Me parece un campo sin dudar bastante atractivo poder usar mi correo electrónic
 
 \end{verbatim}
 \subsubsection{Módulos de Apps}
-\label{sec:org59b2b0a}
+\label{sec:orgd4c87b2}
 
 \begin{quote}
 Application modules are complex and opinionated modules that transform Emacs toward a specific purpose. They may have additional dependencies and should be loaded last, before :config modules.
@@ -783,7 +783,7 @@ everywhere
 
 \end{verbatim}
 \subsubsection{Módulos de configuración}
-\label{sec:orgcc400b2}
+\label{sec:orgeaf7348}
 
 \begin{quote}
 Modules that configure Emacs one way or another, or focus on making it easier for you to customize it yourself. It is best to load these last.
@@ -801,7 +801,7 @@ Así que nos quedamos solamente con el módulo default, el cual \textbf{obviamen
 
 \end{verbatim}
 \subsection{config.el}
-\label{sec:orgbccab63}
+\label{sec:org766ad14}
 
 \begin{quote}
 Here is where 99.99\% of your private configuration should go. Anything in here is evaluated after all other modules have loaded, when starting up Emacs.
@@ -819,7 +819,7 @@ Vamos a dividir la estructura de este archivo por las features a las que aportan
 <<programacionLetrada>>
 \end{verbatim}
 \subsubsection{Estética y estilo}
-\label{sec:org3b52117}
+\label{sec:org6633087}
 
 Primero comenzamos con la elección de tema, la cual hacemos cambiando el nombre de la variable \emph{doom-theme}. No recuerdo bien si he cambiado este tema o el que estoy usando es el default, pero en todo caso, actualmente utilizo doom-one, y no he tenido ninguna queja hasta el momento.
 
@@ -842,7 +842,7 @@ Luego está el tema de las transparencias. A mí me gusta definir una ligera tra
 
 La transparencia la tengo definida a 95, pues es el valor que considero lo suficientemente opaco para no perder el texto de la ventana de Emacs, pero lo suficientemente transparente para poder ver texto detrás.
 \subsubsection{Org Mode}
-\label{sec:org6c45270}
+\label{sec:orge1d4f69}
 
 Para poder tener un espacio de trabajo adecuado a mis necesidades, necesito realizar ciertas configuraciones a los plugins de mi Emacs relacionados con Org-Mode. Debo de admitir que, por ahora, mi setup de trabajo de org-mode, aunque funcional, sigue siendo bastante rudimentaria a comparación de varios sistemas que he visto en Internet.
 
@@ -916,7 +916,7 @@ Y finalmente, los estados que utilizo para mis tareas. Estos están directamente
 
 De una vez también defino los colores para cada estado.
 \subsubsection{Atomic Chrome}
-\label{sec:org36bf41e}
+\label{sec:org9913e53}
 
 Esta es una configuración que viene de tiempos en los que me hice directamente dependiente de los atajos de Vim y me sentía un completo inútil en entornos donde no los pudiera usar (me sigue pasando, pero ahora uso Vimium C). Particularmente, para editar texto en el navegador me gustaba poder abrir un buffer de Emacs, editar el texto ahí y regresar a la aburrida vida del navegador. Esto ha ido cayendo en desuso por mi flujo de trabajo debido a que poco a poco he usado cosas como Vimium C y me he vuelto a acostumbrar a usar el mouse, pero conservo estas configuraciones por si algún día las necesito.
 
@@ -931,7 +931,7 @@ Para esto, no se necesita más que requerir (obviamente) el susodicho plugin Ato
 (atomic-chrome-start-server)
 \end{verbatim}
 \subsubsection{\LaTeX{}}
-\label{sec:org4e3b151}
+\label{sec:org71cf722}
 
 Por ahora no realizo otra configuración que no sea ajustar mi visor preferido para mis compilados de \LaTeX{}, el cual es KDE Okular, porque honestamente es una chulada de visor.
 
@@ -939,7 +939,7 @@ Por ahora no realizo otra configuración que no sea ajustar mi visor preferido p
 (setq +latex-viewers '(okular))
 \end{verbatim}
 \subsubsection{Programación Letrada}
-\label{sec:orgd30ba20}
+\label{sec:orga224d4f}
 
 Mis configuraciones relacionadas con Literate Programming y los documentos letrados que genero con este precioso paradigma de programación (o marco de trabajo?)
 
@@ -967,7 +967,7 @@ Por ahora tengo un flujo de trabajo bastante sencillo, por lo que solamente defi
 
 Con esto terminamos la subsección dedicada a mi config.el, ya casi nos falta poco para terminar la sección de Doom Emacs, solamente nos falta la sección de packages.el
 \subsection{packages.el}
-\label{sec:org9c9276f}
+\label{sec:org017e531}
 
 \begin{quote}
 This file is where package declarations belong. It’s also a good place to look if you want to see what packages a module manages (and where they are installed from).
@@ -982,10 +982,10 @@ Aquí, según la documentación oficial de Doom Emacs, definiremos los packages 
 
 Terminando este archivo, finalmente tenemos completa la configuración de Doom Emacs
 \section{Oh My ZSH}
-\label{sec:orgf5ea616}
+\label{sec:orgcc12621}
 
 \subsection{Introducción}
-\label{sec:org8d2c1f4}
+\label{sec:org0f7bd8e}
 
 Una vez tengo un entorno de trabajo cómodo para mis necesidades letradas y las de este proyecto, es esencial comenzar a movernos para tener una terminal con la que me sienta cómodo, pues esta es el lugar en el que me la paso el 50\% del tiempo en Linux (la otra mitad se reparte entre Emacs y Tiktok\ldots{})
 
@@ -1003,7 +1003,7 @@ Once installed, your terminal shell will become the talk of the town or your mon
 Finally, you'll begin to get the sort of attention that you have always felt you deserved. \ldots{}or maybe you'll use the time that you're saving to start flossing more often. 😬
 \end{quote}
 \subsection{Instalación}
-\label{sec:org03e4e16}
+\label{sec:orgef131cd}
 
 Generamos el playbook para instalar OhMyZSH y las posibles dependencias requeridas. Como siempre, lo primero que hacemos es importar la cabecera con las funciones útiles que necesitaremos.
 
@@ -1014,7 +1014,7 @@ echo -e "${GREEN}=== Installing Oh My ZSH ===${NC}"
 
 \end{verbatim}
 \subsubsection{Instalación de dependencias.}
-\label{sec:org176c532}
+\label{sec:org4052ffb}
 
 Oh My ZSH es un framework que pide poco realmente, solamente necesitamos zsh (obviamente) y curl, este último no directamente por el framework pero por el medio de instalación que usaremos para instalarlo.
 
@@ -1029,7 +1029,7 @@ install_package "curl"
 
 Con esto tenemos los preparativos listos para la instalación.
 \subsubsection{Instalación de la herramienta.}
-\label{sec:org0b436db}
+\label{sec:org8328171}
 
 Siguiendo la \href{https://github.com/ohmyzsh/ohmyzsh/wiki}{documentación oficial de Oh My ZSH}, veremos que la instalación es tan sencilla como descargar y correr un script de instalación ya hecho por los mantenedores de la herramienta. Para esto usaremos curl y enviaremos el flujo obtenido hacia sh, efectivamente descargando y corriendo el script. Este es el mismo comando de la documentación, simplemente agregando una estructura de control para verificar si ya teníamos Oh My ZSH instalado, para evitar reinstalaciones accidentales.
 
@@ -1047,7 +1047,7 @@ Como podemos ver, el mecanismo que uso para detectar si la herramienta está ins
 
 Continuamos con la carga de mis configuraciones.
 \subsubsection{Carga de configuraciones}
-\label{sec:org3dfae80}
+\label{sec:org5470c59}
 
 Por ahora, todas las configuraciones que necesito para Oh My ZSH, residen en el mismo archivo .zshrc que vamos a escribir más adelante; entonces, ese es el único archivo que vamos a importar para cargar nuestras configuraciones correctamente. Como siempre, el archivo se encuentra un nivel más arriba que la ubicación del playbook, la cual, otra vez, usaremos como punto de referencia.
 
@@ -1064,7 +1064,7 @@ echo -e "${YELLOW}Note: You may need to restart your terminal for all changes to
 
 Y listo, tenemos listo el playbook necesario para instalar Oh My ZSH. A continuación, voy a proceder a crear el .zshrc.
 \subsection{Configuraciones preliminares}
-\label{sec:org1200210}
+\label{sec:orgd965345}
 
 Comenzaremos a ensamblar mi configuración para la shell de ZSH. En este capítulo vamos a abordar algunas configuraciones preliminares que no entran bajo ninguna categoría y en general solamente sirven para preparar el terreno para las features posteriores.
 
@@ -1095,13 +1095,13 @@ source $ZSH/oh-my-zsh.sh
 
 \end{verbatim}
 \subsection{Aliases}
-\label{sec:orgcaf3f5a}
+\label{sec:orgabe89b1}
 
 Un alias es, como su mismo nombre lo dice, un nombre corto para un comando largo que podemos definir usando el comando alias.
 
 Tal vez debería de agregar más, pero por ahora los aliases que tengo son los siguientes:
 \subsubsection{Sudo}
-\label{sec:org8423de1}
+\label{sec:org5cf194e}
 
 Se me hace tierno usar la palabra ``pls'' en lugar de sudo, lo cual además proporciona menos palabras, por lo que cumple con el propósito de ser un alias.
 
@@ -1109,7 +1109,7 @@ Se me hace tierno usar la palabra ``pls'' en lugar de sudo, lo cual además prop
 alias pls="sudo"
 \end{verbatim}
 \subsubsection{Arduino CLI}
-\label{sec:org46fb6d8}
+\label{sec:org35238c1}
 
 Cuando utilizo la CLI de Arduino siempre se me hace una tortura poner el nombre completo de la herramienta, así que lo reduzco a arcli
 
@@ -1118,13 +1118,13 @@ alias arcli="arduino-cli"
 
 \end{verbatim}
 \subsection{PATH}
-\label{sec:org67d6854}
+\label{sec:orgdd15c59}
 
 PATH es una variable de entorno que se utiliza para indicarle a nuestra shell \textbf{las rutas del sistema donde puede encontrar archivos ejecutables}. Esto para que luego podamos simplemente correr estos programas por sus nombres en lugar de referirnos a rutas completas.
 
 La variable PATH es una lista de rutas separada por \emph{:}. A esta le vamos a agregar las rutas necesarias por nuestros programas para poder acceder a los mismos de manera más sencilla.
 
-Comenzamos por agregar la ruta de los binarios de \ref{sec:org56c0fa9} la cual es por lo general:
+Comenzamos por agregar la ruta de los binarios de \ref{sec:org858e5c0} la cual es por lo general:
 
 \begin{verbatim}
 PATH=$PATH:~/.config/emacs/bin
@@ -1164,7 +1164,7 @@ export GEM_HOME=$HOME/.gem
 
 \end{verbatim}
 \subsection{Pyenv}
-\label{sec:orgcfff6cc}
+\label{sec:orgf870250}
 
 Pyenv es una herramienta que he usado durante algo de tiempo -probablemente más de un año- porque me permite cambiar entre versiones de Python de una manera bastante rápida y conveniente. Es, como \href{https://github.com/pyenv/pyenv}{su página} lo dice, ``simple, unobtrusive, and follows the UNIX tradition of single-purpose tools that do one thing well.''.
 
@@ -1178,7 +1178,7 @@ eval "$(pyenv init -)"
 
 Con estas líneas, estoy preparado para poder instalar Pyenv en cualquier momento sin hacer otro paso que sea pedir el paquete con mi gestor de paquetes predilecto.
 \subsection{Conda}
-\label{sec:org84de109}
+\label{sec:org9c758a0}
 
 Anaconda es una distribución de Python y R orientada a ciencia de datos y machine learning. En un principio la usaba para montarme entornos virtuales de Python.
 
@@ -1203,15 +1203,15 @@ unset __conda_setup
 
 \end{verbatim}
 \subsection{GHCUP}
-\label{sec:orgc9f29ed}
+\label{sec:org0f4612e}
 
-GHCUP es una herramienta que nos permite manejar varias versiones de Haskell y su GHC, en general, es el equivalente de \ref{sec:orgcfff6cc} pero para Haskell.
+GHCUP es una herramienta que nos permite manejar varias versiones de Haskell y su GHC, en general, es el equivalente de \ref{sec:orgf870250} pero para Haskell.
 
 \begin{verbatim}
 [ -f "/home/mrtaichi/.ghcup/env" ] && . "/home/mrtaichi/.ghcup/env"
 \end{verbatim}
 \subsection{Terminal}
-\label{sec:org49d14e9}
+\label{sec:orgbb77761}
 
 Mi terminal predilecta es Alacritty, y para que i3 pueda invocar esta terminal adecuadamente, necesito fijar una variable de entorno TERMINAL.
 
@@ -1219,12 +1219,436 @@ Mi terminal predilecta es Alacritty, y para que i3 pueda invocar esta terminal a
 export TERMINAL="alacritty"
 \end{verbatim}
 \subsection{NVM}
-\label{sec:org33703c6}
+\label{sec:org11eb931}
 
-Finalmente tenemos a NVM, el cual es un manejador de versiones pero para Node, al igual que los anteriores \ref{sec:orgc9f29ed}
-y \ref{sec:orgcfff6cc}
+Finalmente tenemos a NVM, el cual es un manejador de versiones pero para Node, al igual que los anteriores \ref{sec:org0f4612e}
+y \ref{sec:orgf870250}
 
 \begin{verbatim}
 source /usr/share/nvm/init-nvm.sh
 \end{verbatim}
+\section{i3}
+\label{sec:orgb4b5bca}
+
+\subsection{Introducción}
+\label{sec:org23aa1bc}
+
+Desde que conozco los gestores de ventanas y la gran ventaja que te dan de rapidez (porque inherentemente manejar la computadora con el teclado es más rápido que con el mouse), no he logrado escaparme de usar uno en ninguna de las encarnaciones de mis estaciones de trabajo. De hecho, si eres lector de mi blog, puedes observar que mi admiración por los gestores de ventanas llega a tal punto que \href{https://isaacnietog.github.io/blog/250114gestorDeVentanas/}{mi primera publicación en mi blog} tiene exactamente que ver con esto.
+
+Entonces, lo primero que suelo hacer cuando llega una nueva computadora a mis manos es buscar la forma de reemplazar su entorno de escritorio por un gestor de ventanas. En caso de computadoras con Linux (que es hacia donde se construye este proyecto), lo que busco siempre es generar mi configuración preferida para esto: un entorno de escritorio Plasma al cual le reemplazo KWin (el gestor de ventanas que utiliza generalmente Plasma) por i3. Esto me permite conservar todas las ventajas de ambos mundos: las herramientas e integraciones que te ofrece un entorno de escritorio completo y maduro como lo es KDE Plasma, junto con la sencilleza y agilidad de poder manejar tus ventanas con puros atajos de teclado, y ese ajuste automático entre ellas que te permite trabajar con varias ventanas sin casi necesidad de preocuparte por acomodarlas tú mismo.
+
+Y eso es exactamente lo que vamos a explorar generar en este capítulo: mi configuración curada de i3 + Plasma con la que he estado trabajando cerca de un año y me ha demostrado funcionar de manera eficiente.
+\subsection{Sobre el orden lógico de este capítulo}
+\label{sec:orgc4b0101}
+
+Por la complejidad de esta setup, creo que esta vez el enfoque de secciones de este capítulo cambiará; en los capítulos anteriores he estado intentando que cada sección se dedique a un archivo o, en caso necesario, a un propósito de la configuración. En este capítulo, para poder generar una mejor comprensión de la generación de esta configuración y sus enfoques, creo que se perderá un poco este enfoque en archivos, para cambiar a un enfoque por ideas.
+
+A qué me refiero con esto? Pues a que para construir esta configuración, voy a enfocarme en hacer que el estructurado de la misma vaya surgiendo de manera natural a como nuestro cerebro debe de irla entendiendo; esto va a tener la desventaja de que todas las secciones de este capítulo van a contribuir a varios archivos a la vez; por dar un ejemplo, probablemente el playbook sea solamente finalizado hasta que termine el capítulo, contrario a el resto de capítulos hasta el momento, donde es de hecho lo primero que hago y termino.
+
+Finalmente y para ponerme manos a la obra, pensándolo bien, creo que así es como todo el libro debió de haber sido generado, pues esta es la ventaja real del paradigma de Programación Letrada que estoy utilizando. ``El humano es el ciudadano de primera clase, el código es el accidente que necesitamos para que el compilador construya el producto final.''
+\subsection{Dependencias}
+\label{sec:orgd831bf4}
+
+Vamos a construir nuestra orden de compra para nuestros queridos repositorios de Linux, de las dependencias que vamos a necesitar para generar esta configuración.
+
+Primero que nada, decir que esta orden de compra es el primer paso de nuestro playbook para generar esta configuración, por lo que lo primero que vamos a llevar a nuestro playbook es lo que siempre hemos necesitado para generar playbooks: \hyperref[sec:org81af12a]{nuestra cabecera mínima de un playbook}.
+
+\begin{verbatim}
+<<cabecera_Minima_De_Un_Playbook>>
+
+echo -e "${GREEN}=== Installing i3 Window Manager ===${NC}"
+
+\end{verbatim}
+
+También insertamos el tradicional texto para aclarar que este es el playbook encargado de instalar la configuración de i3.
+
+Ahora sí, vamos a generar las dependencias necesarias.
+
+Necesitamos, primero que nada y obviamente, i3. El nombre depende de la distro, como siempre, pero en el caso de Arch, el nombre es i3-wm
+
+\begin{verbatim}
+install_package "i3-wm"
+\end{verbatim}
+
+También, obviamente, necesitamos el entorno de escritorio de KDE Plasma, más específicamente, lo necesitamos en su versión que utiliza X11. Esto porque, hasta donde mis conocimientos dan, y hasta la investigación que he podido conducir al respecto, esta es la única versión que permite reemplazar KWin; la nueva versión que utiliza Wayland no permite hacer esto. Esto implica que eventualmente deberé de cambiar mi entorno de escritorio, cuando KDE Plasma X11 sea descontinuado (que según \href{https://blogs.kde.org/2025/11/26/going-all-in-on-a-wayland-future/}{el comunicado oficial al respecto}, se espera que sea a finales de 2026). Pero por lo mientras, sigamos con esta solución.
+
+Para la parte de KDE entonces, vamos a necesitar el paquete plasma-meta para el entorno de escritorio. Y el paquete plasma-x11-session para la sesión de X11 que necesitamos, que, vale la pena aclarar, que justamente por estos esfuerzos de KDE para descontinuarla, \href{https://archlinux.org/news/plasma-640-will-need-manual-intervention-if-you-are-on-x11/}{ya no es incluida en plasma-meta por default}.
+
+\begin{verbatim}
+install_package "plasma-meta"
+install_package "plasma-x11-session"
+\end{verbatim}
+
+Yo siempre he sido muy fan de las transparencias que te permiten ver detrás de ventanas, puedes ver en mi sección dedicada a \ref{sec:org858e5c0} que de hecho las utilizo para poder ver detrás de la misma ventana de Emacs para ubicar ventanas detrás, las cuales generalmente utilizo para leer documentación mientras escribo código.
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{./imgs/img1.png}
+\end{center}
+
+En la imagen de arriba, por ejemplo, a la vez que estoy generando esta sección, tengo de fondo la documentación de org-mode para leer cómo incluir imágenes al archivo.
+
+Y para generar esto, necesitamos un \href{https://en.wikipedia.org/wiki/Compositing\_manager}{compositor} que nos proporcione los medios para generar este efecto, ya que i3 no es un Window Manager con compositor incluído. Mi compositor actual es picom.
+
+\begin{verbatim}
+install_package "picom"
+\end{verbatim}
+
+Luego, también necesitamos un programa que funcione como fondo de pantalla, ya que esto es una característica que suele incluirse junto con el gestor de ventanas de KWin. El más sencillo que conozco y que generalmente utilizo es feh
+
+\begin{verbatim}
+install_package "feh"
+\end{verbatim}
+
+Como menú de aplicaciones, podría utilizar el menú que ya incluye i3, pero la verdad es que me inclino más a usar rofi con cierto tema que es mi favorito. Para instalar rofi, lo instalamos como un paquete de siempre.
+
+\begin{verbatim}
+install_package "rofi"
+\end{verbatim}
+
+Luego, el tema que utilizo para rofi (que de hecho me encanta) está incluido dentro del \href{https://github.com/adi1090x/rofi}{paquete de temas para rofi hechos por adi1090x}. Estos temas están diseñados para funcionar como un ecosistema completo, así que si voy a usar uno, necesito instalarlos todos como un paquete completo.
+
+\begin{verbatim}
+
+echo -e "\n${GREEN}Installing adi1090x's rofi themes...${NC}"
+if [ ! -d "$HOME/.config/rofi" ]; then
+    git clone --depth 1 https://github.com/adi1090x/rofi.git /tmp/rofi
+    cd /tmp/rofi
+    chmod +x setup.sh
+    ./setup.sh
+    cd - > /dev/null
+    rm -rf /tmp/rofi
+else
+    echo -e "${YELLOW}Rofi themes are already installed${NC}"
+fi
+
+\end{verbatim}
+\subsection{Configuraciones iniciales}
+\label{sec:orgdd06f6d}
+
+i3 es un gestor de ventanas que está especializado en utilizar exclusivamente el teclado. Se puede dar la rara ocasión en la cual necesitemos de usar el mouse, pero es muy rara y generalmente provocada por usar ventanas flotantes (muy rara vez). Por esto mismo, necesitamos un montón de atajos de teclado. El principio de diseño más importante de las configuraciones por default de i3 -o el que yo siento es el más importante- es que todos nacen de una tecla llamada Tecla Modificadora, referenciada como \$mod de manera interna. Todos los atajos de teclado más importantes de este gestor utilizan de una u otra manera esta tecla, por lo que es importante definirla de manera temprana en nuestra configuración.
+
+La opción por default para Tecla Modificadora es la tecla Alt. Pero yo prefiero la tecla Windows porque es menos disruptiva con los atajos de teclado definidos dentro de aplicaciones.
+
+\begin{verbatim}
+set $mod Mod4
+\end{verbatim}
+
+Mod4 es el nombre interno con el cual se denomina a la tecla Windows. Con esta linea definimos que nuestra Tecla Modificadora será la de Windows.
+
+Cada ventana del gestor tiene una barra superior la cual declara el nombre de la aplicación que está contenida por esta ventana. Para definir la fuente tipográfica de este texto utilizamos la siguiente instrucción:
+
+\begin{verbatim}
+font pango:monospace 6
+\end{verbatim}
+
+Me quedo con la fuente por default de i3, la cual es pango::monospace
+
+Desde este mismo archivo de configuración podemos llamar a nuestro fondo de pantalla, el cual, como vimos previamente en la sección de \hyperref[sec:orgd831bf4]{dependencias} lo vamos a implementar usando feh.
+
+El fondo de pantalla no lo voy a instalar automáticamente con el playbook, porque al final del día esta opción de configuración es demasiado personal incluso para este trabajo que ya de por sí es muy personal. Pero para quien quiera saber cómo es, si nos metemos a la \href{https://wiki.archlinux.org/title/Feh}{página de la Arch Wiki sobre feh} podemos observar que debemos correr el siguiente comando:
+
+\begin{verbatim}
+feh --bg-scale /path/to/image.file
+\end{verbatim}
+
+Una vez hecho esto, se crea un archivo en \textasciitilde{}/.fehbg, el cual es un ejecutable al que podemos llamar cada vez que queramos invocar la carga del fondo de pantalla. Esto es justamente lo que vamos a integrar en la configuración de i3.
+
+\begin{verbatim}
+exec --no-startup-id ~/.fehbg
+\end{verbatim}
+
+El parámetro de --no-startup-id es para, citando a la \href{https://i3wm.org/docs/userguide.html\#exec}{documentación oficial de i3}, deshabilitar el startup-notification support. Casi todas las veces en que ejecuto programas dentro de esta configuración utilizo este parámetro, honestamente porque esa feature no me interesa, y en casos de aplicaciones que no tienen este soporte esto puede llevar a que se cuelgue el cursor indefinidamente. (creo que sí me ha pasado).
+
+Una configuración que viene de la caja y que en realidad no uso tan concretamente es habilitar el \href{https://wiki.archlinux.org/title/XDG\_Autostart}{XDG Autostart}, la verdad es que no me interesa tanto, pero tampoco me estorba.
+
+\begin{verbatim}
+exec --no-startup-id dex --autostart --environment i3
+\end{verbatim}
+
+Para las ventanas flotantes necesitamos definir una tecla llamada floating\textsubscript{modifier}. Mientras mantengamos presionada esta tecla podemos mover las ventanas flotantes de lugar, de otra manera, estarán fijas en su lugar.
+
+\begin{verbatim}
+floating_modifier $mod
+\end{verbatim}
+
+De la misma forma, si queremos reorganizar las ventanas en azulejo con el mouse, debemos configurar tiling\textsubscript{drag}. La verdad es que es una feature que casi nunca uso, así que dejo la configuración default.
+
+\begin{verbatim}
+tiling_drag modifier titlebar
+\end{verbatim}
+
+Con esta opción, podemos cambiar de lugar las ventanas en azulejo ya sea arrastrando desde la barra de título de la ventana como clickeando en cualquier lugar mientras sostenemos la Tecla Modificadora.
+
+Luego nos movemos a algo bastante esencial para este flujo de trabajo usando un gestor de ventanas: la terminal.
+
+Evidentemente se puede usar un gestor de ventanas y nunca tocar una terminal, de la misma forma en la que puedes usar Linux sin nunca tocar una terminal. Pero en ambos casos, yo considero que es restringirte de uno de los grandes dulces de este flujo de trabajo. La mayoría del tiempo tengo una terminal a lado para hacer prácticamente todo. Las pocas ocasiones en las que salgo de la terminal son para abrir mi navegador web o abrir Emacs, el resto de cosas las hago en la terminal. E i3 ya contempla este perfil de uso dándonos por default este atajo de teclado, con el que al presionar \$mod+Return (Windows + Enter) podemos abrir una terminal. Incluso tiene un script personalizado el cual se decanta por algún emulador de terminal según las opciones que están disponibles en el sistema en este momento.
+
+\begin{verbatim}
+bindsym $mod+Return exec i3-sensible-terminal
+\end{verbatim}
+
+Este script escoge uno de los emuladores de terminal disponibles en la máquina en el momento de su ejecución, priorizando los que ``tienen mejor accesibilidad'' (a gusto del mantenedor del script). Aunque se puede overridear fijando la variable de entorno \$TERMINAL a la terminal de nuestro gusto. Esto es lo que termino haciendo siempre para poder usar Alacritty.
+
+Luego tenemos el keybinding para cerrar la ventana que tengamos focuseada en el momento. Este keybinding es esencial, ya que yo siempre deshabilito las barras superiores de las ventanas donde tenemos las opciones de minimizar, maximizar y cerrar, para tener más espacio y porque en realidad sólamente podemos hacer una de esas tres opciones cuando estamos bajo un gestor de ventanas como i3wm.
+
+\begin{verbatim}
+bindsym $mod+Shift+q kill
+\end{verbatim}
+
+Otra opción bastante esencial es la de abrir un launcher de aplicaciones, aquí es donde reclutamos Rofi. En la sección de \ref{sec:orgd831bf4} instalamos una serie de temas para Rofi, para poder ejecutar el tema de mi predilección (el tema Tipo 1), el repositorio mismo nos proporciona launchers ejecutables bajo la ruta \textasciitilde{}/.config/rofi/launchers/(Tipo del launcher)/launcher.sh. Entonces ese es el ejecutable que vamos a llamar. Lo bindeamos al atajo por default.
+
+\begin{verbatim}
+bindsym $mod+d exec --no-startup-id ~/.config/rofi/launchers/type-1/launcher.sh
+\end{verbatim}
+
+Los atajos por default para moverse entre ventanas utilizan un esquema Vim-like, pero en lugar de utilizar las teclas HJKL, se utilizan las teclas JKL;. La decisión de diseño detrás de esta decisión es interesante, de hecho la trato en \href{https://isaacnietog.github.io/blog/250114gestorDeVentanas/\#bindings-de-vim-a-medias}{un artículo de mi blog}, pero justamente en este artículo también aclaro que no es una decisión de diseño que yo comparta. Principalmente por tener una estandarización de atajos de VIM a lo largo de mi sistema, es por lo que revierto esto al viejo esquema HJKL.
+
+\begin{verbatim}
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+\end{verbatim}
+
+De una vez también integro estos mismos controles pero con las flechas (por si acaso).
+
+Al invocar una nueva ventana en i3wm, tenemos la capacidad de especificarle al gestor si queremos que nazca al lado derecho de la ventana que teníamos enfocada en ese momento (Horizontal split) o debajo de la misma (Vertical split). Para hacer esto, primero debemos de usar el atajo correspondiente. Pero aquí nos topamos con un problema directamente relacionado con mi declaración anterior.
+
+Resulta que en las configuraciones por default, para hacer un Horizontal split el atajo es \$mod+h. Pero debido a mi decisión respecto a los controles (usar HJKL) este atajo ahora está ocupado, por lo que lo tengo que cambiar a \$mod+o
+
+\begin{verbatim}
+
+bindsym $mod+o split h
+bindsym $mod+v split v
+
+\end{verbatim}
+
+Luego configuramos el toggle de pantalla completa.
+
+\begin{verbatim}
+bindsym $mod+f fullscreen toggle
+\end{verbatim}
+
+Y los atajos para cambiar el modo de layout que queramos usar en el momento, teniendo tres disponibles:
+
+\begin{itemize}
+\item Stacked
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{./imgs/img2.png}
+\end{center}
+
+\item Tabbed
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{./imgs/img3.png}
+\end{center}
+
+\item Y la opción normal de siempre (split)
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{./imgs/img4.png}
+\end{center}
+\end{itemize}
+
+\begin{verbatim}
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+\end{verbatim}
+
+Luego configuramos las gaps, que son ese espacio pequeño entre ventana y ventana. Quiero que este espacio sea lo más pequeño posible, pero sin juntar ventana con ventana porque se vería raro. Ya de paso también, con la linea de for\textsubscript{window} elimino todos los títulos de ventanas para tener más espacio.
+
+\begin{verbatim}
+for_window [class="^.*"] border pixel 0
+gaps inner 5
+gaps outer 5
+\end{verbatim}
+
+Luego tenemos otros keybindings miscelaneos que vienen por default. La verdad es que varios son muy autodescriptivos y varios otros no tanto pero lo son cuando tomas el flujo de trabajo. Lo que sí, es que la mayoría son los default, por lo que en realidad una cheatsheet de keybindings de i3 los pueden explicar bastante bien.
+
+\begin{verbatim}
+bindsym $mod+Shift+space floating toggle
+
+bindsym $mod+space focus mode_toggle
+
+bindsym $mod+a focus parent
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+mode "resize" {
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
+
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+\end{verbatim}
+\subsection{Integración con Plasma}
+\label{sec:orgc0062fa}
+
+Una vez formadas las configuraciones iniciales necesarias para que i3 sea mínimamente funcional, podemos empezar a formar la siguiente parte de mi entorno de escritorio: su integración con KDE Plasma y todas sus aplicaciones. Para esto voy a seguir la \href{https://github.com/heckelson/i3-and-kde-plasma}{guía de Alexander Hecke} respecto a este tema, junto con algunas secciones específicas de \href{https://wikisandbox.kde.org/Tutorials/Using\_Other\_Window\_Managers\_with\_Plasma}{la documentación oficial de KDE al respecto}.
+\subsubsection{Configuraciones en i3wm}
+\label{sec:org62c8dcf}
+
+Aprovechando que tenemos nuestro archivo de configuración abierto de la sección anterior, vamos a agregar aquí algunas de las configuraciones necesarias para este setup. Al estilo de esta obra, las vamos explicando detenidamente.
+
+Primero vamos a buscar con una expresión regular algunas ventanas que carga Plasma y que nosotros no necesitamos. Dentro de esta categoría se incluye la ventana que usa Plasma para cargar el fondo de pantalla. Debido a que no necesitamos esto porque estamos cargando el fondo de pantalla con feh, nos interesa matarla.
+
+\begin{verbatim}
+for_window [title="Desktop @ QRect.*"] kill, floating enable, border none
+\end{verbatim}
+
+Como mecanismo de ``fallback'' de esta regla, si es que i3 falla al intentar matar estas ventanas, lo que puede hacer es hacerlas flotantes y deshabilitarles el borde.
+
+Luego, en complemento a lo anterior, vamos a matar también la ventana que usa Plasma para dibujar el escritorio (iconos, efectos, etc). Esta ventana obviamente es completamente incompatible con i3wm.
+
+\begin{verbatim}
+exec --no-startup-id wmctrl -c Plasma
+\end{verbatim}
+
+Cargamos el compositor que instalamos en la sección de \ref{sec:orgd831bf4}. Le vamos a dar algunos parámetros relacionados con usar sombras, transparencia y animaciones.
+
+\begin{verbatim}
+exec --no-startup-id wmctrl -c Plasma
+\end{verbatim}
+
+Finalmente, hay algunas ventanas que nos interesa que i3wm maneje como flotantes, particularmente las relacionadas con notificaciones, dropdown windows, etc. Con estas reglas le definimos a i3wm cuáles son.
+
+\begin{verbatim}
+for_window [class="yakuake"] floating enable;
+for_window [class="lattedock"] floating enable;
+for_window [class="plasmashell"] floating enable;
+for_window [class="Kmix"] floating enable; border none
+for_window [class="kruler"] floating enable; border none
+for_window [class="Plasma"] floating enable; border none
+for_window [class="Klipper"] floating enable; border none
+for_window [class="krunner"] floating enable; border none
+for_window [class="Plasmoidviewer"] floating enable; border none
+for_window [title="plasma-desktop"] floating enable; border none
+for_window [class="plasmashell" window_type="notification"] floating enable, border none, move position 1450px 20px
+no_focus [class="plasmashell" window_type="notification"]
+
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_role="About"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [instance="__scratchpad"] floating enable
+\end{verbatim}
+
+Con esto, ahora sí terminamos de configurar el lado de i3wm.
+
+Regresamos brevemente al playbook para crear el enlace simbólico necesario para que estas configuraciones que creamos carguen en i3wm.
+
+\begin{verbatim}
+create_symlink "$REPO_ROOT/i3/config" ~/.config/i3/config
+\end{verbatim}
+\subsubsection{Configuración del sistema.}
+\label{sec:orge17eaf9}
+
+Lo que queremos hacer para este flujo de trabajo es deshabilitar el servicio que activa Kwin, el gestor de ventanas nativo de Plasma que queremos anular y reemplazar con i3wm. En lugar de este servicio, vamos a escribir el nuestro para activar i3wm.
+
+\begin{verbatim}
+[Install]
+WantedBy=plasma-workspace.target
+
+[Unit]
+Description=Plasma Custom Window Manager
+Before=plasma-workspace.target
+
+[Service]
+ExecStart=/usr/bin/i3
+Slice=session.slice
+Restart=on-failure
+\end{verbatim}
+
+Una vez escrito, volvemos al playbook para configurar las acciones necesarias relacionadas con este paso.
+
+Creamos el enlace simbólico necesario para llevar nuestro nuevo servicio a la carpeta de servicios correspondiente a nuestro usuario. Es importante aclarar que estos cambios relacionados a servicios son a nivel de usuario, por lo que no necesitamos permisos de root y tampoco estamos haciendo cambios a nivel de sistema.
+
+\begin{verbatim}
+create_symlink "$REPO_ROOT/i3/plasma-i3.service" ~/.config/systemd/user
+\end{verbatim}
+
+Y ``enmascaramos'' es decir, deshabilitamos, el servicio que invoca Kwin.
+
+\begin{verbatim}
+systemctl mask plasma-kwin_x11.service --user
+\end{verbatim}
+
+Para finalmente habilitar nuestro servicio propio.
+
+\begin{verbatim}
+systemctl enable plasma-i3 --user
+\end{verbatim}
+
+Con esto terminamos de configurar i3wm + Plasma, finalizando estos pasos tenemos completo el entorno de escritorio que utilizo y podemos comenzar a trabajar.
+\section{Conclusión}
+\label{sec:org6aed420}
+
+Por ahora, estas son todas las configuraciones que utilizo diariamente para mi flujo de trabajo.
+
+Esta versión letrada de mis dotfiles se reduce bastante a comparación de la versión iletrada anterior, pero es porque varias de mis dotfiles pasadas actualmente las considero código legacy porque ya no las utilizo más, de igual manera, si quieres consultar alguna de mis dotfiles de la versióń anterior, bajo la carpeta legacy de este repositorio tienes todos los scripts, configuraciones y playbooks que en algún momento llegué a utilizar. Tal vez en un futuro los agregue a este libro, bajo un capítulo Legacy -o tal vez no-. Lo que sí, es que cualquier cambio a mi flujo de trabajo será reflejado a este documento; pues al día de hoy, de este documento \textbf{nace} mi flujo de trabajo.
+
+Si tienes alguna duda adicional, o comentarios de cómo podría mejorar este texto, siempre puedes contactarte conmigo en mis medios de contacto, los cuales puedes encontrar en mi \href{https://github.com/IsaacNietoG}{Github}.
+
+Espero que cualquiera que haya leído esto le haya sido útil o al menos entretenido, nos veremos pronto :D
 \end{document}
