@@ -47,7 +47,8 @@ create_symlink() {
     ln -sf "$source" "$target"
 }
 
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 echo -e "${GREEN}=== Installing i3 Window Manager ===${NC}"
 

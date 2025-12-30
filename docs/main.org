@@ -179,8 +179,8 @@ Necesitamos primero que nada saber dónde se encuentra el playbook en estos mome
 
 Los enlaces simbólicos trabajan con rutas absolutas, necesitamos saber siempre la ruta absoluta de dónde se encuentra nuestro repositorio para poder generarlos. Con estas dos variables de entorno temporales podemos generar y saber en tiempo de ejecución estos lugares tan importantes.
 
-#+NAME: variablesDeEntornoAuxiliares>>
-#+begin_src
+#+NAME: variablesDeEntornoAuxiliares
+#+begin_src bash
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 #+end_src
