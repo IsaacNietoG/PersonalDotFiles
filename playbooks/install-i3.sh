@@ -75,7 +75,7 @@ fi
 
 create_symlink "$REPO_ROOT/i3/config" ~/.config/i3/config
 
-create_symlink "$REPO_ROOT/i3/plasma-i3.service" ~/.config/systemd/user
+create_symlink "$REPO_ROOT/i3/plasma-i3.service" ~/.config/systemd/user/plasma-i3.service
 
 systemctl mask plasma-kwin_x11.service --user
 

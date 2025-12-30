@@ -1605,7 +1605,7 @@ Una vez escrito, volvemos al playbook para configurar las acciones necesarias re
 Creamos el enlace simbólico necesario para llevar nuestro nuevo servicio a la carpeta de servicios correspondiente a nuestro usuario. Es importante aclarar que estos cambios relacionados a servicios son a nivel de usuario, por lo que no necesitamos permisos de root y tampoco estamos haciendo cambios a nivel de sistema.
 
 #+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
-create_symlink "$REPO_ROOT/i3/plasma-i3.service" ~/.config/systemd/user
+create_symlink "$REPO_ROOT/i3/plasma-i3.service" ~/.config/systemd/user/plasma-i3.service
 #+end_src
 
 Y "enmascaramos" es decir, deshabilitamos, el servicio que invoca Kwin.
