@@ -48,6 +48,7 @@ create_symlink() {
 }
 
 
+
 echo -e "${GREEN}=== Installing Doom Emacs ===${NC}"
 
 echo -e "${GREEN}Installing Doom Emacs dependencies...${NC}"
@@ -63,9 +64,6 @@ if [ ! -f "$HOME/.config/emacs/bin/doom" ]; then
 else
     echo -e "${YELLOW}Doom Emacs is already installed${NC}"
 fi
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 echo -e "\n${GREEN}Installing Doom Emacs config...${NC}"
 create_symlink "$REPO_ROOT/doomEmacs/config.el" ~/.config/doom/config.el

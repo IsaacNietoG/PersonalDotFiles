@@ -68,6 +68,7 @@ La cabecera más común para todos los playbooks del proyecto es la siguiente:
 
 <<funcion_Para_Crear_Un_Enlace_Simbolico>>
 
+<<variablesDeEntornoAuxiliares>>
 #+end_src
 
 Esto nos da varias de las funcionalidades comunes que necesitaremos en todos los playbooks para comenzar a hacerlos útiles. A continuación, vamos a concretarlas todas.
@@ -168,6 +169,20 @@ create_symlink() {
     backup_file "$target"
     ln -sf "$source" "$target"
 }
+#+end_src
+
+*** Variables de entorno auxiliares
+
+Hay una serie de ubicaciones que necesitamos tener a la mano, principalmente para la función de creación de enlaces simbólicos que es tan esencial de los playbooks:
+
+Necesitamos primero que nada saber dónde se encuentra el playbook en estos momentos. Podemos asumir que se encuentra en la carpeta playbooks bajo la raíz del repositorio. Esta ubicación nos resulta valiosa porque de ella podemos derivar la que es realmente la más relevante: La raíz del repositorio.
+
+Los enlaces simbólicos trabajan con rutas absolutas, necesitamos saber siempre la ruta absoluta de dónde se encuentra nuestro repositorio para poder generarlos. Con estas dos variables de entorno temporales podemos generar y saber en tiempo de ejecución estos lugares tan importantes.
+
+#+NAME: variablesDeEntornoAuxiliares>>
+#+begin_src
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 #+end_src
 
 
@@ -289,8 +304,6 @@ Una vez instalado Doom Emacs, podemos comenzar a importar las configuraciones in
 Para esto creamos los enlaces simbólicos respectivos.
 
 #+begin_src bash :tangle ../playbooks/install-doom-emacs.sh :eval never
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 echo -e "\n${GREEN}Installing Doom Emacs config...${NC}"
 create_symlink "$REPO_ROOT/doomEmacs/config.el" ~/.config/doom/config.el
@@ -1032,8 +1045,6 @@ Continuamos con la carga de mis configuraciones.
 Por ahora, todas las configuraciones que necesito para Oh My ZSH, residen en el mismo archivo .zshrc que vamos a escribir más adelante; entonces, ese es el único archivo que vamos a importar para cargar nuestras configuraciones correctamente. Como siempre, el archivo se encuentra un nivel más arriba que la ubicación del playbook, la cual, otra vez, usaremos como punto de referencia.
 
 #+begin_src bash :tangle ../playbooks/install-ohmyzsh.sh
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 echo -e "\n${GREEN}Installing Oh My Zsh config...${NC}"
 create_symlink "$REPO_ROOT/OhMyZsh/.zshrc" ~/.zshrc

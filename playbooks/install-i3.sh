@@ -48,6 +48,7 @@ create_symlink() {
 }
 
 
+
 echo -e "${GREEN}=== Installing i3 Window Manager ===${NC}"
 
 install_package "i3-wm"

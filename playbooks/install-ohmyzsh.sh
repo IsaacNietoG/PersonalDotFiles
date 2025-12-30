@@ -48,6 +48,7 @@ create_symlink() {
 }
 
 
+
 echo -e "${GREEN}=== Installing Oh My ZSH ===${NC}"
 
 echo -e "${GREEN}Installing Oh My Zsh dependencies...${NC}"
@@ -60,9 +61,6 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
 else
     echo -e "${YELLOW}Oh My Zsh is already installed${NC}"
 fi
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 echo -e "\n${GREEN}Installing Oh My Zsh config...${NC}"
 create_symlink "$REPO_ROOT/OhMyZsh/.zshrc" ~/.zshrc
