@@ -1232,7 +1232,7 @@ source /usr/share/nvm/init-nvm.sh
 
 ** Introducción
 
-Desde que conozco los gestores de ventanas y la gran ventaja que te dan de rapidez (porque inherentemente manejar la computadora con el teclado es más rápido que con el mouse), no he logrado escaparme de usar uno en ninguna de las encarnaciones de mis estaciones de trabajo. De hecho, si eres lector de mi blog, puedes observar que mi admiración por los gestores de ventanas llega a tal punto que [[https://isaacnietog.github.io/blog/250114gestorDeVentanas/][mi primera publicación en mi blog]] tiene exactamente que ver con esto.
+Desde que conozco los gestores de ventanas y la gran ventaja que te dan de rapidez (porque inherentemente manejar la computadora con el teclado es más rápido que con el mouse), no he logrado escaparme de usar uno en ninguna de las encarnaciones de mis estaciones de trabajo. De hecho, si eres lector de mi blog, puedes observar que mi admiración por los gestores de ventanas llega a tal punto que [[https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/][mi primera publicación en mi blog]] tiene exactamente que ver con esto.
 
 Entonces, lo primero que suelo hacer cuando llega una nueva computadora a mis manos es buscar la forma de reemplazar su entorno de escritorio por un gestor de ventanas. En caso de computadoras con Linux (que es hacia donde se construye este proyecto), lo que busco siempre es generar mi configuración preferida para esto: un entorno de escritorio Plasma al cual le reemplazo KWin (el gestor de ventanas que utiliza generalmente Plasma) por i3. Esto me permite conservar todas las ventajas de ambos mundos: las herramientas e integraciones que te ofrece un entorno de escritorio completo y maduro como lo es KDE Plasma, junto con la sencilleza y agilidad de poder manejar tus ventanas con puros atajos de teclado, y ese ajuste automático entre ellas que te permite trabajar con varias ventanas sin casi necesidad de preocuparte por acomodarlas tú mismo.
 
@@ -1399,7 +1399,7 @@ Otra opción bastante esencial es la de abrir un launcher de aplicaciones, aquí
 bindsym $mod+d exec --no-startup-id ~/.config/rofi/launchers/type-1/launcher.sh
 #+end_src
 
-Los atajos por default para moverse entre ventanas utilizan un esquema Vim-like, pero en lugar de utilizar las teclas HJKL, se utilizan las teclas JKL;. La decisión de diseño detrás de esta decisión es interesante, de hecho la trato en [[https://isaacnietog.github.io/blog/250114gestorDeVentanas/#bindings-de-vim-a-medias][un artículo de mi blog]], pero justamente en este artículo también aclaro que no es una decisión de diseño que yo comparta. Principalmente por tener una estandarización de atajos de VIM a lo largo de mi sistema, es por lo que revierto esto al viejo esquema HJKL.
+Los atajos por default para moverse entre ventanas utilizan un esquema Vim-like, pero en lugar de utilizar las teclas HJKL, se utilizan las teclas JKL;. La decisión de diseño detrás de esta decisión es interesante, de hecho la trato en [[https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/#bindings-de-vim-a-medias][un artículo de mi blog]] pero justamente en este artículo también aclaro que no es una decisión de diseño que yo comparta. Principalmente por tener una estandarización de atajos de VIM a lo largo de mi sistema, es por lo que revierto esto al viejo esquema HJKL.
 
 #+begin_src conf :tangle ../i3/config
 bindsym $mod+h focus left
