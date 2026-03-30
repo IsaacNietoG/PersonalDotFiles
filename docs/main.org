@@ -543,7 +543,7 @@ Para formar nuestra propia sección de init.el, iremos seleccionando los módulo
 Luego, dentro de los módulos elegidos, necesitamos considerar que existen varias categorías de módulos para personalizar nuestra configuración de Doom Emacs, siendo las principales:
 
 #+NAME: modulos_Elegidos
-#+begin_src lisp :eval never :noweb tangle
+#+begin_src lisp :eval never :noweb no-export
 <<modulos_Input>>
 <<modulos_Completion>>
 <<modulos_Ui>>
@@ -742,8 +742,11 @@ latex
 markdown
 (rust +lsp)
 sh
+(org +evil)
 
 #+end_src
+
+Algo para comentar particularmente aquí es que Emacs tiene soporte para org-mode de manera nativa, entonces uno podría pensar que no es necesario el módulo de org. La principal razón por la que lo agrego es por compatibilidad con Evil Mode. Si no explicito esta compatibilidad, los bindings dentro de la Org-Agenda se revierten a los defaults y eso me hace mucha fricción para trabajar.
 
 *** Módulos de Email
 
@@ -888,23 +891,54 @@ Y finalmente, los estados que utilizo para mis tareas. Estos están directamente
 
 #+begin_src lisp :eval never :noweb-ref orgMode
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "|" "DONE(d)")
-	(sequence "TASK(T)")
-	(sequence "WAITING(w@/!)" "INACTIVE(i)" "SOMEDAY(s)" "|" "CANCELLED(c@/!)")))
+   '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "|" "DONE(d)")
+	 (sequence "TASK(T)")
+	 (sequence "WAITING(w@/!)" "INACTIVE(i)" "SOMEDAY(s)" "|" "CANCELLED(c@/!)")))
 
 (setq org-todo-keyword-faces
       '(("TODO" :foreground "red" :weight bold)
-	("TASK" :foreground "#5C888B" :weight bold)
-	("NEXT" :foreground "blue" :weight bold)
-	("PROJ" :foreground "magenta" :weight bold)
-	("DONE" :foreground "forest green" :weight bold)
-	("WAITING" :foreground "orange" :weight bold)
-	("INACTIVE" :foreground "magenta" :weight bold)
-	("SOMEDAY" :foreground "cyan" :weight bold)
-	("CANCELLED" :foreground "forest green" :weight bold)))
+	    ("TASK" :foreground "#5C888B" :weight bold)
+	    ("NEXT" :foreground "blue" :weight bold)
+	    ("PROJ" :foreground "magenta" :weight bold)
+	    ("DONE" :foreground "forest green" :weight bold)
+	    ("WAITING" :foreground "orange" :weight bold)
+	    ("INACTIVE" :foreground "magenta" :weight bold)
+	    ("SOMEDAY" :foreground "cyan" :weight bold)
+	    ("CANCELLED" :foreground "forest green" :weight bold)))
 #+end_src
 
 De una vez también defino los colores para cada estado.
+
+- Org-agenda crea algo llamado "Logbook" para tareas que se completan de manera diaria. Esto en resúmen lo que hace es crear una lista de veces que se ha completado una tarea bajo el título de la misma. El problema es que para tareas que se completan todos los días (hábitos por ejemplo) esto crea listas muy largas, de este estilo:
+
+  #+begin_src org :eval never
+ ** TODO Revisar correo electrónico
+SCHEDULED: <2026-01-12 Mon +1d>
+:PROPERTIES:
+:LAST_REPEAT: [2026-01-11 Sun 17:49]
+:END:
+- State "DONE"       from "TODO"       [2026-01-11 Sun 17:49]
+- State "DONE"       from "TODO"       [2026-01-11 Sun 17:49]
+- State "DONE"       from "TODO"       [2026-01-09 Fri 17:47]
+- State "DONE"       from "TODO"       [2026-01-08 Thu 21:41]
+- State "DONE"       from "TODO"       [2026-01-08 Thu 14:31]
+- State "DONE"       from "TODO"       [2026-01-06 Tue 11:41]
+- State "DONE"       from "TODO"       [2026-01-05 Mon 19:54]
+- State "DONE"       from "TODO"       [2026-01-04 Sun 21:48]
+- State "DONE"       from "TODO"       [2026-01-03 Sat 19:35]
+- State "DONE"       from "TODO"       [2026-01-02 Fri 19:54]
+- State "DONE"       from "TODO"       [2026-01-01 Thu 23:36]
+- State "DONE"       from "TODO"       [2026-01-01 Thu 23:36]
+- State "DONE"       from "TODO"       [2025-12-30 Tue 15:28]
+- State "DONE"       from "TODO"       [2025-10-06 Mon 18:11]
+
+  #+end_src
+
+Para aminorar esto, la siguiente linea hace que todas las lineas del logbook se guarden en un drawer del mismo nombre abajo de la tarea correspondiente.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-log-into-drawer t)
+#+end_src
 
 
 *** Atomic Chrome
@@ -1064,6 +1098,14 @@ Primero comenzamos exportando una variable de entorno esencial para el funcionam
 
 #+begin_src bash :tangle ../OhMyZsh/.zshrc
 export ZSH="$HOME/.oh-my-zsh"
+#+end_src
+
+Algunas configuraciones personales de mis dotfiles se encuentran en .profile, particularmente las relacionadas con variables de entorno apuntando a proyectos experimentales, o algunos alias rápidos que voy a usar durante una temporada determinada de mi vida pero que no valen la pena ser conservados. Es decir, configuraciones en general volátiles.
+
+Zsh por defecto no sourcea .profile, ya que el estándar es que tenga su propio archivo llamado .Zprofile. Pero, por gusto propio, siempre he sido más de trabajar en .profile
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+[[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
 #+end_src
 
 Luego definimos el tema de Oh My ZSH que voy a utilizar. A mi, particularmente, me gusta mucho el tema Agnoster.
@@ -1228,83 +1270,118 @@ source /usr/share/nvm/init-nvm.sh
 #+end_src
 
 
-* i3
+* Hyprland
 
-** Introducción
+Desde que conozco los gestores de ventanas y la gran ventaja de rapidez que ofrecen cuando les tomas el ritmo correcto (porque es inherentemente más rápido manejar la computadora con el teclado que con el mouse), no he logrado escapar de usar uno en niguna de las encarnaciones de mis estaciones de trabajo. Si eres lector de mi blog, puedes consultar un artículo al respecto, que de hecho es la [[https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/][primera publicación de mi blog]].
 
-Desde que conozco los gestores de ventanas y la gran ventaja que te dan de rapidez (porque inherentemente manejar la computadora con el teclado es más rápido que con el mouse), no he logrado escaparme de usar uno en ninguna de las encarnaciones de mis estaciones de trabajo. De hecho, si eres lector de mi blog, puedes observar que mi admiración por los gestores de ventanas llega a tal punto que [[https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/][mi primera publicación en mi blog]] tiene exactamente que ver con esto.
+A tal punto de que lo primero que suelo hacer cuando llega una nueva computadora a mis manos es reemplazar su entorno de escritorio por un gestor de ventanas. Esto es algo bastante fácil de realizar en Linux (que es el enfoque de estas dotfiles), y un poco más complicado de realizar en otros sistemas operativos, pero no imposible.
 
-Entonces, lo primero que suelo hacer cuando llega una nueva computadora a mis manos es buscar la forma de reemplazar su entorno de escritorio por un gestor de ventanas. En caso de computadoras con Linux (que es hacia donde se construye este proyecto), lo que busco siempre es generar mi configuración preferida para esto: un entorno de escritorio Plasma al cual le reemplazo KWin (el gestor de ventanas que utiliza generalmente Plasma) por i3. Esto me permite conservar todas las ventajas de ambos mundos: las herramientas e integraciones que te ofrece un entorno de escritorio completo y maduro como lo es KDE Plasma, junto con la sencilleza y agilidad de poder manejar tus ventanas con puros atajos de teclado, y ese ajuste automático entre ellas que te permite trabajar con varias ventanas sin casi necesidad de preocuparte por acomodarlas tú mismo.
+Previamente usaba un entorno de escritorio basado en KDE Plasma al cual le reemplazaba su gestor de ventanas nativo (KWin) por i3. Esto me permitía conservar todo lo mejor de ambos mundos: la integración y herramientas que te ofrece tener un entorno de escritorio completo con su respectivo ecosistema curado por alguna comunidad dedicada a eso; junto con la sencilleza y agilidad que provee el manejar tus ventanas con puros atajos de teclado y acomodados automáticos de un gestor de ventanas.
 
-Y eso es exactamente lo que vamos a explorar generar en este capítulo: mi configuración curada de i3 + Plasma con la que he estado trabajando cerca de un año y me ha demostrado funcionar de manera eficiente.
+Pero desde los cambios que ha hecho este ecosistema para [[https://blogs.kde.org/2025/11/26/going-all-in-on-a-wayland-future/][migrar a Wayland]], esta alternativa se ha vuelto cada vez más inviable en cada actualización que pasa de KDE, llegando a un punto en el que directamente no pude hacerlo funcionar. Esto se debe a la naturaleza del nuevo KDE Wayland, donde directamente es imposible (al menos a la fecha) de sustituir su gestor de ventanas nativo.
 
-** Sobre el orden lógico de este capítulo
-
-Por la complejidad de esta setup, creo que esta vez el enfoque de secciones de este capítulo cambiará; en los capítulos anteriores he estado intentando que cada sección se dedique a un archivo o, en caso necesario, a un propósito de la configuración. En este capítulo, para poder generar una mejor comprensión de la generación de esta configuración y sus enfoques, creo que se perderá un poco este enfoque en archivos, para cambiar a un enfoque por ideas.
-
-A qué me refiero con esto? Pues a que para construir esta configuración, voy a enfocarme en hacer que el estructurado de la misma vaya surgiendo de manera natural a como nuestro cerebro debe de irla entendiendo; esto va a tener la desventaja de que todas las secciones de este capítulo van a contribuir a varios archivos a la vez; por dar un ejemplo, probablemente el playbook sea solamente finalizado hasta que termine el capítulo, contrario a el resto de capítulos hasta el momento, donde es de hecho lo primero que hago y termino.
-
-Finalmente y para ponerme manos a la obra, pensándolo bien, creo que así es como todo el libro debió de haber sido generado, pues esta es la ventaja real del paradigma de Programación Letrada que estoy utilizando. "El humano es el ciudadano de primera clase, el código es el accidente que necesitamos para que el compilador construya el producto final."
+Esto me lleva a escribir esta nueva configuración: intentar abrazar de manera incómoda el avance del mundo y utilizar un gestor de ventanas moderno: Hyprland. Todavía tengo un gusto agridulce al respecto de esto, pero ni modo, vamos a comenzar.
 
 ** Dependencias
 
-Vamos a construir nuestra orden de compra para nuestros queridos repositorios de Linux, de las dependencias que vamos a necesitar para generar esta configuración.
+Como siempre, comenzaremos a construir nuestra orden de compra dirigida a nuestros queridos repositorios de Linux en donde vamos a especificar todas las dependencias requeridas para esta configuración.
 
-Primero que nada, decir que esta orden de compra es el primer paso de nuestro playbook para generar esta configuración, por lo que lo primero que vamos a llevar a nuestro playbook es lo que siempre hemos necesitado para generar playbooks: [[Cabecera común de un playbook][nuestra cabecera mínima de un playbook]].
+Y esta orden de compra es la primera parte del playbook asociado a esta configuración. Importaremos la cabecera mínima del playbook y un pequeño mensaje para dar claridad a lo que el playbook hace.
 
-#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh :noweb tangle
 <<cabecera_Minima_De_Un_Playbook>>
 
-echo -e "${GREEN}=== Installing i3 Window Manager ===${NC}"
+echo -e "${GREEN}=== Installing Hyprland Window Manager ===${NC}"
 
 #+end_src
 
-También insertamos el tradicional texto para aclarar que este es el playbook encargado de instalar la configuración de i3.
+Obviamente la primera de las dependencias a utilizar es el mismo hyprland.
+Luego, vamos a agregar algunas dependencias adicionales para ciertas partes de esta configuración:
 
-Ahora sí, vamos a generar las dependencias necesarias.
-
-Necesitamos, primero que nada y obviamente, i3. El nombre depende de la distro, como siempre, pero en el caso de Arch, el nombre es i3-wm
-
-#+begin_src bash :tangle ../playbooks/install-i3.sh
-install_package "i3-wm"
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
+install_package "hyprland"
 #+end_src
 
-También, obviamente, necesitamos el entorno de escritorio de KDE Plasma, más específicamente, lo necesitamos en su versión que utiliza X11. Esto porque, hasta donde mis conocimientos dan, y hasta la investigación que he podido conducir al respecto, esta es la única versión que permite reemplazar KWin; la nueva versión que utiliza Wayland no permite hacer esto. Esto implica que eventualmente deberé de cambiar mi entorno de escritorio, cuando KDE Plasma X11 sea descontinuado (que según [[https://blogs.kde.org/2025/11/26/going-all-in-on-a-wayland-future/][el comunicado oficial al respecto]], se espera que sea a finales de 2026). Pero por lo mientras, sigamos con esta solución.
+*** Hyprpaper
 
-Para la parte de KDE entonces, vamos a necesitar el paquete plasma-meta para el entorno de escritorio. Y el paquete plasma-x11-session para la sesión de X11 que necesitamos, que, vale la pena aclarar, que justamente por estos esfuerzos de KDE para descontinuarla, [[https://archlinux.org/news/plasma-640-will-need-manual-intervention-if-you-are-on-x11/][ya no es incluida en plasma-meta por default]].
+Es la herramienta nativa de Hyprland para ofrecer un fondo de pantalla. En el pasado he usado feh, pero en realidad me sorprendió gratamente esta herramienta, más adelante veremos que resulta tener una configurabilidad bastante bonita e interesante.
 
-#+begin_src bash :tangle ../playbooks/install-i3.sh
-install_package "plasma-meta"
-install_package "plasma-x11-session"
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
+install_package "hyprpaper"
 #+end_src
 
-Yo siempre he sido muy fan de las transparencias que te permiten ver detrás de ventanas, puedes ver en mi sección dedicada a [[Doom Emacs]] que de hecho las utilizo para poder ver detrás de la misma ventana de Emacs para ubicar ventanas detrás, las cuales generalmente utilizo para leer documentación mientras escribo código.
+*** Waybar
 
-[[./imgs/img1.png]]
+La herramienta predilecta de Hyprland para crear la barra de estatus en nuestro gestor de ventanas. Esta no es una herramienta creada por el equipo de Wayland, en su lugar es una herramienta con un uso bastante extendido entre varios gestores de ventanas creados en Wayland.
 
-En la imagen de arriba, por ejemplo, a la vez que estoy generando esta sección, tengo de fondo la documentación de org-mode para leer cómo incluir imágenes al archivo.
-
-Y para generar esto, necesitamos un [[https://en.wikipedia.org/wiki/Compositing_manager][compositor]] que nos proporcione los medios para generar este efecto, ya que i3 no es un Window Manager con compositor incluído. Mi compositor actual es picom.
-
-#+begin_src bash :tangle ../playbooks/install-i3.sh
-install_package "picom"
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
+install_package "waybar"
 #+end_src
 
-Luego, también necesitamos un programa que funcione como fondo de pantalla, ya que esto es una característica que suele incluirse junto con el gestor de ventanas de KWin. El más sencillo que conozco y que generalmente utilizo es feh
+*** Hyprshot
 
-#+begin_src bash :tangle ../playbooks/install-i3.sh
-install_package "feh"
+Para tomar capturas de pantalla de manera rápida. En realidad en este caso es un script en bash bastante sencillo que nos provee justamente esa funcionalidad de manera sencilla y sin complicaciones.
+
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
+install_package "hyprshot"
 #+end_src
 
-Como menú de aplicaciones, podría utilizar el menú que ya incluye i3, pero la verdad es que me inclino más a usar rofi con cierto tema que es mi favorito. Para instalar rofi, lo instalamos como un paquete de siempre.
+*** Portal
 
-#+begin_src bash :tangle ../playbooks/install-i3.sh
+Un portal es una herramienta que reside en el D-Bus y provee una serie de interfaces generalizadas por las cuales las aplicaciones pueden acceder a ciertos recursos del sistema de manera segura... esa es una paráfrasis de la [[https://flatpak.github.io/xdg-desktop-portal/docs/for-app-developers.html][definición formal de un Desktop Portal]].
+
+La necesidad de un Desktop Portal en entornos de escritorio basados en Wayland provee del hecho de que este protocolo es inherentemente seguro. En el sentido de que todas las aplicaciones bajo Wayland viven aisladas una de la otra. En X11 esto no pasaba y una aplicación podía revisar libremente las pulsaciones de teclado, movimientos del mouse y la imagen de otras aplicaciones sin problemas.
+
+Esto nos da la ventaja de la "seguridad" pero crea ciertos problemas para otras aplicaciones. ¿Cómo podría por ejemplo Discord compartir mi pantalla si la aplicación no teine acceso a esto? Pues la respuesta es justamente este servicio, el cual funciona como intermediario para esta y más acciones.
+
+Hyprland provee una implementación propia de un portal de este estilo, que, aunque no me termina de gustar, "da la piedra pal chingadazo".
+
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
+install_package "xdg-desktop-portal-hyprland"
+#+end_src
+
+*** Bluetui y Nmtui
+
+En mi configuración anterior de i3 + Plasma podía omitir varias utilidades relacionadas a configurar el sistema. Porque bueno, Plasma ya me proveía todas. Este ya no es el caso, porque la que es la mayor ventaja y la mayor desventaja (depende el humor del día) de usar un gestor de ventanas en su estado más puro es que llega "as-is". Es decir, te da muy pocas cosas.
+
+Entre las cosas que no te da, es una forma bonita de poder configurar tus conexiones inalámbricas, como el Bluetooth y el WiFi. Para eso uso estas dos herramientas, que me proporcionan de un front relativamente bonito (a mí me mama la estética de las TUIs, pero entiendo que no es para todos) para poder realizar estas configuraciones.
+
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
+install_package "bluetui"
+install_package "nmtui"
+#+end_src
+
+[[./imgs/hypr1.jpeg]]
+
+*** Keyring
+
+Un keyring es un servicio de almacenamiento de secretos al cual deberán acceder varias aplicaciones del sistema para recuperar cosas variadas. Es otra de las especificaciones de Freedesktop, al igual que el servicio anterior, y al igual que el servicio anterior, sus aplicaciones son muy variadas dentro del sistema Linux. Creo que la aplicación más notoria del keyring son las cookies relacionadas a la autenticación en páginas web de tus navegadores. Como keyring para esta configuración, voy a usar el provisto por Gnome, porque generalmente es la implementación más completa y estándar que podemos encontrar.
+
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
+install_package "gnome-keyring"
+#+end_src
+
+*** Hyprlock
+
+Gran parte de mi vida me consideré alguien bastante descuidado con ese tema de las pantallas de bloqueo en mis dispositivos electrónicos. Principalmente porque, gran parte de mi vida, mis dispositivos personales estuvieron en casa. Y toda la gente de mi casa respetaba mi privacidad. Esto es algo que ha cambiado recientemente conforme me he rodeado de gente menos respetuosa con esto -y con amigos bastante curiosos- con quienes he visto que nunca sobra una buena pantalla de bloqueo para cuando voy a dejar mi computadora sin supervisión. Para implementar esto, la solución más sencilla y no por eso mala en absoluto es Hyprlock.
+
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
+install_package "hyprlock"
+#+end_src
+
+Vamos a seguir trayendo cosas del supermercado (los repositorios de Arch), pero con esto es más que suficiente para ir avanzando a las configuraciones iniciales.
+
+*** Launcher de aplicaciones
+
+Como menú de aplicaciones, podría utilizar el menú que ya incluye hyprland, pero la verdad es que me inclino más a usar rofi con cierto tema que es mi favorito. Para instalar rofi, lo instalamos como un paquete de siempre.
+
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
 install_package "rofi"
 #+end_src
 
 Luego, el tema que utilizo para rofi (que de hecho me encanta) está incluido dentro del [[https://github.com/adi1090x/rofi][paquete de temas para rofi hechos por adi1090x]]. Estos temas están diseñados para funcionar como un ecosistema completo, así que si voy a usar uno, necesito instalarlos todos como un paquete completo.
 
-#+begin_src bash :tangle ../playbooks/install-i3.sh
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
 
 echo -e "\n${GREEN}Installing adi1090x's rofi themes...${NC}"
 if [ ! -d "$HOME/.config/rofi" ]; then
@@ -1320,319 +1397,672 @@ fi
 
 #+end_src
 
+*** Terminal
+
+Alacritty FTW
+
+#+begin_src bash :tangle ../playbooks/install-hyprland.sh
+install_package "alacritty"
+#+end_src
+
+TODO: Configuración de alacritty
+
 
 ** Configuraciones iniciales
 
-i3 es un gestor de ventanas que está especializado en utilizar exclusivamente el teclado. Se puede dar la rara ocasión en la cual necesitemos de usar el mouse, pero es muy rara y generalmente provocada por usar ventanas flotantes (muy rara vez). Por esto mismo, necesitamos un montón de atajos de teclado. El principio de diseño más importante de las configuraciones por default de i3 -o el que yo siento es el más importante- es que todos nacen de una tecla llamada Tecla Modificadora, referenciada como $mod de manera interna. Todos los atajos de teclado más importantes de este gestor utilizan de una u otra manera esta tecla, por lo que es importante definirla de manera temprana en nuestra configuración.
+Las configuraciones principales de este gestor de ventanas se concentran en un sólo archivo que vive en ~/.config/hypr/hyprland.conf. De todas formas, existe otra variedad de archivos para cada uno de los módulos que vamos a ir configurando para crear mi configuración final. Por lo que iré avanzando feature por feature -aclarando el archivo que estamos modificando- hasta terminar.
 
-La opción por default para Tecla Modificadora es la tecla Alt. Pero yo prefiero la tecla Windows porque es menos disruptiva con los atajos de teclado definidos dentro de aplicaciones.
+*** Configuración de los monitores
 
-#+begin_src conf :tangle ../i3/config
-set $mod Mod4
+Tengo que reconocer que configurar los monitores en Hyprland es algo que me sorprendió de lo sencillo y tan bien logrado que está. En otros gestores de ventanas, generalmente tendríamos que recurrir a scripts externos de xrandr que realicen automáticamente estas configuraciiones -y meternos con xrandr es algo que todavía me despierta sudando en noches frías-. Por lo que el enterarme de que en Hyprland, esto es algo que vamos a configurar desde su archivo de configuración, fue algo bastante agradable.
+
+Yo en mi laptop solamente tengo el potencial de dos pantallas: una en HDMI y la misma interna de la laptop. Entrando a [[https://wiki.hypr.land/Configuring/Monitors/][la sección de documentación de Hyprland que lo explica]] vemos que tenemos varios parámetros para configurar de un monitor. Partiendo de la generalidad de que todo se ve como:
+
+#+begin_src conf :eval never
+monitor = name, resolution, position, scale
 #+end_src
 
-Mod4 es el nombre interno con el cual se denomina a la tecla Windows. Con esta linea definimos que nuestra Tecla Modificadora será la de Windows.
+Quiero que el posible monitor en HDMI quede "arriba" de mi monitor principal y use la resolución preferida por el monitor, para que se vea lo mejor posible. Esto porque generalmente este slot lo suelo usar para dos cosas:
 
-Cada ventana del gestor tiene una barra superior la cual declara el nombre de la aplicación que está contenida por esta ventana. Para definir la fuente tipográfica de este texto utilizamos la siguiente instrucción:
+- Para mi monitor principal en casa, el cual está posicionado para que pueda trabajar de pie con él.
+- Para conectarme a proyectores de la escuela a exponer y dar clases. Generalmente todos proyectan hacia la mitad superior de una pared... cuando estoy sentado esto es arriba de mi nivel de vista.
 
-#+begin_src conf :tangle ../i3/config
-font pango:monospace 6
-#+end_src
+También cambio la escala utilizada por el monitor a algun número alrededor de 0.9 para que los elementos de la pantalla se encojan un poco y quepa más información. Y finalmente, mantengo comentada una sección para poder hacer que el monitor HDMI sea un espejo del monitor de mi laptop.
 
-Me quedo con la fuente por default de i3, la cual es pango::monospace
+Para mi monitor nativo y para otros que puedan venir, sólo me interesa la alta resolución.
 
-Desde este mismo archivo de configuración podemos llamar a nuestro fondo de pantalla, el cual, como vimos previamente en la sección de [[Dependencias][dependencias]] lo vamos a implementar usando feh.
+Quedando de esta manera:
 
-El fondo de pantalla no lo voy a instalar automáticamente con el playbook, porque al final del día esta opción de configuración es demasiado personal incluso para este trabajo que ya de por sí es muy personal. Pero para quien quiera saber cómo es, si nos metemos a la [[https://wiki.archlinux.org/title/Feh][página de la Arch Wiki sobre feh]] podemos observar que debemos correr el siguiente comando:
-
-#+begin_src bash :eval never
-feh --bg-scale /path/to/image.file
-#+end_src
-
-Una vez hecho esto, se crea un archivo en ~/.fehbg, el cual es un ejecutable al que podemos llamar cada vez que queramos invocar la carga del fondo de pantalla. Esto es justamente lo que vamos a integrar en la configuración de i3.
-
-#+begin_src conf :tangle ../i3/config
-exec --no-startup-id ~/.fehbg
-#+end_src
-
-El parámetro de --no-startup-id es para, citando a la [[https://i3wm.org/docs/userguide.html#exec][documentación oficial de i3]], deshabilitar el startup-notification support. Casi todas las veces en que ejecuto programas dentro de esta configuración utilizo este parámetro, honestamente porque esa feature no me interesa, y en casos de aplicaciones que no tienen este soporte esto puede llevar a que se cuelgue el cursor indefinidamente. (creo que sí me ha pasado).
-
-Una configuración que viene de la caja y que en realidad no uso tan concretamente es habilitar el [[https://wiki.archlinux.org/title/XDG_Autostart][XDG Autostart]], la verdad es que no me interesa tanto, pero tampoco me estorba.
-
-#+begin_src conf :tangle ../i3/config
-exec --no-startup-id dex --autostart --environment i3
-#+end_src
-
-Para las ventanas flotantes necesitamos definir una tecla llamada floating_modifier. Mientras mantengamos presionada esta tecla podemos mover las ventanas flotantes de lugar, de otra manera, estarán fijas en su lugar.
-
-#+begin_src conf :tangle ../i3/config
-floating_modifier $mod
-#+end_src
-
-De la misma forma, si queremos reorganizar las ventanas en azulejo con el mouse, debemos configurar tiling_drag. La verdad es que es una feature que casi nunca uso, así que dejo la configuración default.
-
-#+begin_src conf :tangle ../i3/config
-tiling_drag modifier titlebar
-#+end_src
-
-Con esta opción, podemos cambiar de lugar las ventanas en azulejo ya sea arrastrando desde la barra de título de la ventana como clickeando en cualquier lugar mientras sostenemos la Tecla Modificadora.
-
-Luego nos movemos a algo bastante esencial para este flujo de trabajo usando un gestor de ventanas: la terminal.
-
-Evidentemente se puede usar un gestor de ventanas y nunca tocar una terminal, de la misma forma en la que puedes usar Linux sin nunca tocar una terminal. Pero en ambos casos, yo considero que es restringirte de uno de los grandes dulces de este flujo de trabajo. La mayoría del tiempo tengo una terminal a lado para hacer prácticamente todo. Las pocas ocasiones en las que salgo de la terminal son para abrir mi navegador web o abrir Emacs, el resto de cosas las hago en la terminal. E i3 ya contempla este perfil de uso dándonos por default este atajo de teclado, con el que al presionar $mod+Return (Windows + Enter) podemos abrir una terminal. Incluso tiene un script personalizado el cual se decanta por algún emulador de terminal según las opciones que están disponibles en el sistema en este momento.
-
-#+begin_src conf :tangle ../i3/config
-bindsym $mod+Return exec i3-sensible-terminal
-#+end_src
-
-Este script escoge uno de los emuladores de terminal disponibles en la máquina en el momento de su ejecución, priorizando los que "tienen mejor accesibilidad" (a gusto del mantenedor del script). Aunque se puede overridear fijando la variable de entorno $TERMINAL a la terminal de nuestro gusto. Esto es lo que termino haciendo siempre para poder usar Alacritty.
-
-Luego tenemos el keybinding para cerrar la ventana que tengamos focuseada en el momento. Este keybinding es esencial, ya que yo siempre deshabilito las barras superiores de las ventanas donde tenemos las opciones de minimizar, maximizar y cerrar, para tener más espacio y porque en realidad sólamente podemos hacer una de esas tres opciones cuando estamos bajo un gestor de ventanas como i3wm.
-
-#+begin_src conf :tangle ../i3/config
-bindsym $mod+Shift+q kill
-#+end_src
-
-Otra opción bastante esencial es la de abrir un launcher de aplicaciones, aquí es donde reclutamos Rofi. En la sección de [[Dependencias]] instalamos una serie de temas para Rofi, para poder ejecutar el tema de mi predilección (el tema Tipo 1), el repositorio mismo nos proporciona launchers ejecutables bajo la ruta ~/.config/rofi/launchers/(Tipo del launcher)/launcher.sh. Entonces ese es el ejecutable que vamos a llamar. Lo bindeamos al atajo por default.
-
-#+begin_src conf :tangle ../i3/config
-bindsym $mod+d exec --no-startup-id ~/.config/rofi/launchers/type-1/launcher.sh
-#+end_src
-
-Los atajos por default para moverse entre ventanas utilizan un esquema Vim-like, pero en lugar de utilizar las teclas HJKL, se utilizan las teclas JKL;. La decisión de diseño detrás de esta decisión es interesante, de hecho la trato en [[https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/#bindings-de-vim-a-medias][un artículo de mi blog]] pero justamente en este artículo también aclaro que no es una decisión de diseño que yo comparta. Principalmente por tener una estandarización de atajos de VIM a lo largo de mi sistema, es por lo que revierto esto al viejo esquema HJKL.
-
-#+begin_src conf :tangle ../i3/config
-bindsym $mod+h focus left
-bindsym $mod+j focus down
-bindsym $mod+k focus up
-bindsym $mod+l focus right
-
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
-
-bindsym $mod+Shift+h move left
-bindsym $mod+Shift+j move down
-bindsym $mod+Shift+k move up
-bindsym $mod+Shift+l move right
-
-bindsym $mod+Shift+Left move left
-bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
-bindsym $mod+Shift+Right move right
-#+end_src
-
-De una vez también integro estos mismos controles pero con las flechas (por si acaso).
-
-Al invocar una nueva ventana en i3wm, tenemos la capacidad de especificarle al gestor si queremos que nazca al lado derecho de la ventana que teníamos enfocada en ese momento (Horizontal split) o debajo de la misma (Vertical split). Para hacer esto, primero debemos de usar el atajo correspondiente. Pero aquí nos topamos con un problema directamente relacionado con mi declaración anterior.
-
-Resulta que en las configuraciones por default, para hacer un Horizontal split el atajo es $mod+h. Pero debido a mi decisión respecto a los controles (usar HJKL) este atajo ahora está ocupado, por lo que lo tengo que cambiar a $mod+o
-
-#+begin_src conf :tangle ../i3/config
-
-bindsym $mod+o split h
-bindsym $mod+v split v
+#+begin_src conf :tangle ../hypr/hyprland.conf
+monitor= HDMI-A-1,preferred,auto-up,0.9 #,mirror, eDP-1
+monitor=,highres,auto,auto
 
 #+end_src
 
-Luego configuramos el toggle de pantalla completa.
+*** Defaults
 
-#+begin_src conf :tangle ../i3/config
-bindsym $mod+f fullscreen toggle
+En teoría en esta sección debería de configurar varios defaults. Pero tengo la sospecha de que me perdí de esto por no tener un sistema limpio. Por ahora tengo esto, pero probablemente cuando regrese con una configuración limpia tendré que revisar esta sección.
+
+#+begin_src conf :tangle ../hypr/hyprland.conf
+$terminal = alacritty
+$menu = ~/.config/rofi/launchers/type-1/launcher.sh
+
 #+end_src
 
-Y los atajos para cambiar el modo de layout que queramos usar en el momento, teniendo tres disponibles:
+*** Wallpaper
 
-- Stacked
+Aquí empezamos con aquellas aplicaciones que deberían de arrancar al iniciar el entorno. Para esto, usamos el comando exec-once.
 
-  [[./imgs/img2.png]]
+Comenzamos con el fondo de pantalla, que como de costumbre en gestores de ventanas, es un programa que ejecutamos al inicio.
 
-- Tabbed
-
-  [[./imgs/img3.png]]
-
-- Y la opción normal de siempre (split)
-
-  [[./imgs/img4.png]]
-
-#+begin_src conf :tangle ../i3/config
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+#+begin_src conf :tangle ../hypr/hyprland.conf
+exec-once = hyprpaper
 #+end_src
 
-Luego configuramos las gaps, que son ese espacio pequeño entre ventana y ventana. Quiero que este espacio sea lo más pequeño posible, pero sin juntar ventana con ventana porque se vería raro. Ya de paso también, con la linea de for_window elimino todos los títulos de ventanas para tener más espacio.
+Y ya hablando de fondos de pantalla, podemos asomarnos un poco al archivo de configuración correspondiente para hyprpaper. Este vive en ~/.config/hypr/hyprpaper.conf. Y es que de hecho es un archivo bastante simple que se lee bastante sencillo
 
-#+begin_src conf :tangle ../i3/config
-for_window [class="^.*"] border pixel 0
-gaps inner 5
-gaps outer 5
+#+begin_src conf :tangle ../hypr/hyprpaper.conf
+wallpaper {
+    monitor =
+    path = ~/PersonalDotFiles/wallpapers/wallpaperLaptop.jpg
+    fit_mode = fill
+}
 #+end_src
 
-Luego tenemos otros keybindings miscelaneos que vienen por default. La verdad es que varios son muy autodescriptivos y varios otros no tanto pero lo son cuando tomas el flujo de trabajo. Lo que sí, es que la mayoría son los default, por lo que en realidad una cheatsheet de keybindings de i3 los pueden explicar bastante bien.
+La herramienta tiene mucho potencial para crear cosas bastante fancys como wallpapers que se van rotando, sets de estos para cada uno de los monitores que tengas y ajá... Yo por mi parte soy una persona bastante simple y solamente quiero que mi fondo de pantalla de siempre se vea en todos mis monitores.
 
-#+begin_src conf :tangle ../i3/config
-bindsym $mod+Shift+space floating toggle
+*** Waybar
 
-bindsym $mod+space focus mode_toggle
+Esta es la barra de estado por default de Hyprland y la que utilizo porque en realidad no necesito mucho más. Siendo honestos, mantengo la configuración por default excepto por alguna configuración extremadamente puntual que ni siquiera podría recordar que hice, así que voy a romper un poco el paradigma letrado de este y pegar directamente la configuración. Si algún día realizo algún cambio a los defaults que merezca ser señalado, modificaré esta sección.
 
-bindsym $mod+a focus parent
+#+begin_src jsonc :tangle ../waybar/config.jsonc
+// -*- mode: jsonc -*-
+{
+    // "layer": "top", // Waybar at top layer
+    // "position": "bottom", // Waybar position (top|bottom|left|right)
+    "height": 20, // Waybar height (to be removed for auto height)
+    // "width": 1280, // Waybar width
+    "spacing": 4, // Gaps between modules (4px)
+    // Choose the order of the modules
+    "modules-left": [
+        "hyprland/workspaces",
+        "hyprland/submap",
+        "sway/scratchpad",
+        "custom/media"
+    ],
+    "modules-center": [
+        "sway/window"
+    ],
+    "modules-right": [
+        "mpd",
+        "idle_inhibitor",
+        "pulseaudio",
+        "network",
+        "power-profiles-daemon",
+        "cpu",
+        "memory",
+        "temperature",
+        "backlight",
+        "keyboard-state",
+        "sway/language",
+        "battery",
+        "battery#bat2",
+        "clock",
+        "tray",
+        "custom/power"
+    ],
+    // Modules configuration
+    // "hyprland/workspaces": {
+    //     "disable-scroll": true,
+    //     "all-outputs": true,
+    //     "warp-on-scroll": false,
+    //     "format": "{name}: {icon}",
+    //     "format-icons": {
+    //         "1": "",
+    //         "2": "",
+    //         "3": "",
+    //         "4": "",
+    //         "5": "",
+    //         "urgent": "",
+    //         "focused": "",
+    //         "default": ""
+    //     }
+    // },
+    "keyboard-state": {
+        "numlock": true,
+        "capslock": true,
+        "format": "{name} {icon}",
+        "format-icons": {
+            "locked": "",
+            "unlocked": ""
+        }
+    },
+    "hyprland/submap": {
+        "format": "<span style=\"italic\">{}</span>"
+    },
+    "sway/scratchpad": {
+        "format": "{icon} {count}",
+        "show-empty": false,
+        "format-icons": ["", ""],
+        "tooltip": true,
+        "tooltip-format": "{app}: {title}"
+    },
+    "mpd": {
+        "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
+        "format-disconnected": "Disconnected ",
+        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+        "unknown-tag": "N/A",
+        "interval": 5,
+        "consume-icons": {
+            "on": " "
+        },
+        "random-icons": {
+            "off": "<span color=\"#f53c3c\"></span> ",
+            "on": " "
+        },
+        "repeat-icons": {
+            "on": " "
+        },
+        "single-icons": {
+            "on": "1 "
+        },
+        "state-icons": {
+            "paused": "",
+            "playing": ""
+        },
+        "tooltip-format": "MPD (connected)",
+        "tooltip-format-disconnected": "MPD (disconnected)"
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 10,
+        // "icons": {
+        //   "blueman": "bluetooth",
+        //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+        // }
+    },
+    "clock": {
+        // "timezone": "America/New_York",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": "{:%Y-%m-%d}"
+    },
+    "cpu": {
+        "format": "{usage}% ",
+        "tooltip": false
+    },
+    "memory": {
+        "format": "{}% "
+    },
+    "temperature": {
+        // "thermal-zone": 2,
+        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "critical-threshold": 80,
+        // "format-critical": "{temperatureC}°C {icon}",
+        "format": "{temperatureC}°C {icon}",
+        "format-icons": ["", "", ""]
+    },
+    "backlight": {
+        // "device": "acpi_video1",
+        "format": "{percent}% {icon}",
+        "format-icons": ["", "", "", "", "", "", "", "", ""]
+    },
+    "battery": {
+        "states": {
+            // "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% {icon}",
+        "format-full": "{capacity}% {icon}",
+        "format-charging": "{capacity}% ",
+        "format-plugged": "{capacity}% ",
+        "format-alt": "{time} {icon}",
+        // "format-good": "", // An empty format will hide the module
+        // "format-full": "",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "battery#bat2": {
+        "bat": "BAT2"
+    },
+    "power-profiles-daemon": {
+      "format": "{icon}",
+      "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+      "tooltip": true,
+      "format-icons": {
+        "default": "",
+        "performance": "",
+        "balanced": "",
+        "power-saver": ""
+      }
+    },
+    "network": {
+        // "interface": "wlp2*", // (Optional) To force the use of this interface
+        "format-wifi": "{essid} ({signalStrength}%) ",
+        "format-ethernet": "{ipaddr}/{cidr} ",
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+    "pulseaudio": {
+        // "scroll-step": 1, // %, can be a float
+        "format": "{volume}% {icon} {format_source}",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+    "custom/media": {
+        "format": "{icon} {text}",
+        "return-type": "json",
+        "max-length": 40,
+        "format-icons": {
+            "spotify": "",
+            "default": "🎜"
+        },
+        "escape": true,
+        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
+        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+    },
+    "custom/power": {
+        "format" : "⏻ ",
+		"tooltip": false,
+		"menu": "on-click",
+		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
+		"menu-actions": {
+			"shutdown": "shutdown",
+			"reboot": "reboot",
+			"suspend": "systemctl suspend",
+			"hibernate": "systemctl hibernate"
+		}
+    }
+}
+#+end_src
 
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
+Esta herramienta además de la configuración requiere también una hoja de estilos, la cual igual dejaré por el momento por default.
 
-bindsym $mod+1 workspace number $ws1
-bindsym $mod+2 workspace number $ws2
-bindsym $mod+3 workspace number $ws3
-bindsym $mod+4 workspace number $ws4
-bindsym $mod+5 workspace number $ws5
-bindsym $mod+6 workspace number $ws6
-bindsym $mod+7 workspace number $ws7
-bindsym $mod+8 workspace number $ws8
-bindsym $mod+9 workspace number $ws9
-
-bindsym $mod+Shift+1 move container to workspace number $ws1
-bindsym $mod+Shift+2 move container to workspace number $ws2
-bindsym $mod+Shift+3 move container to workspace number $ws3
-bindsym $mod+Shift+4 move container to workspace number $ws4
-bindsym $mod+Shift+5 move container to workspace number $ws5
-bindsym $mod+Shift+6 move container to workspace number $ws6
-bindsym $mod+Shift+7 move container to workspace number $ws7
-bindsym $mod+Shift+8 move container to workspace number $ws8
-bindsym $mod+Shift+9 move container to workspace number $ws9
-bindsym $mod+Shift+c reload
-bindsym $mod+Shift+r restart
-mode "resize" {
-        bindsym h resize shrink width 10 px or 10 ppt
-        bindsym j resize grow height 10 px or 10 ppt
-        bindsym k resize shrink height 10 px or 10 ppt
-        bindsym l resize grow width 10 px or 10 ppt
-
-        bindsym Left resize shrink width 10 px or 10 ppt
-        bindsym Down resize grow height 10 px or 10 ppt
-        bindsym Up resize shrink height 10 px or 10 ppt
-        bindsym Right resize grow width 10 px or 10 ppt
-
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-        bindsym $mod+r mode "default"
+#+begin_src css :tangle ../waybar/style.css
+\* {
+    /* `otf-font-awesome` is required to be installed for icons */
+    font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 13px;
 }
 
-bindsym $mod+r mode "resize"
+window#waybar {
+    background-color: rgba(43, 48, 59, 0.5);
+    border-bottom: 3px solid rgba(100, 114, 125, 0.5);
+    color: #ffffff;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+/*
+window#waybar.empty {
+    background-color: transparent;
+}
+window#waybar.solo {
+    background-color: #FFFFFF;
+}
+*/
+
+window#waybar.termite {
+    background-color: #3F3F3F;
+}
+
+window#waybar.chromium {
+    background-color: #000000;
+    border: none;
+}
+
+button {
+    /* Use box-shadow instead of border so the text isn't offset */
+    box-shadow: inset 0 -3px transparent;
+    /* Avoid rounded borders under each button name */
+    border: none;
+    border-radius: 0;
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+button:hover {
+    background: inherit;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+/* you can set a style on hover for any module like this */
+#pulseaudio:hover {
+    background-color: #a37800;
+}
+
+#workspaces button {
+    padding: 0 5px;
+    background-color: transparent;
+    color: #ffffff;
+}
+
+#workspaces button:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#workspaces button.focused {
+    background-color: #64727D;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+#workspaces button.urgent {
+    background-color: #eb4d4b;
+}
+
+#mode {
+    background-color: #64727D;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#custom-media,
+#tray,
+#mode,
+#idle_inhibitor,
+#scratchpad,
+#power-profiles-daemon,
+#mpd {
+    padding: 0 10px;
+    color: #ffffff;
+}
+
+#window,
+#workspaces {
+    margin: 0 4px;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces {
+    margin-right: 0;
+}
+
+#clock {
+    background-color: #64727D;
+}
+
+#battery {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+#battery.charging, #battery.plugged {
+    color: #ffffff;
+    background-color: #26A65B;
+}
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: #000000;
+    }
+}
+
+/* Using steps() instead of linear as a timing function to limit cpu usage */
+#battery.critical:not(.charging) {
+    background-color: #f53c3c;
+    color: #ffffff;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+#power-profiles-daemon {
+    padding-right: 15px;
+}
+
+#power-profiles-daemon.performance {
+    background-color: #f53c3c;
+    color: #ffffff;
+}
+
+#power-profiles-daemon.balanced {
+    background-color: #2980b9;
+    color: #ffffff;
+}
+
+#power-profiles-daemon.power-saver {
+    background-color: #2ecc71;
+    color: #000000;
+}
+
+label:focus {
+    background-color: #000000;
+}
+
+#cpu {
+    background-color: #2ecc71;
+    color: #000000;
+}
+
+#memory {
+    background-color: #9b59b6;
+}
+
+#disk {
+    background-color: #964B00;
+}
+
+#backlight {
+    background-color: #90b1b1;
+}
+
+#network {
+    background-color: #2980b9;
+}
+
+#network.disconnected {
+    background-color: #f53c3c;
+}
+
+#pulseaudio {
+    background-color: #f1c40f;
+    color: #000000;
+}
+
+#pulseaudio.muted {
+    background-color: #90b1b1;
+    color: #2a5c45;
+}
+
+#wireplumber {
+    background-color: #fff0f5;
+    color: #000000;
+}
+
+#wireplumber.muted {
+    background-color: #f53c3c;
+}
+
+#custom-media {
+    background-color: #66cc99;
+    color: #2a5c45;
+    min-width: 100px;
+}
+
+#custom-media.custom-spotify {
+    background-color: #66cc99;
+}
+
+#custom-media.custom-vlc {
+    background-color: #ffa000;
+}
+
+#temperature {
+    background-color: #f0932b;
+}
+
+#temperature.critical {
+    background-color: #eb4d4b;
+}
+
+#tray {
+    background-color: #2980b9;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: #eb4d4b;
+}
+
+#idle_inhibitor {
+    background-color: #2d3436;
+}
+
+#idle_inhibitor.activated {
+    background-color: #ecf0f1;
+    color: #2d3436;
+}
+
+#mpd {
+    background-color: #66cc99;
+    color: #2a5c45;
+}
+
+#mpd.disconnected {
+    background-color: #f53c3c;
+}
+
+#mpd.stopped {
+    background-color: #90b1b1;
+}
+
+#mpd.paused {
+    background-color: #51a37a;
+}
+
+#language {
+    background: #00b093;
+    color: #740864;
+    padding: 0 5px;
+    margin: 0 5px;
+    min-width: 16px;
+}
+
+#keyboard-state {
+    background: #97e1ad;
+    color: #000000;
+    padding: 0 0px;
+    margin: 0 5px;
+    min-width: 16px;
+}
+
+#keyboard-state > label {
+    padding: 0 5px;
+}
+
+#keyboard-state > label.locked {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#scratchpad {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#scratchpad.empty {
+	background-color: transparent;
+}
+
+#privacy {
+    padding: 0;
+}
+
+#privacy-item {
+    padding: 0 5px;
+    color: white;
+}
+
+#privacy-item.screenshare {
+    background-color: #cf5700;
+}
+
+#privacy-item.audio-in {
+    background-color: #1ca000;
+}
+
+#privacy-item.audio-out {
+    background-color: #0069d4;
+}
+
 #+end_src
 
-** Integración con Plasma
+Y finalmente agregamos su entrada de exec-once al archivo de configuración principal de Hyprland:
 
-Una vez formadas las configuraciones iniciales necesarias para que i3 sea mínimamente funcional, podemos empezar a formar la siguiente parte de mi entorno de escritorio: su integración con KDE Plasma y todas sus aplicaciones. Para esto voy a seguir la [[https://github.com/heckelson/i3-and-kde-plasma][guía de Alexander Hecke]] respecto a este tema, junto con algunas secciones específicas de [[https://wikisandbox.kde.org/Tutorials/Using_Other_Window_Managers_with_Plasma][la documentación oficial de KDE al respecto]].
-
-*** Configuraciones en i3wm
-
-Aprovechando que tenemos nuestro archivo de configuración abierto de la sección anterior, vamos a agregar aquí algunas de las configuraciones necesarias para este setup. Al estilo de esta obra, las vamos explicando detenidamente.
-
-Primero vamos a buscar con una expresión regular algunas ventanas que carga Plasma y que nosotros no necesitamos. Dentro de esta categoría se incluye la ventana que usa Plasma para cargar el fondo de pantalla. Debido a que no necesitamos esto porque estamos cargando el fondo de pantalla con feh, nos interesa matarla.
-
-#+begin_src conf :tangle ../i3/config
-for_window [title="Desktop @ QRect.*"] kill, floating enable, border none
+#+begin_src conf :tangle ../hypr/hyprland.conf
+exec-once = waybar
 #+end_src
 
-Como mecanismo de "fallback" de esta regla, si es que i3 falla al intentar matar estas ventanas, lo que puede hacer es hacerlas flotantes y deshabilitarles el borde.
+*** Variables de entorno
 
-Luego, en complemento a lo anterior, vamos a matar también la ventana que usa Plasma para dibujar el escritorio (iconos, efectos, etc). Esta ventana obviamente es completamente incompatible con i3wm.
+Necesitamos gestionar la creación de algunas variables de entorno que serán necesarias para que los programas bajo esta configuración puedan funcionar correctamente. Para hacer esto, Hyprland nos proporciona su utilidad env la cual crea las variables de entorno directamente en el proceso de Hyprland, y todos los procesos hijos las heredarán sin problemas.
 
-#+begin_src conf :tangle ../i3/config
-exec --no-startup-id wmctrl -c Plasma
+Pero también hay que considerar la sutileza de que necesitamos también crear variables de entorno en procesos que no serán hijos del proceso Hyprland, tales como los creados por Systemd y el D-Bus. En este caso, necesitamos también una utilidad que deberá pasarle estas variables de entorno (un shot cada que diga variables de entorno) a ambos procesos para que sus hijos también las tengan. Esto se logra con:
+
+#+begin_src conf :tangle ../hypr/hyprland.conf
+exec-once=dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 #+end_src
 
-Cargamos el compositor que instalamos en la sección de [[Dependencias]]. Le vamos a dar algunos parámetros relacionados con usar sombras, transparencia y animaciones.
+Esto lo que hace es activar dicha utilidad (dbus-update-activation-environment) y decirle que tome las variables WAYLAND_DISPLAY y XDG_CURRENT_DESKTOP y se las pase tanto a D-Bus como a Systemd para que los procesos hijos de estos las tengan también.
 
-#+begin_src conf :tangle ../i3/config
-exec --no-startup-id wmctrl -c Plasma
+Ya de paso no sobra explicar qué hace cada una de estas dos variables:
+
+- La variable WAYLAND_DISPLAY es la que le define a las aplicaciones que estamos usando Wayland y no X11, y que el socket al que deben de enviar los eventos es el dado. Por ejemplo, suele tomar el valor de wayland-1 o wayland-0 porque no suelo tener otra sesión de Wayland en mi computadora.
+- La variable XDG_CURRENT_DESKTOP dicta el tipo de escritorio que se está utilizando en estos momentos. De aquí se agarran los procesos para determinar tanto el [[Portal]] como ciertas preferencias y estéticas.
+
+Ambas son creadas por Hyprland al iniciar, así que esta linea en realidad lo que hace no es declararlas si no pasárselas a Systemd y D-Bus.
+
+Las que si vamos a crear son:
+
+#+begin_src conf :tangle ../hypr/hyprland.conf
+env = XCURSOR_SIZE,24
+env = HYPRCURSOR_SIZE,24
 #+end_src
 
-Finalmente, hay algunas ventanas que nos interesa que i3wm maneje como flotantes, particularmente las relacionadas con notificaciones, dropdown windows, etc. Con estas reglas le definimos a i3wm cuáles son.
-
-#+begin_src conf :tangle ../i3/config
-for_window [class="yakuake"] floating enable;
-for_window [class="lattedock"] floating enable;
-for_window [class="plasmashell"] floating enable;
-for_window [class="Kmix"] floating enable; border none
-for_window [class="kruler"] floating enable; border none
-for_window [class="Plasma"] floating enable; border none
-for_window [class="Klipper"] floating enable; border none
-for_window [class="krunner"] floating enable; border none
-for_window [class="Plasmoidviewer"] floating enable; border none
-for_window [title="plasma-desktop"] floating enable; border none
-for_window [class="plasmashell" window_type="notification"] floating enable, border none, move position 1450px 20px
-no_focus [class="plasmashell" window_type="notification"]
-
-for_window [window_role="pop-up"] floating enable
-for_window [window_role="bubble"] floating enable
-for_window [window_role="task_dialog"] floating enable
-for_window [window_role="Preferences"] floating enable
-for_window [window_role="About"] floating enable
-for_window [window_type="dialog"] floating enable
-for_window [window_type="menu"] floating enable
-for_window [instance="__scratchpad"] floating enable
-#+end_src
-
-Con esto, ahora sí terminamos de configurar el lado de i3wm.
-
-Regresamos brevemente al playbook para crear el enlace simbólico necesario para que estas configuraciones que creamos carguen en i3wm.
-
-#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
-create_symlink "$REPO_ROOT/i3/config" ~/.config/i3/config
-#+end_src
-
-
-*** Configuración del sistema.
-
-Lo que queremos hacer para este flujo de trabajo es deshabilitar el servicio que activa Kwin, el gestor de ventanas nativo de Plasma que queremos anular y reemplazar con i3wm. En lugar de este servicio, vamos a escribir el nuestro para activar i3wm.
-
-#+begin_src text :tangle ../i3/plasma-i3.service
-[Install]
-WantedBy=plasma-workspace.target
-
-[Unit]
-Description=Plasma Custom Window Manager
-Before=plasma-workspace.target
-
-[Service]
-ExecStart=/usr/bin/i3
-Slice=session.slice
-Restart=on-failure
-#+end_src
-
-Una vez escrito, volvemos al playbook para configurar las acciones necesarias relacionadas con este paso.
-
-Creamos el enlace simbólico necesario para llevar nuestro nuevo servicio a la carpeta de servicios correspondiente a nuestro usuario. Es importante aclarar que estos cambios relacionados a servicios son a nivel de usuario, por lo que no necesitamos permisos de root y tampoco estamos haciendo cambios a nivel de sistema.
-
-#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
-create_symlink "$REPO_ROOT/i3/plasma-i3.service" ~/.config/systemd/user/plasma-i3.service
-#+end_src
-
-Y "enmascaramos" es decir, deshabilitamos, el servicio que invoca Kwin.
-
-#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
-systemctl mask plasma-kwin_x11.service --user
-#+end_src
-
-Para finalmente habilitar nuestro servicio propio.
-
-#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
-systemctl enable plasma-i3 --user
-#+end_src
-
-Con esto terminamos de configurar i3wm + Plasma, finalizando estos pasos tenemos completo el entorno de escritorio que utilizo y podemos comenzar a trabajar.
-
+Porque con estas vamos a determinar el tamaño del cursor. Usamos dos porque XCURSOR_SIZE es la utilizada por aplicaciones que tengan que correr bajo Xwayland (la capa de compatibilidad de Wayland con X11) para funcionar.
 
 * Conclusión
 

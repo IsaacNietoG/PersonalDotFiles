@@ -1,0 +1,4 @@
+Enlaces simbólicos:
+
+night-mode.sh en ~/.local/bin
+.service y .timer en ~/.config/systemd/user

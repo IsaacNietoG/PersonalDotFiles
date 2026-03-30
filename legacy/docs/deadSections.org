@@ -1,0 +1,411 @@
+#+title: Las dotfiles que no se quedaron
+#+author: mrtaichi
+
+* Introducción
+
+En este documento -igual escrito bajo programación letrada- voy a colocar las secciones letradas jubiladas de mis dotfiles. Me sirve para tomarlas como referencia de deciones pasadas, tal vez en la posibilidad de que ciertas ideas o fragmentos de código antiguos puedan resultarme como inspiración para nuevas partes de mi flujo de trabajo; a lo mejor incluso resurrecciones imprevistas, o simplemente para poder pasearme por aquí ocasionalmente a pasear nostálgicamente sobre iteraciones previas de mi flujo de trabajo.
+
+* i3
+
+** Introducción
+
+Desde que conozco los gestores de ventanas y la gran ventaja que te dan de rapidez (porque inherentemente manejar la computadora con el teclado es más rápido que con el mouse), no he logrado escaparme de usar uno en ninguna de las encarnaciones de mis estaciones de trabajo. De hecho, si eres lector de mi blog, puedes observar que mi admiración por los gestores de ventanas llega a tal punto que [[https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/][mi primera publicación en mi blog]] tiene exactamente que ver con esto.
+
+Entonces, lo primero que suelo hacer cuando llega una nueva computadora a mis manos es buscar la forma de reemplazar su entorno de escritorio por un gestor de ventanas. En caso de computadoras con Linux (que es hacia donde se construye este proyecto), lo que busco siempre es generar mi configuración preferida para esto: un entorno de escritorio Plasma al cual le reemplazo KWin (el gestor de ventanas que utiliza generalmente Plasma) por i3. Esto me permite conservar todas las ventajas de ambos mundos: las herramientas e integraciones que te ofrece un entorno de escritorio completo y maduro como lo es KDE Plasma, junto con la sencilleza y agilidad de poder manejar tus ventanas con puros atajos de teclado, y ese ajuste automático entre ellas que te permite trabajar con varias ventanas sin casi necesidad de preocuparte por acomodarlas tú mismo.
+
+Y eso es exactamente lo que vamos a explorar generar en este capítulo: mi configuración curada de i3 + Plasma con la que he estado trabajando cerca de un año y me ha demostrado funcionar de manera eficiente.
+
+** Sobre el orden lógico de este capítulo
+
+Por la complejidad de esta setup, creo que esta vez el enfoque de secciones de este capítulo cambiará; en los capítulos anteriores he estado intentando que cada sección se dedique a un archivo o, en caso necesario, a un propósito de la configuración. En este capítulo, para poder generar una mejor comprensión de la generación de esta configuración y sus enfoques, creo que se perderá un poco este enfoque en archivos, para cambiar a un enfoque por ideas.
+
+A qué me refiero con esto? Pues a que para construir esta configuración, voy a enfocarme en hacer que el estructurado de la misma vaya surgiendo de manera natural a como nuestro cerebro debe de irla entendiendo; esto va a tener la desventaja de que todas las secciones de este capítulo van a contribuir a varios archivos a la vez; por dar un ejemplo, probablemente el playbook sea solamente finalizado hasta que termine el capítulo, contrario a el resto de capítulos hasta el momento, donde es de hecho lo primero que hago y termino.
+
+Finalmente y para ponerme manos a la obra, pensándolo bien, creo que así es como todo el libro debió de haber sido generado, pues esta es la ventaja real del paradigma de Programación Letrada que estoy utilizando. "El humano es el ciudadano de primera clase, el código es el accidente que necesitamos para que el compilador construya el producto final."
+
+** Dependencias
+
+Vamos a construir nuestra orden de compra para nuestros queridos repositorios de Linux, de las dependencias que vamos a necesitar para generar esta configuración.
+
+Primero que nada, decir que esta orden de compra es el primer paso de nuestro playbook para generar esta configuración, por lo que lo primero que vamos a llevar a nuestro playbook es lo que siempre hemos necesitado para generar playbooks: [[Cabecera común de un playbook][nuestra cabecera mínima de un playbook]].
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
+<<cabecera_Minima_De_Un_Playbook>>
+
+echo -e "${GREEN}=== Installing i3 Window Manager ===${NC}"
+
+#+end_src
+
+También insertamos el tradicional texto para aclarar que este es el playbook encargado de instalar la configuración de i3.
+
+Ahora sí, vamos a generar las dependencias necesarias.
+
+Necesitamos, primero que nada y obviamente, i3. El nombre depende de la distro, como siempre, pero en el caso de Arch, el nombre es i3-wm
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "i3-wm"
+#+end_src
+
+También, obviamente, necesitamos el entorno de escritorio de KDE Plasma, más específicamente, lo necesitamos en su versión que utiliza X11. Esto porque, hasta donde mis conocimientos dan, y hasta la investigación que he podido conducir al respecto, esta es la única versión que permite reemplazar KWin; la nueva versión que utiliza Wayland no permite hacer esto. Esto implica que eventualmente deberé de cambiar mi entorno de escritorio, cuando KDE Plasma X11 sea descontinuado (que según [[https://blogs.kde.org/2025/11/26/going-all-in-on-a-wayland-future/][el comunicado oficial al respecto]], se espera que sea a finales de 2026). Pero por lo mientras, sigamos con esta solución.
+
+Para la parte de KDE entonces, vamos a necesitar el paquete plasma-meta para el entorno de escritorio. Y el paquete plasma-x11-session para la sesión de X11 que necesitamos, que, vale la pena aclarar, que justamente por estos esfuerzos de KDE para descontinuarla, [[https://archlinux.org/news/plasma-640-will-need-manual-intervention-if-you-are-on-x11/][ya no es incluida en plasma-meta por default]].
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "plasma-meta"
+install_package "plasma-x11-session"
+#+end_src
+
+Yo siempre he sido muy fan de las transparencias que te permiten ver detrás de ventanas, puedes ver en mi sección dedicada a [[Doom Emacs]] que de hecho las utilizo para poder ver detrás de la misma ventana de Emacs para ubicar ventanas detrás, las cuales generalmente utilizo para leer documentación mientras escribo código.
+
+[[./imgs/img1.png]]
+
+En la imagen de arriba, por ejemplo, a la vez que estoy generando esta sección, tengo de fondo la documentación de org-mode para leer cómo incluir imágenes al archivo.
+
+Y para generar esto, necesitamos un [[https://en.wikipedia.org/wiki/Compositing_manager][compositor]] que nos proporcione los medios para generar este efecto, ya que i3 no es un Window Manager con compositor incluído. Mi compositor actual es picom.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "picom"
+#+end_src
+
+Luego, también necesitamos un programa que funcione como fondo de pantalla, ya que esto es una característica que suele incluirse junto con el gestor de ventanas de KWin. El más sencillo que conozco y que generalmente utilizo es feh
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "feh"
+#+end_src
+
+Como menú de aplicaciones, podría utilizar el menú que ya incluye i3, pero la verdad es que me inclino más a usar rofi con cierto tema que es mi favorito. Para instalar rofi, lo instalamos como un paquete de siempre.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+install_package "rofi"
+#+end_src
+
+Luego, el tema que utilizo para rofi (que de hecho me encanta) está incluido dentro del [[https://github.com/adi1090x/rofi][paquete de temas para rofi hechos por adi1090x]]. Estos temas están diseñados para funcionar como un ecosistema completo, así que si voy a usar uno, necesito instalarlos todos como un paquete completo.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh
+
+echo -e "\n${GREEN}Installing adi1090x's rofi themes...${NC}"
+if [ ! -d "$HOME/.config/rofi" ]; then
+    git clone --depth 1 https://github.com/adi1090x/rofi.git /tmp/rofi
+    cd /tmp/rofi
+    chmod +x setup.sh
+    ./setup.sh
+    cd - > /dev/null
+    rm -rf /tmp/rofi
+else
+    echo -e "${YELLOW}Rofi themes are already installed${NC}"
+fi
+
+#+end_src
+
+
+** Configuraciones iniciales
+
+i3 es un gestor de ventanas que está especializado en utilizar exclusivamente el teclado. Se puede dar la rara ocasión en la cual necesitemos de usar el mouse, pero es muy rara y generalmente provocada por usar ventanas flotantes (muy rara vez). Por esto mismo, necesitamos un montón de atajos de teclado. El principio de diseño más importante de las configuraciones por default de i3 -o el que yo siento es el más importante- es que todos nacen de una tecla llamada Tecla Modificadora, referenciada como $mod de manera interna. Todos los atajos de teclado más importantes de este gestor utilizan de una u otra manera esta tecla, por lo que es importante definirla de manera temprana en nuestra configuración.
+
+La opción por default para Tecla Modificadora es la tecla Alt. Pero yo prefiero la tecla Windows porque es menos disruptiva con los atajos de teclado definidos dentro de aplicaciones.
+
+#+begin_src conf :tangle ../i3/config
+set $mod Mod4
+#+end_src
+
+Mod4 es el nombre interno con el cual se denomina a la tecla Windows. Con esta linea definimos que nuestra Tecla Modificadora será la de Windows.
+
+Cada ventana del gestor tiene una barra superior la cual declara el nombre de la aplicación que está contenida por esta ventana. Para definir la fuente tipográfica de este texto utilizamos la siguiente instrucción:
+
+#+begin_src conf :tangle ../i3/config
+font pango:monospace 6
+#+end_src
+
+Me quedo con la fuente por default de i3, la cual es pango::monospace
+
+Desde este mismo archivo de configuración podemos llamar a nuestro fondo de pantalla, el cual, como vimos previamente en la sección de [[Dependencias][dependencias]] lo vamos a implementar usando feh.
+
+El fondo de pantalla no lo voy a instalar automáticamente con el playbook, porque al final del día esta opción de configuración es demasiado personal incluso para este trabajo que ya de por sí es muy personal. Pero para quien quiera saber cómo es, si nos metemos a la [[https://wiki.archlinux.org/title/Feh][página de la Arch Wiki sobre feh]] podemos observar que debemos correr el siguiente comando:
+
+#+begin_src bash :eval never
+feh --bg-scale /path/to/image.file
+#+end_src
+
+Una vez hecho esto, se crea un archivo en ~/.fehbg, el cual es un ejecutable al que podemos llamar cada vez que queramos invocar la carga del fondo de pantalla. Esto es justamente lo que vamos a integrar en la configuración de i3.
+
+#+begin_src conf :tangle ../i3/config
+exec --no-startup-id ~/.fehbg
+#+end_src
+
+El parámetro de --no-startup-id es para, citando a la [[https://i3wm.org/docs/userguide.html#exec][documentación oficial de i3]], deshabilitar el startup-notification support. Casi todas las veces en que ejecuto programas dentro de esta configuración utilizo este parámetro, honestamente porque esa feature no me interesa, y en casos de aplicaciones que no tienen este soporte esto puede llevar a que se cuelgue el cursor indefinidamente. (creo que sí me ha pasado).
+
+Una configuración que viene de la caja y que en realidad no uso tan concretamente es habilitar el [[https://wiki.archlinux.org/title/XDG_Autostart][XDG Autostart]], la verdad es que no me interesa tanto, pero tampoco me estorba.
+
+#+begin_src conf :tangle ../i3/config
+exec --no-startup-id dex --autostart --environment i3
+#+end_src
+
+Para las ventanas flotantes necesitamos definir una tecla llamada floating_modifier. Mientras mantengamos presionada esta tecla podemos mover las ventanas flotantes de lugar, de otra manera, estarán fijas en su lugar.
+
+#+begin_src conf :tangle ../i3/config
+floating_modifier $mod
+#+end_src
+
+De la misma forma, si queremos reorganizar las ventanas en azulejo con el mouse, debemos configurar tiling_drag. La verdad es que es una feature que casi nunca uso, así que dejo la configuración default.
+
+#+begin_src conf :tangle ../i3/config
+tiling_drag modifier titlebar
+#+end_src
+
+Con esta opción, podemos cambiar de lugar las ventanas en azulejo ya sea arrastrando desde la barra de título de la ventana como clickeando en cualquier lugar mientras sostenemos la Tecla Modificadora.
+
+Luego nos movemos a algo bastante esencial para este flujo de trabajo usando un gestor de ventanas: la terminal.
+
+Evidentemente se puede usar un gestor de ventanas y nunca tocar una terminal, de la misma forma en la que puedes usar Linux sin nunca tocar una terminal. Pero en ambos casos, yo considero que es restringirte de uno de los grandes dulces de este flujo de trabajo. La mayoría del tiempo tengo una terminal a lado para hacer prácticamente todo. Las pocas ocasiones en las que salgo de la terminal son para abrir mi navegador web o abrir Emacs, el resto de cosas las hago en la terminal. E i3 ya contempla este perfil de uso dándonos por default este atajo de teclado, con el que al presionar $mod+Return (Windows + Enter) podemos abrir una terminal. Incluso tiene un script personalizado el cual se decanta por algún emulador de terminal según las opciones que están disponibles en el sistema en este momento.
+
+#+begin_src conf :tangle ../i3/config
+bindsym $mod+Return exec i3-sensible-terminal
+#+end_src
+
+Este script escoge uno de los emuladores de terminal disponibles en la máquina en el momento de su ejecución, priorizando los que "tienen mejor accesibilidad" (a gusto del mantenedor del script). Aunque se puede overridear fijando la variable de entorno $TERMINAL a la terminal de nuestro gusto. Esto es lo que termino haciendo siempre para poder usar Alacritty.
+
+Luego tenemos el keybinding para cerrar la ventana que tengamos focuseada en el momento. Este keybinding es esencial, ya que yo siempre deshabilito las barras superiores de las ventanas donde tenemos las opciones de minimizar, maximizar y cerrar, para tener más espacio y porque en realidad sólamente podemos hacer una de esas tres opciones cuando estamos bajo un gestor de ventanas como i3wm.
+
+#+begin_src conf :tangle ../i3/config
+bindsym $mod+Shift+q kill
+#+end_src
+
+Otra opción bastante esencial es la de abrir un launcher de aplicaciones, aquí es donde reclutamos Rofi. En la sección de [[Dependencias]] instalamos una serie de temas para Rofi, para poder ejecutar el tema de mi predilección (el tema Tipo 1), el repositorio mismo nos proporciona launchers ejecutables bajo la ruta ~/.config/rofi/launchers/(Tipo del launcher)/launcher.sh. Entonces ese es el ejecutable que vamos a llamar. Lo bindeamos al atajo por default.
+
+#+begin_src conf :tangle ../i3/config
+bindsym $mod+d exec --no-startup-id ~/.config/rofi/launchers/type-1/launcher.sh
+#+end_src
+
+Los atajos por default para moverse entre ventanas utilizan un esquema Vim-like, pero en lugar de utilizar las teclas HJKL, se utilizan las teclas JKL;. La decisión de diseño detrás de esta decisión es interesante, de hecho la trato en [[https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/#bindings-de-vim-a-medias][un artículo de mi blog]] pero justamente en este artículo también aclaro que no es una decisión de diseño que yo comparta. Principalmente por tener una estandarización de atajos de VIM a lo largo de mi sistema, es por lo que revierto esto al viejo esquema HJKL.
+
+#+begin_src conf :tangle ../i3/config
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+#+end_src
+
+De una vez también integro estos mismos controles pero con las flechas (por si acaso).
+
+Al invocar una nueva ventana en i3wm, tenemos la capacidad de especificarle al gestor si queremos que nazca al lado derecho de la ventana que teníamos enfocada en ese momento (Horizontal split) o debajo de la misma (Vertical split). Para hacer esto, primero debemos de usar el atajo correspondiente. Pero aquí nos topamos con un problema directamente relacionado con mi declaración anterior.
+
+Resulta que en las configuraciones por default, para hacer un Horizontal split el atajo es $mod+h. Pero debido a mi decisión respecto a los controles (usar HJKL) este atajo ahora está ocupado, por lo que lo tengo que cambiar a $mod+o
+
+#+begin_src conf :tangle ../i3/config
+
+bindsym $mod+o split h
+bindsym $mod+v split v
+
+#+end_src
+
+Luego configuramos el toggle de pantalla completa.
+
+#+begin_src conf :tangle ../i3/config
+bindsym $mod+f fullscreen toggle
+#+end_src
+
+Y los atajos para cambiar el modo de layout que queramos usar en el momento, teniendo tres disponibles:
+
+- Stacked
+
+  [[./imgs/img2.png]]
+
+- Tabbed
+
+  [[./imgs/img3.png]]
+
+- Y la opción normal de siempre (split)
+
+  [[./imgs/img4.png]]
+
+#+begin_src conf :tangle ../i3/config
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+#+end_src
+
+Luego configuramos las gaps, que son ese espacio pequeño entre ventana y ventana. Quiero que este espacio sea lo más pequeño posible, pero sin juntar ventana con ventana porque se vería raro. Ya de paso también, con la linea de for_window elimino todos los títulos de ventanas para tener más espacio.
+
+#+begin_src conf :tangle ../i3/config
+for_window [class="^.*"] border pixel 0
+gaps inner 5
+gaps outer 5
+#+end_src
+
+Luego tenemos otros keybindings miscelaneos que vienen por default. La verdad es que varios son muy autodescriptivos y varios otros no tanto pero lo son cuando tomas el flujo de trabajo. Lo que sí, es que la mayoría son los default, por lo que en realidad una cheatsheet de keybindings de i3 los pueden explicar bastante bien.
+
+#+begin_src conf :tangle ../i3/config
+bindsym $mod+Shift+space floating toggle
+
+bindsym $mod+space focus mode_toggle
+
+bindsym $mod+a focus parent
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+mode "resize" {
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
+
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+#+end_src
+
+** Integración con Plasma
+
+Una vez formadas las configuraciones iniciales necesarias para que i3 sea mínimamente funcional, podemos empezar a formar la siguiente parte de mi entorno de escritorio: su integración con KDE Plasma y todas sus aplicaciones. Para esto voy a seguir la [[https://github.com/heckelson/i3-and-kde-plasma][guía de Alexander Hecke]] respecto a este tema, junto con algunas secciones específicas de [[https://wikisandbox.kde.org/Tutorials/Using_Other_Window_Managers_with_Plasma][la documentación oficial de KDE al respecto]].
+
+*** Configuraciones en i3wm
+
+Aprovechando que tenemos nuestro archivo de configuración abierto de la sección anterior, vamos a agregar aquí algunas de las configuraciones necesarias para este setup. Al estilo de esta obra, las vamos explicando detenidamente.
+
+Primero vamos a buscar con una expresión regular algunas ventanas que carga Plasma y que nosotros no necesitamos. Dentro de esta categoría se incluye la ventana que usa Plasma para cargar el fondo de pantalla. Debido a que no necesitamos esto porque estamos cargando el fondo de pantalla con feh, nos interesa matarla.
+
+#+begin_src conf :tangle ../i3/config
+for_window [title="Desktop @ QRect.*"] kill, floating enable, border none
+#+end_src
+
+Como mecanismo de "fallback" de esta regla, si es que i3 falla al intentar matar estas ventanas, lo que puede hacer es hacerlas flotantes y deshabilitarles el borde.
+
+Luego, en complemento a lo anterior, vamos a matar también la ventana que usa Plasma para dibujar el escritorio (iconos, efectos, etc). Esta ventana obviamente es completamente incompatible con i3wm.
+
+#+begin_src conf :tangle ../i3/config
+exec --no-startup-id wmctrl -c Plasma
+#+end_src
+
+Cargamos el compositor que instalamos en la sección de [[Dependencias]]. Le vamos a dar algunos parámetros relacionados con usar sombras, transparencia y animaciones.
+
+#+begin_src conf :tangle ../i3/config
+exec --no-startup-id wmctrl -c Plasma
+#+end_src
+
+Finalmente, hay algunas ventanas que nos interesa que i3wm maneje como flotantes, particularmente las relacionadas con notificaciones, dropdown windows, etc. Con estas reglas le definimos a i3wm cuáles son.
+
+#+begin_src conf :tangle ../i3/config
+for_window [class="yakuake"] floating enable;
+for_window [class="lattedock"] floating enable;
+for_window [class="plasmashell"] floating enable;
+for_window [class="Kmix"] floating enable; border none
+for_window [class="kruler"] floating enable; border none
+for_window [class="Plasma"] floating enable; border none
+for_window [class="Klipper"] floating enable; border none
+for_window [class="krunner"] floating enable; border none
+for_window [class="Plasmoidviewer"] floating enable; border none
+for_window [title="plasma-desktop"] floating enable; border none
+for_window [class="plasmashell" window_type="notification"] floating enable, border none, move position 1450px 20px
+no_focus [class="plasmashell" window_type="notification"]
+
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_role="About"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [instance="__scratchpad"] floating enable
+#+end_src
+
+Con esto, ahora sí terminamos de configurar el lado de i3wm.
+
+Regresamos brevemente al playbook para crear el enlace simbólico necesario para que estas configuraciones que creamos carguen en i3wm.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
+create_symlink "$REPO_ROOT/i3/config" ~/.config/i3/config
+#+end_src
+
+
+*** Configuración del sistema.
+
+Lo que queremos hacer para este flujo de trabajo es deshabilitar el servicio que activa Kwin, el gestor de ventanas nativo de Plasma que queremos anular y reemplazar con i3wm. En lugar de este servicio, vamos a escribir el nuestro para activar i3wm.
+
+#+begin_src text :tangle ../i3/plasma-i3.service
+[Install]
+WantedBy=plasma-workspace.target
+
+[Unit]
+Description=Plasma Custom Window Manager
+Before=plasma-workspace.target
+
+[Service]
+ExecStart=/usr/bin/i3
+Slice=session.slice
+Restart=on-failure
+#+end_src
+
+Una vez escrito, volvemos al playbook para configurar las acciones necesarias relacionadas con este paso.
+
+Creamos el enlace simbólico necesario para llevar nuestro nuevo servicio a la carpeta de servicios correspondiente a nuestro usuario. Es importante aclarar que estos cambios relacionados a servicios son a nivel de usuario, por lo que no necesitamos permisos de root y tampoco estamos haciendo cambios a nivel de sistema.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
+create_symlink "$REPO_ROOT/i3/plasma-i3.service" ~/.config/systemd/user/plasma-i3.service
+#+end_src
+
+Y "enmascaramos" es decir, deshabilitamos, el servicio que invoca Kwin.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
+systemctl mask plasma-kwin_x11.service --user
+#+end_src
+
+Para finalmente habilitar nuestro servicio propio.
+
+#+begin_src bash :tangle ../playbooks/install-i3.sh :noweb tangle
+systemctl enable plasma-i3 --user
+#+end_src
+
+Con esto terminamos de configurar i3wm + Plasma, finalizando estos pasos tenemos completo el entorno de escritorio que utilizo y podemos comenzar a trabajar.

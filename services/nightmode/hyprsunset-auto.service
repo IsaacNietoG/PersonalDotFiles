@@ -1,0 +1,9 @@
+[Unit]
+Description=Auto Night Mode for Hyprland
+
+[Service]
+ExecStart=%h/.local/bin/night-mode.sh
+Type=oneshot
+
+[Install]
+WantedBy=default.target
