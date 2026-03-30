@@ -1,15 +1,67 @@
 (doom!
-    <<modulos_Input>>
-    <<modulos_Completion>>
-    <<modulos_Ui>>
-    <<modulos_Editor>>
-    <<modulos_Emacs>>
-    <<modulos_Term>>
-    <<modulos_Checkers>>
-    <<modulos_Tools>>
-    <<modulos_Os>>
-    <<modulos_Lang>>
-    <<modulos_Email>>
-    <<modulos_App>>
-    <<modulos_Config>>
+    :input
+    :completion
+    (company +childframe)
+    vertico
+    
+    :ui
+    doom
+    doom-dashboard
+    hl-todo
+    modeline
+    ophints
+    (popup + defaults)
+    (vc-gutter +pretty)
+    vi-tilde-fringe
+    workspaces
+    :editor
+    file-templates
+    fold
+    snippets
+    (evil +everywhere)
+    
+    :emacs
+    dired
+    electric
+    undo
+    vc
+    
+    :term
+    vterm
+    
+    :checkers
+    syntax
+    
+    :tools
+    lookup
+    lsp
+    magit
+    
+    :os
+    (:if (featurep :system 'macos) macos)
+    
+    :lang
+    (cc +lsp)
+    clojure
+    (dart +flutter)
+    emacs-lisp
+    (go +lsp)
+    (haskell +lsp)
+    json
+    (java +lsp)
+    javascript
+    latex
+    markdown
+    (rust +lsp)
+    sh
+    (org +evil)
+    
+    :email
+    
+    :app
+    everywhere
+    
+    :config
+    (default +bindings +smartparens)
+    
 )
