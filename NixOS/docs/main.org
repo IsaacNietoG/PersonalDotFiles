@@ -1,0 +1,1222 @@
+#+title: PersonalDotFiles - NixOS Edition
+#+author: mrtaichi
+
+* Introducción
+
+Voy a escribir esto cuando termine. Se vienen cositas.
+
+- Documentar todo mi flujo de trabajo
+
+
+* Especificación
+El flujo de trabajo y configuración que explica este documento es el que utilizo para las encarnaciones de mis máquinas de trabajo principales.
+
+Como estudiante de Ciencias de la Computación que además tiene bastantes intereses que lo llevan a trabajar en un par de cosillas a la vez, no me siento seguro de afirmar que mi marco de trabajo es el correcto para nadie más que mi mismo, pero si te sirve de algo, esto es lo que tengo.
+
+* NixOS
+El sistema operativo sobre el que construyo mi máquina de trabajo es Linux, más específicamente la distribución NixOS.
+
+La razón por la que utilizo Linux es en realidad una lista extremadamente extensa que incluye razones tanto pragmáticas como inclusive filosóficas (fuck closed-source).
+
+La razón por la que utilizo esta distribución es porque su estilo de configuración declarativo se lleva bastante bien con el flujo de documentación que me gustaría llevar en este proyecto. El hecho de poder dejar de lado el aspecto imperativo de construir la máquina de trabajo y que en su lugar pueda declarar su estado final es algo muy bonito que veremos más adelante. Al final del día, uno debe escoger una distribución de Linux pensando siempre en la máxima que me dió un profesor de Administración de Sistemas Unix:
+
+#+begin_quote
+"Todos los Linux son iguales"
+#+end_quote
+
+Entonces, lo que cambia de una distribución a otra no es más que la comodidad con la que uno pueda trabajar con ella. Y en mi caso, me gusta mucho redactar especificaciones. El hecho de poder construir mi sistema a base de especificaciones me viene como anillo al dedo.
+
+NixOS admite configuraciones reproducibles y declarativas a través de un manejo de configuraciones que se aplica a todo el sistema en todo momento.
+
+Este sistema de configuraciones se basa en archivos .nix, que serán los que iremos construyendo para formar prácticamente todo el sistema.
+
+** Instalación y Sistema de Archivos
+
+#+begin_quote
+Si BTRFS opina, estoy de acuerdo.
+Si BTRFS habla, lo escucho.
+Si BTRFS falla, mentira, el no falla.
+Si BTRFS piensa, lo avalo.
+Si BTRFS tiene 100 fans, yo soy uno de ellos.
+Si BTRFS tiene 1 fan, yo soy ese fan.
+Si BTRFS no tiene fans, es porque estoy muerto.
+#+end_quote
+
+La base de mi máquina de trabajo será un sistema de archivos BTRFS con los siguientes subvolúmenes:
+
+- Un subvolumen raíz el cual contendrá la raíz del sistema.
+- Un subvolumen /home el cual contendrá el directorio /home del sistema
+- Un subvolumen /nix el cual contendrá el directorio /nix del sistema
+
+Las razones para separar mi sistema en tres subvolúmenes son un par y de varias índoles dependiendo de cada uno de estos subvolúmenes.
+
+Para los tres porque me interesa tener políticas de snapshots distintas en cada uno. De la raíz potencialmente quisiera guardar una snapshot en cada actualización del sistema sólo por si los ya existentes mecanismos de protección de NixOS no me pudieran salvar en algún momento; de /home me quiero poner paranóico y guardar snapshots de manera bastante regular, porque son mis archivos personales, y de /nix es totalmente innecesario tener alguna política de snapshots, porque su contenido se genera de manera 100% declarativa.
+
+Además, tener un subvolumen separado de /home me otorga el beneficio de independizar mis archivos personales de la instalación de Linux que tenga en un momento dado. Esto podría lograrlo de una manera incluso más fuerte con una partición separada, pero crear particiones trae el problema de eventualmente tener que redimensionarlas a nivel físico, y eso me da miedo.
+
+Para instalar NixOS en BTRFS el proceso es bastante sencillo y directo, entonces omitiré esa sección y simplemente citaré [[https://wiki.nixos.org/wiki/Btrfs][este artículo de la Wiki al respecto]].
+
+Una vez instalado NixOS en la partición deseada, podemos empezar a configurar. Lo primero que si hay que hacer respecto a esto es importar las configuraciones de hardware que el instalador ha generado automáticamente, en un archivo llamado hardware-configuration.nix
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+{ inputs, config, lib, pkgs, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      /etc/nixos/hardware-configuration.nix
+      inputs.hyprland.nixosModules.default
+    ];
+  fileSystems = {
+  "/".options = [ "compress=zstd" ];
+  "/home".options = [ "compress=zstd" ];
+  "/nix".options = [ "compress=zstd" "noatime" ];
+  };
+#+end_src
+
+De una vez también le declaramos al sistema operativo los subvolúmenes creados. Además, aquí hay una pequeña optimización respecto al subvolumen nix:
+
+Cuando montamos una partición con la opción noatime, le prohibimos al sistema operativo actualizar el registro de "Access time".
+
+Normalmente, cada vez que lees un archivo (aunque no lo modifiques), el sistema tiene que hacer una operación de escritura para actualizar la hora de acceso. Con noatime, esa escritura se elimina. Esto nos trae una optimización para el rendimiento y la vida útil de nuestro SSD que podemos tomar muy fácilmente aquí.
+
+** Configuraciones globales
+
+El arranque de nuestro sistema será delegado a Systemd-boot. Esta es la primera vez que creo una configuración no basada en GRUB. Tal vez lo cambie más adelante, pero por ahora me gusta mucho el hecho de que este sistema "fuera de la caja" ya tenga soporte para las "Generaciones" de NixOS (lo veremos más adelante probablemente).
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+#+end_src
+
+Y como está en el mejor de nuestros intereses de seguridad y features, siempre usaremos el kernel más reciente disponible
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+#+end_src
+
+El hostname de nuestra computadora es dependiente al contexto. Pero por ahora, mi máquina de trabajo es mi laptop. Ya hablando en temas de networking, también me interesa poder trabajar con las herramientas nmtui y nmcli, a las cuales ya estoy bastante acostumbrado desde hacia varias encarnaciones de mi máquina de trabajo.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  networking.hostName = "mrtaichi-laptop";
+#+end_src
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  networking.networkmanager.enable = true;
+#+end_src
+
+Luego para la zona horaria definimos que estamos en Ciudad de México.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  time.timeZone = "America/Mexico_City";
+#+end_src
+
+Habilitamos el servidor X11. Aunque más adelante veremos que en realidad uso Hyprland (y por ende Wayland), todavía sirve tener esto por motivos de retrocompatibilidad. Hablando del servidor X11, también definimos aquí que use la distribución de teclado US-Intl con Altgr
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  services.xserver.enable = true;
+  services.xserver.xkb = {
+  layout = "us";
+  variant = "altgr-intl";
+  options = "grp:win_space_toggle";
+  };
+#+end_src
+
+Y activo el soporte para tener sonido en mi máquina de trabajo usando PipeWire.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+  };
+#+end_src
+
+** Cuentas de usuario
+
+Mi equipo de trabajo solamente tiene un usuario interactivo: el mío.
+
+No hay mucho que definir aquí excepto tal vez el preludio a [[OhMyZSH]] al definir que voy a usar zsh como emulador de terminal.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  users.users.mrtaichi = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    packages = with pkgs; [
+      tree
+    ];
+    shell = pkgs.zsh;
+  };
+#+end_src
+
+Con esto terminamos las configuraciones iniciales respecto al sistema operativo como tal. El resto de configuraciones las haremos en la siguiente capa de abstracción: los programas :D
+
+** Programas
+
+En NixOS la mayoría de los programas se pueden instalar de dos maneras: la manera declarativa y permanente, especificándolos en este mismo archivo de configuración, bajo la sección environment.systemPackages; o la manera imperativa y temporal: usando nix-shell.
+
+La diferencia entre ambas maneras tiene que ver con el tema permanencia. Quiero preservar la primera manera solamente para todos los programas y dependencias que sé que voy a utilizar diariamente y deberían de ser parte fija de mi sistema. Esta entonces será la manera en la que voy a definir todos los programas que estaré usando en mi flujo de trabajo.
+
+La segunda manera entonces escapa al alcance de este texto y sólo la menciono prácticamente como curiosidad.
+
+Entonces, para definir los programas, herramientas y dependencias fijas de mi equipo de trabajo, lo haré de esta manera:
+
+#+begin_src nix :tangle ../nixOS/configuration.nix :noweb tangle
+  nixpkgs.config.allowUnfree = true;
+   environment.systemPackages = with pkgs; [
+     <<systemPackages>>
+   ];
+#+end_src
+
+La primera línea es para permitir la instalación de software de código cerrado. Porque, aunque filosóficamente odio el código cerrado, he de admitir que hay ciertas instancias de mi flujo de trabajo que desgraciadamente dependen de algún software con copyright.
+
+** TODO Cambiar estos systemPackages a explicaciones
+
+#+begin_src nix :noweb-ref systemPackages
+  vim
+  wget
+  git
+  microsoft-edge
+  alacritty
+#+end_src
+
+** Flakes
+
+Para algunos programas que vamos a usar más adelante, nos interesa mantener un registro claro de las versiones de las dependencias que estarán instalando y usando. Esto tanto para mantener la reproducibilidad como para ciertas situaciones nicho que requieren algunas versiones particulares de ciertos programas que vamos a utilizar.
+
+Para esto, NixOS provee de una feature llamada Flakes, que en cierta forma hace esto. No voy a meterme en explicaciones porque a la fecha que escribo esto todavía no estoy tan versado en el mundo de Nix como para explicar claramente cómo funciona esto. Así que movámonos a lo pragmatico.
+
+Para habilitar esta feature, agregamos lo siguiente a nuestro configuration.nix
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+#+end_src
+
+Luego crearemos un archivo llamado flake.nix, el cual contendrá lo siguiente:
+
+#+begin_src nix :tangle ../nixOS/flake.nix :noweb tangle
+{
+  description = "Configuración personal de Flakes";
+
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    <<inputsFlakes>>
+  };
+
+  nixConfig = {
+    extra-substituters = [ "https://hyprland.cachix.org" ];
+    extra-trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+  };
+
+  outputs = { self, nixpkgs, ... }@inputs: {
+    nixosConfigurations.mrtaichi-laptop = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
+      modules = [
+        ./configuration.nix
+      ];
+    };
+  };
+}
+#+end_src
+
+En este es en el que realizaremos los cambios necesarios para instalar paquetes de NixOS mediante Flakes. Generalmente solamente agregaremos cosillas a inputs.
+
+Además y para finalizar, ya que los packages que obtengamos mediante flakes generalmente no se encontrarán precompilados en la cache oficial de NixOS, varias veces tendremos que agregar las caches de los flakes que queramos agregar para ahorrarnos compilar todo el tiempo.
+
+** stateVersion
+
+Antes de dejar de hablar de NixOS, debemos de abordar una variable muy importante que se define en estos archivos de configuración: system.stateVersion.
+
+Esta variable guarda la primera versión de NixOS que le fue instalada al equipo. Esto con propósitos de mantener compatibilidad con los datos que no sean controlados por todo el mundo declarativo de NixOS. Esta variable entonces es inmutable, pero está altamente ligada al equipo físico en el que fué instalada mi máquina de trabajo y el momento en el que fue hecho esto.
+
+Por este motivo, esta variable al igual que todas las configuraciones especificadas y generadas automáticamente en hardware-configuration.nix escapan al alcance de los archivos generados por este documento.
+
+Por default esta variable vive en configuration.nix, que es el archivo de configuración que estamos generando en estos momentos, pero por lo explicado anteriormente, la moveré a hardware-configuration.nix, el cual es, como dije previamente, generado automáticamente por el instalador de NixOS cada vez que instale el sistema en un equipo físico nuevo.
+
+
+* OhMyZSH
+
+El inicio de todo buen sistema es una buena shell. Es aquí donde la voy a pasar el 60% del tiempo porque mi flujo de trabajo está diseñado para depender lo menos posible de cualquier interfaz gráfica.
+
+Para esto, me gusta mucho utilizar OhMyZSH, el cual, citando al mismo sitio oficial:
+
+#+begin_quote
+Oh My Zsh is an open source, community-driven framework for managing your Zsh configuration.
+
+Sounds boring. Let's try again.
+
+Oh My Zsh will not make you a 10x developer...but you may feel like one!
+
+Once installed, your terminal shell will become the talk of the town or your money back! With each keystroke in your command prompt, you'll take advantage of the hundreds of powerful plugins and beautiful themes. Strangers will come up to you in cafés and ask you, "that is amazing! are you some sort of genius?"
+
+Finally, you'll begin to get the sort of attention that you have always felt you deserved. ...or maybe you'll use the time that you're saving to start flossing more often. 😬
+#+end_quote
+
+** Instalación
+
+En el archivo de configuración de NixOS agregamos las siguientes entradas:
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  programs.zsh = {
+    enable = true; # Enable Zsh
+  ohMyZsh = {
+    enable = true; # Enable Oh My Zsh
+    plugins = [ "git" ]; # Add desired plugins
+    # plugins = [ "git" "zsh-autosuggestions" "zsh-syntax-highlighting" ]; # Add desired plugins
+    theme = "agnoster"; # Set your preferred theme (default: robbyrussell)
+    };
+  };
+
+  users.defaultUserShell = pkgs.zsh; # Set Zsh as the default shell
+  environment.shells = [ pkgs.zsh ]; # Add Zsh to available shells
+#+end_src
+
+Y con eso tenemos :D
+
+** Configuraciones preliminares
+
+Comenzaremos a ensamblar mi configuración para la shell de ZSH. En este capítulo vamos a abordar algunas configuraciones preliminares que no entran bajo ninguna categoría y en general solamente sirven para preparar el terreno para las features posteriores.
+
+Primero comenzamos exportando una variable de entorno esencial para el funcionamiento de Oh My ZSH, la cual es la variable ZSH. Esta variable indica el path hacia la instalación de Oh My ZSH. Vamos a usar la ubicación por default.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+export ZSH="$HOME/.oh-my-zsh"
+#+end_src
+
+Algunas configuraciones personales de mis dotfiles se encuentran en .profile, particularmente las relacionadas con variables de entorno apuntando a proyectos experimentales, o algunos alias rápidos que voy a usar durante una temporada determinada de mi vida pero que no valen la pena ser conservados. Es decir, configuraciones en general volátiles.
+
+Zsh por defecto no sourcea .profile, ya que el estándar es que tenga su propio archivo llamado .Zprofile. Pero, por gusto propio, siempre he sido más de trabajar en .profile
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+[[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
+#+end_src
+
+Luego definimos el tema de Oh My ZSH que voy a utilizar. A mi, particularmente, me gusta mucho el tema Agnoster.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+ZSH_THEME="agnoster"
+#+end_src
+
+Si queremos cambiar de tema en un futuro, podemos hacerlo en base a los temas ya instalados en Oh My ZSH, los cuales podemos encontrar [[https://github.com/ohmyzsh/ohmyzsh/wiki/Themes][aquí]].
+
+Luego vamos a definir algunas cosillas como los plugins a utilizar. Oh My ZSH tiene una selección bastante amplia de plugins, pero yo soy más adepto a crear mis propias funcionalidades; por ahora solamente uso el de git porque me resulta bastante útil para saber en qué branch de un repositorio me encuentro en todo momento.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+plugins=(git)
+#+end_src
+
+Y, para finalizar con estas configuraciones iniciales, llamamos al script de inicialización de Oh My ZSH.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+source $ZSH/oh-my-zsh.sh
+
+#+end_src
+
+
+** Aliases
+
+Un alias es, como su mismo nombre lo dice, un nombre corto para un comando largo que podemos definir usando el comando alias.
+
+Tal vez debería de agregar más, pero por ahora los aliases que tengo son los siguientes:
+
+*** Sudo
+
+Se me hace tierno usar la palabra "pls" en lugar de sudo, lo cual además proporciona menos palabras, por lo que cumple con el propósito de ser un alias.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+alias pls="sudo"
+#+end_src
+
+*** Arduino CLI
+
+Cuando utilizo la CLI de Arduino siempre se me hace una tortura poner el nombre completo de la herramienta, así que lo reduzco a arcli
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+alias arcli="arduino-cli"
+
+#+end_src
+
+
+** PATH
+
+PATH es una variable de entorno que se utiliza para indicarle a nuestra shell *las rutas del sistema donde puede encontrar archivos ejecutables*. Esto para que luego podamos simplemente correr estos programas por sus nombres en lugar de referirnos a rutas completas.
+
+La variable PATH es una lista de rutas separada por /:/. A esta le vamos a agregar las rutas necesarias por nuestros programas para poder acceder a los mismos de manera más sencilla.
+
+Comenzamos por agregar la ruta de los binarios de [[*Doom Emacs]] la cual es por lo general:
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+PATH=$PATH:~/.config/emacs/bin
+#+end_src
+
+Luego la ruta de Flutter, que a veces suelo usar para interfaces gráficas sobre todo.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+PATH=$PATH:/usr/bin/flutter/bin
+#+end_src
+
+Las del Android SDK, que uso sobre todo por adb y fastboot.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+PATH=$PATH:$HOME/Android/Sdk/platform-tools
+PATH=$PATH:$HOME/Android/Sdk/tools
+#+end_src
+
+De una vez también agrego la variable ANDROID_HOME, que es necesario para el Android SDK, y aunque no es directamente relacionado con esta sección, considero que tampoco es algo lo suficientemente grande como para abarcar con una sección propia.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+ANDROID_HOME=$HOME/Android/Sdk
+#+end_src
+
+Generalmente me gusta usar la ruta ~/.local/bin para ejecutables variados que probablemente no quepan en alguna otra categoría y tampoco quiera agregar en las carpetas de ejecutables por default. Entonces también agrego esta ruta.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+PATH=$PATH:$HOME/.local/bin
+#+end_src
+
+Luego también terminamos con Ruby y Golang, de los cuales de una vez voy también a definir la variable GEM_HOME que es necesaria para Ruby.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+PATH=$PATH:$HOME/.local/share/gem/ruby/3.2.0/bin
+PATH=$PATH:$HOME/go/bin
+export GEM_HOME=$HOME/.gem
+
+#+end_src
+
+
+** Pyenv
+
+Pyenv es una herramienta que he usado durante algo de tiempo -probablemente más de un año- porque me permite cambiar entre versiones de Python de una manera bastante rápida y conveniente. Es, como [[https://github.com/pyenv/pyenv][su página]] lo dice, "simple, unobtrusive, and follows the UNIX tradition of single-purpose tools that do one thing well.".
+
+Para usar esta herramienta necesitamos agregar algunas líneas que vienen también en su página. Las cuales son las siguientes:
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+#+end_src
+
+Con estas líneas, estoy preparado para poder instalar Pyenv en cualquier momento sin hacer otro paso que sea pedir el paquete con mi gestor de paquetes predilecto.
+
+
+** Conda
+
+Anaconda es una distribución de Python y R orientada a ciencia de datos y machine learning. En un principio la usaba para montarme entornos virtuales de Python.
+
+Esta es una suerte de sección legacy porque en realidad desde que uso Virtual Envs y Pyenv he dejado de usar Anaconda, pero creo que no sobra tampoco.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/mrtaichi/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/mrtaichi/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/mrtaichi/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/mrtaichi/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+#+end_src
+
+
+** GHCUP
+
+GHCUP es una herramienta que nos permite manejar varias versiones de Haskell y su GHC, en general, es el equivalente de [[*Pyenv]] pero para Haskell.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+[ -f "/home/mrtaichi/.ghcup/env" ] && . "/home/mrtaichi/.ghcup/env"
+#+end_src
+
+
+** Terminal
+
+Mi terminal predilecta es Alacritty, y para que i3 pueda invocar esta terminal adecuadamente, necesito fijar una variable de entorno TERMINAL.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+export TERMINAL="alacritty"
+#+end_src
+
+
+** NVM
+
+Finalmente tenemos a NVM, el cual es un manejador de versiones pero para Node, al igual que los anteriores [[*GHCUP]]
+y [[*Pyenv]]
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+source /usr/share/nvm/init-nvm.sh
+#+end_src
+
+* Doom Emacs
+
+Si todo este proyecto utiliza programación letrada, es imperativo que las primeras dotfiles que se creen sean las necesarias para hacer mi entorno de trabajo de programación letrada. Entonces comencemos con la herramienta principal, la cual es Doom Emacs. Si estás leyendo este documento en org, abajo verás el enlace al archivo org de toda esta herramienta, si estás leyendo PDF... pues sigue leyendo lol.
+
+** Introducción
+Doom Emacs es mi principal editor de texto. Emacs en sí es el editor de texto que llevo usando desde que inicié la carrera -por influencia de la cultura de mi facultad-. El problema con Emacs es que es, a mi gusto, difícil de configurar en su versión básica. Por esto decidí usar Doom Emacs, el cual es un framework de configuración que me sirve para tener todo el poder de Emacs de una manera sencilla y que, además, no me hace perder la configurabilidad que me provee un Emacs vainilla.
+
+** Instalación
+
+Para instalar Doom Emacs bajo NixOS lo único que necesitamos es tener la última versión de Emacs instalada en el equipo de trabajo. Para esto agregamos el paquete emacs a nuestros systemPackages.
+
+#+begin_src nix :noweb-ref systemPackages
+emacs
+#+end_src
+
+Luego, ya que Doom Emacs es en realidad una colección de configuraciones que viven bajo el .config del usuario, habremos de instalarlo de manera imperativa, con las instrucciones tradicionales del repositorio:
+
+#+begin_src bash :eval no-export
+git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+~/.config/emacs/bin/doom install
+#+end_src
+
+Y listo.
+
+Una vez hecho esto, solamente habremos de crear los enlaces simbólicos para importar las configuraciones que vamos a generar más adelante:
+
+#+begin_src bash :eval no-export
+ln -sf ~/PersonalDotFiles/doomEmacs/config.el ~/.config/doom/config.el
+ln -sf ~/PersonalDotFiles/doomEmacs/init.el ~/.config/doom/init.el
+ln -sf ~/PersonalDotFiles/doomEmacs/packages.el ~/.config/doom/packages.el
+doom sync
+#+end_src
+
+** init.el
+
+#+begin_quote
+Where you’ll find your doom! block, which controls what Doom modules are enabled and in what order they will be loaded.
+This file is evaluated early when Emacs is starting up; before any other module has loaded. You generally shouldn’t add code to this file unless you’re targeting Doom’s CLI or something that needs to be configured very early in the startup process.
+#+end_quote
+
+En este archivo seleccionamos los /doom modules/ que vamos a necesitar para el flujo de trabajo. Siendo la lista original la siguiente:
+
+#+begin_src lisp :eval never
+;;; init.el -*- lexical-binding: t; -*-
+
+;; This file controls what Doom modules are enabled and what order they load
+;; in. Remember to run 'doom sync' after modifying it!
+
+;; NOTE Press 'SPC h d h' (or 'C-h d h' for non-vim users) to access Doom's
+;;      documentation. There you'll find a link to Doom's Module Index where all
+;;      of our modules are listed, including what flags they support.
+
+;; NOTE Move your cursor over a module's name (or its flags) and press 'K' (or
+;;      'C-c c k' for non-vim users) to view its documentation. This works on
+;;      flags as well (those symbols that start with a plus).
+;;
+;;      Alternatively, press 'gd' (or 'C-c c d') on a module to browse its
+;;      directory (for easy access to its source code).
+
+(doom! :input
+       ;;bidi              ; (tfel ot) thgir etirw uoy gnipleh
+       ;;chinese
+       ;;japanese
+       ;;layout            ; auie,ctsrnm is the superior home row
+
+       :completion
+       ;;(company +childframe)           ; the ultimate code completion backend
+       ;;helm              ; the *other* search engine for love and life
+       ;;ido               ; the other *other* search engine...
+       ;;ivy               ; a search engine for love and life
+       ;;vertico           ; the search engine of the future
+
+       :ui
+       ;;deft              ; notational velocity for Emacs
+       ;;doom              ; what makes DOOM look the way it does
+       ;;doom-dashboard    ; a nifty splash screen for Emacs
+       ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
+       ;;(emoji +unicode)  ; 🙂
+       ;;hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+       ;;hydra
+       ;;indent-guides     ; highlighted indent columns
+       ;;ligatures         ; ligatures and symbols to make your code pretty again
+       ;;minimap           ; show a map of the code on the side
+       ;;modeline          ; snazzy, Atom-inspired modeline, plus API
+       ;;nav-flash         ; blink cursor line after big motions
+       ;;neotree           ; a project drawer, like NERDTree for vim
+       ;;ophints           ; highlight the region an operation acts on
+       ;;(popup +defaults)   ; tame sudden yet inevitable temporary windows
+       ;;tabs              ; a tab bar for Emacs
+       ;;treemacs          ; a project drawer, like neotree but cooler
+       ;;unicode           ; extended unicode support for various languages
+       ;;(vc-gutter +pretty) ; vcs diff in the fringe
+       ;;vi-tilde-fringe   ; fringe tildes to mark beyond EOB
+       ;;window-select     ; visually switch windows
+       ;;workspaces        ; tab emulation, persistence & separate workspaces
+       ;;zen               ; distraction-free coding or writing
+
+       :editor
+       ;;file-templates    ; auto-snippets for empty files
+       ;;fold              ; (nigh) universal code folding
+       ;;(format +onsave)  ; automated prettiness
+       ;;god               ; run Emacs commands without modifier keys
+       ;;lispy             ; vim for lisp, for people who don't like vim
+       ;;multiple-cursors  ; editing in many places at once
+       ;;objed             ; text object editing for the innocent
+       ;;parinfer          ; turn lisp into python, sort of
+       ;;rotate-text       ; cycle region at point between text candidates
+       ;;snippets            ; my elves. They type so I don't have to
+       ;;(evil +everywhere)
+       ;;word-wrap         ; soft wrapping with language-aware indent
+
+       :emacs
+       ;;dired             ; making dired pretty [functional]
+       ;;electric          ; smarter, keyword-based electric-indent
+       ;;ibuffer         ; interactive buffer management
+       ;;undo              ; persistent, smarter undo for your inevitable mistakes
+       ;;vc                ; version-control and Emacs, sitting in a tree
+
+       :term
+       ;;eshell            ; the elisp shell that works everywhere
+       ;;shell             ; simple shell REPL for Emacs
+       ;;term              ; basic terminal emulator for Emacs
+       ;;vterm             ; the best terminal emulation in Emacs
+
+       :checkers
+       ;;syntax              ; tasing you for every semicolon you forget
+       ;;(spell +flyspell) ; tasing you for misspelling mispelling
+       ;;grammar           ; tasing grammar mistake every you make
+
+       :tools
+       ;;ansible
+       ;;biblio            ; Writes a PhD for you (citation needed)
+       ;;collab            ; buffers with friends
+       ;;debugger          ; FIXME stepping through code, to help you add bugs
+       ;;direnv
+       ;;docker
+       ;;editorconfig      ; let someone else argue about tabs vs spaces
+       ;;ein               ; tame Jupyter notebooks with emacs
+       ;;(eval +overlay)     ; run code, run (also, repls)
+       ;;lookup              ; navigate your code and its documentation
+       ;;lsp               ; M-x vscode
+       ;;magit             ; a git porcelain for Emacs
+       ;;make              ; run make tasks from Emacs
+       ;;pass              ; password manager for nerds
+       ;;pdf               ; pdf enhancements
+       ;;prodigy           ; FIXME managing external services & code builders
+       ;;rgb               ; creating color strings
+       ;;taskrunner        ; taskrunner for all your projects
+       ;;terraform         ; infrastructure as code
+       ;;tmux              ; an API for interacting with tmux
+       ;;tree-sitter       ; syntax and parsing, sitting in a tree...
+       ;;upload            ; map local to remote projects via ssh/ftp
+
+       :os
+       ;;(:if (featurep :system 'macos) macos)  ; improve compatibility with macOS
+       ;;tty               ; improve the terminal Emacs experience
+
+       :lang
+       ;;agda              ; types of types of types of types...
+       ;;beancount         ; mind the GAAP
+       ;;(cc +lsp)         ; C > C++ == 1
+       ;;clojure           ; java with a lisp
+       ;;common-lisp       ; if you've seen one lisp, you've seen them all
+       ;;coq               ; proofs-as-programs
+       ;;crystal           ; ruby at the speed of c
+       ;;csharp            ; unity, .NET, and mono shenanigans
+       ;;data              ; config/data formats
+       ;;(dart +flutter)   ; paint ui and not much else
+       ;;dhall
+       ;;elixir            ; erlang done right
+       ;;elm               ; care for a cup of TEA?
+       ;;emacs-lisp        ; drown in parentheses
+       ;;erlang            ; an elegant language for a more civilized age
+       ;;ess               ; emacs speaks statistics
+       ;;factor
+       ;;faust             ; dsp, but you get to keep your soul
+       ;;fortran           ; in FORTRAN, GOD is REAL (unless declared INTEGER)
+       ;;fsharp            ; ML stands for Microsoft's Language
+       ;;fstar             ; (dependent) types and (monadic) effects and Z3
+       ;;gdscript          ; the language you waited for
+       ;;(go +lsp)         ; the hipster dialect
+       ;;(graphql +lsp)    ; Give queries a REST
+       ;;(haskell +lsp)    ; a language that's lazier than I am
+       ;;hy                ; readability of scheme w/ speed of python
+       ;;idris             ; a language you can depend on
+       ;;json              ; At least it ain't XML
+       ;;(java +lsp)       ; the poster child for carpal tunnel syndrome
+       ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
+       ;;julia             ; a better, faster MATLAB
+       ;;kotlin            ; a better, slicker Java(Script)
+       ;;latex             ; writing papers in Emacs has never been so fun
+       ;;lean              ; for folks with too much to prove
+       ;;ledger            ; be audit you can be
+       ;;lua               ; one-based indices? one-based indices
+       ;;markdown          ; writing docs for people to ignore
+       ;;nim               ; python + lisp at the speed of c
+       ;;nix               ; I hereby declare "nix geht mehr!"
+       ;;ocaml             ; an objective camel
+       ;;org               ; organize your plain life in plain text
+       ;;php               ; perl's insecure younger brother
+       ;;plantuml          ; diagrams for confusing people more
+       ;;purescript        ; javascript, but functional
+       ;;python            ; beautiful is better than ugly
+       ;;qt                ; the 'cutest' gui framework ever
+       ;;racket            ; a DSL for DSLs
+       ;;raku              ; the artist formerly known as perl6
+       ;;rest              ; Emacs as a REST client
+       ;;rst               ; ReST in peace
+       ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
+       ;;(rust +lsp)       ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+       ;;scala             ; java, but good
+       ;;(scheme +guile)   ; a fully conniving family of lisps
+       ;;sh                ; she sells {ba,z,fi}sh shells on the C xor
+       ;;sml
+       ;;solidity          ; do you need a blockchain? No.
+       ;;swift             ; who asked for emoji variables?
+       ;;terra             ; Earth and Moon in alignment for performance.
+       ;;web               ; the tubes
+       ;;yaml              ; JSON, but readable
+       ;;zig               ; C, but simpler
+
+       :email
+       ;;(mu4e +org +gmail)
+       ;;notmuch
+       ;;(wanderlust +gmail)
+
+       :app
+       ;;calendar
+       ;;emms
+       ;;everywhere        ; *leave* Emacs!? You must be joking
+       ;;irc               ; how neckbeards socialize
+       ;;(rss +org)        ; emacs as an RSS reader
+       ;;twitter           ; twitter client https://twitter.com/vnought
+
+       :config
+       ;;literate
+       ;;(default +bindings +smartparens))
+
+#+end_src
+
+Para formar nuestra propia sección de init.el, iremos seleccionando los módulos necesarios. Considerando primero que nada que, todo lo que existe aquí es parte del bloque /doom!/. Entonces, nuestra primera declaración de este archivo debe de ser este bloque.
+
+#+begin_src lisp :tangle ../doomEmacs/init.el :noweb tangle :eval never
+(doom!
+    <<modulos_Elegidos>>
+)
+
+#+end_src
+
+Luego, dentro de los módulos elegidos, necesitamos considerar que existen varias categorías de módulos para personalizar nuestra configuración de Doom Emacs, siendo las principales:
+
+#+NAME: modulos_Elegidos
+#+begin_src lisp :eval never :noweb no-export
+<<modulos_Input>>
+<<modulos_Completion>>
+<<modulos_Ui>>
+<<modulos_Editor>>
+<<modulos_Emacs>>
+<<modulos_Term>>
+<<modulos_Checkers>>
+<<modulos_Tools>>
+<<modulos_Os>>
+<<modulos_Lang>>
+<<modulos_Email>>
+<<modulos_App>>
+<<modulos_Config>>
+#+end_src
+
+Vamos a movernos entre cada categoría para armar nuestros selectos módulos.
+
+*** Módulos Input
+
+Esta categoría de módulos no posee una descripción oficial, y sus módulos tampoco están documentados, pero podemos asumir que son módulos que tienen que ver con soluciones de compatibilidad con layouts o idiomas con caracteres de entrada extraños (sea Chino o Japonés). Así que por el momento, no necesitamos nada de aquí.
+
+#+NAME: modulos_Input
+#+begin_src lisp :eval never
+:input
+#+end_src
+
+*** Módulos Completion
+
+#+begin_quote
+Modules that provide new interfaces or frameworks for completion, including code completion.
+#+end_quote
+
+Los dos módulos que incluye Doom Emacs en su configuración por defecto y que me han servido bastante hasta el momento han sido Company y vertico, la verdad es que no he probado los otros que ofrece, aunque no descarto hacerlo en un futuro.
+
+#+NAME: modulos_Completion
+#+begin_src lisp :eval never
+:completion
+(company +childframe)
+vertico
+
+#+end_src
+
+*** Módulos UI
+
+#+begin_quote
+Aesthetic modules that affect the Emacs interface or user experience.
+#+end_quote
+
+En esta sección también tengo por ahora una configuración directamente default, aunque al estar escribiendo este documento, me pongo a leer las descripciones de los módulos que puedo elegir para mejorar mi interfaz de usuario, y me tientan. Tal vez otro día me pongo a seleccionarlos como se debe.
+
+#+NAME: modulos_Ui
+#+begin_src lisp :eval never
+:ui
+doom
+doom-dashboard
+hl-todo
+modeline
+ophints
+(popup + defaults)
+(vc-gutter +pretty)
+vi-tilde-fringe
+workspaces
+#+end_src
+
+*** Módulos Editor
+
+#+begin_quote
+Modules that affect and augment your ability to manipulate or insert text.
+#+end_quote
+
+Aquí ya le agregamos un poco más de salsa al asunto, porque esta es la parte donde decido confesar que llevo un año o más usando Emacs en evil mode. Porque -al César lo que es del César- la verdad es que me encantan los atajos de Vim, a lo largo de estos últimos años he intentado integrarlos a cualquier parte de mi flujo de trabajo que se dejara. Y no sé si sentirme orgulloso de decir que, es muy probable que una persona que no sepa usar Vim no sepa usar mis computadoras.
+
+#+NAME: modulos_Editor
+#+begin_src lisp :eval never
+:editor
+file-templates
+fold
+snippets
+(evil +everywhere)
+
+#+end_src
+
+*** Módulos Emacs
+
+#+begin_quote
+Modules that reconfigure or augment packages or features built into Emacs.
+#+end_quote
+
+En esta categoría también tenemos los defaults por ahora.
+
+#+NAME: modulos_Emacs
+#+begin_src lisp :eval never
+:emacs
+dired
+electric
+undo
+vc
+
+#+end_src
+
+*** Módulos Term
+
+#+begin_quote
+Modules that offer terminal emulation.
+#+end_quote
+
+Para esta categoría vamos a incluir el módulo de vterm, que presumiblemente es el mejor emulador de terminal hasta el momento que tenemos disponible para Doom Emacs.
+
+#+NAME: modulos_Term
+#+begin_src lisp :eval never
+:term
+vterm
+
+#+end_src
+
+*** Módulos Checkers
+
+Esta categoría de módulos no tiene una descripción oficial, pero podemos decir que engloba aquellos módulos relacionados con la corrección de ortografía.
+
+Y pues por ahora solamente utilizo el verificador de syntax.
+
+#+NAME: modulos_Checkers
+#+begin_src lisp :eval never
+:checkers
+syntax
+
+#+end_src
+
+*** Módulos Tools
+
+#+begin_quote
+Small modules that give Emacs access to external tools & services.
+#+end_quote
+
+Dentro de esta categoría incluiremos los siguientes módulos:
+
+**** Eval
+Para realizar evaluaciones de bloques de código en el momento. Me parece que este es uno de los módulos habilitados por default, así que desconozco realmente la funcionalidad de tenerlo habilitado.
+
+**** Lookup
+Para navegar a través del código, buscando "símbolos" y definiciones.
+
+**** Lsp
+Mi favorito, con este podemos tener servidores de lenguaje, que nos implementan varias de las funcionalidades que podríamos extrañar de un IDE convencional. Con este módulo, junto con los correspondientes a cada lenguaje que necesitemos (en Módulos Lenguajes), convertimos a Emacs en un IDE completo.
+
+**** Magit
+Agrega integración con Git, principalmente lo uso para ver en el lateral izquierdo los cambios que he introducido a un archivo y que no he commiteado.
+
+Finalmente, esta sección queda de la siguiente forma:
+
+#+NAME: modulos_Tools
+#+begin_src lisp :eval never
+:tools
+lookup
+lsp
+magit
+
+#+end_src
+
+*** Módulos OS
+
+#+begin_quote
+Modules to improve integration into your OS, system, or devices.
+#+end_quote
+
+El módulo que viene por default es el de MacOS, bajo el condicional de activarse solamente si detecta que estamos bajo dicho sistema operativo. Lo dejo activo, solamente porque así, si un día cambio a MacOS, no me ocurra que me confunda porque no funciona y me de cuenta que fué por desactivar este módulo.
+
+#+NAME: modulos_Os
+#+begin_src lisp :eval never
+:os
+(:if (featurep :system 'macos) macos)
+
+#+end_src
+
+*** Módulos de lenguajes
+
+#+begin_quote
+Modules that bring support for a language or group of languages to Emacs.
+#+end_quote
+
+Esta es una de las categorías más importantes para un programador, pues literalmente aquí podemos encontrar los paquetes de soporte para lenguajes de programación que nos proporciona Emacs. Me encantaría poder activar todos de una vez, porque sé que al ritmo que voy eventualmente los terminaría usando; pero la traba es que mientras más módulos tenga activos en esta setup, me exhibo más a tiempos de arranque reducidos y posibles pérdidas de rendimiento. Por este motivo, prefiero solamente activar estos módulos conforme los vaya necesitando.
+
+#+NAME: modulos_Lang
+#+begin_src lisp :eval never
+:lang
+(cc +lsp)
+clojure
+(dart +flutter)
+emacs-lisp
+(go +lsp)
+(haskell +lsp)
+json
+(java +lsp)
+javascript
+latex
+markdown
+(rust +lsp)
+sh
+(org +evil)
+
+#+end_src
+
+Algo para comentar particularmente aquí es que Emacs tiene soporte para org-mode de manera nativa, entonces uno podría pensar que no es necesario el módulo de org. La principal razón por la que lo agrego es por compatibilidad con Evil Mode. Si no explicito esta compatibilidad, los bindings dentro de la Org-Agenda se revierten a los defaults y eso me hace mucha fricción para trabajar.
+
+*** Módulos de Email
+
+Esta categoría no posee una descripción oficial, pero proporciona los medios para poder conectar un cliente de correo a Emacs.
+
+Me parece un campo sin dudar bastante atractivo poder usar mi correo electrónico dentro de Emacs. Pero por ahora creo que prefiero quedarme así, tal vez en un futuro decida utilizar esta posible feature.
+
+#+NAME: modulos_Email
+#+begin_src lisp :eval never
+:email
+
+#+end_src
+
+*** Módulos de Apps
+
+#+begin_quote
+Application modules are complex and opinionated modules that transform Emacs toward a specific purpose. They may have additional dependencies and should be loaded last, before :config modules.
+#+end_quote
+
+Por ahora, sólo utilizo emacs-everywhere, que me permite abrir frames de Emacs para editar cualquier recuadro de texto en mi computadora usando Emacs. Esto es algo bastante útil que no uso tan seguido como podría hacerlo, pero definitivamente cada que lo uso +siento como pierdo sex appeal+ me siento como un power user.
+
+#+NAME: modulos_App
+#+begin_src lisp :eval never
+:app
+everywhere
+
+#+end_src
+
+*** Módulos de configuración
+
+#+begin_quote
+Modules that configure Emacs one way or another, or focus on making it easier for you to customize it yourself. It is best to load these last.
+#+end_quote
+
+Nada interesante aquí, excepto señalar que esta categoría contiene dentro de sí al módulo literate. Este módulo nos permite tanglear automáticamente un archivo config.org al iniciar nuestro Emacs. Esto con el propósito de que este config.org funcione como nuestra configuración letrada para Doom Emacs.
+
+Podría haber usado este módulo para tanglear la configuración de Doom Emacs particularmente, pero siempre tuve pensado este archivo .org como algo que comprendiera completamente a mis dotfiles, como una especie de libro maestro para mi flujo de trabajo. Entonces, tener mi configuración de Doom Emacs viviendo en otro archivo .org me hubiera resultado conflictivo. Y evidentemente usar este config.org para el libro maestro y así tanglear todas mis dotfiles cada que abra Emacs tampoco hubiera sido una opción a considerar...
+
+Así que nos quedamos solamente con el módulo default, el cual *obviamente* viene activado por default.
+
+#+NAME: modulos_Config
+#+begin_src lisp :eval never
+:config
+(default +bindings +smartparens)
+
+#+end_src
+
+
+** config.el
+
+#+begin_quote
+Here is where 99.99% of your private configuration should go. Anything in here is evaluated after all other modules have loaded, when starting up Emacs.
+#+end_quote
+
+Esta es la parte más sabrosa de la configuración de Doom Emacs en cuanto a usabilidad se trata. Una vez hemos elegido los módulos que vamos a utilizar dentro de nuestro /init.el/, podemos empezar a ajustar nuestras configuraciones.
+
+Vamos a dividir la estructura de este archivo por las features a las que aportan las configuraciones necesarias. La estructura actual se verá de la siguiente forma, separando la configuración por features:
+
+#+begin_src lisp :tangle ../doomEmacs/config.el :noweb tangle :eval never
+<<esteticaYEstilo>>
+<<orgMode>>
+<<atomicChrome>>
+<<latex>>
+<<programacionLetrada>>
+#+end_src
+
+*** Estética y estilo
+
+Primero comenzamos con la elección de tema, la cual hacemos cambiando el nombre de la variable /doom-theme/. No recuerdo bien si he cambiado este tema o el que estoy usando es el default, pero en todo caso, actualmente utilizo doom-one, y no he tenido ninguna queja hasta el momento.
+
+#+begin_src lisp :eval never :noweb-ref esteticaYEstilo
+(setq doom-theme 'doom-one)
+#+end_src
+
+Luego definimos la variable display-line-numbers-type, la cual nos permite controlar como se va a mostrar la barra lateral que nos indica la línea del documento sobre la que estamos. Existen varias configuraciones posibles, incluso para hacerla relativa. Yo prefiero quedarme con la sencilla, la cual simplemente marca en el lado izquierdo la línea en la que nos hallamos.
+
+#+begin_src lisp :eval never :noweb-ref esteticaYEstilo
+(setq display-line-numbers-type t)
+#+end_src
+
+Luego está el tema de las transparencias. A mí me gusta definir una ligera transparencia en el marco principal de Emacs, porque esto me permite poder ver ligeramente la ventana que tenga acomodada detrás de la ventana de Emacs. Esto me deja tener Emacs en pantalla completa y tener atrás algún documento para consulta, lo cual me ha resultado útil en muchos casos.
+
+#+begin_src lisp :eval never :noweb-ref esteticaYEstilo
+(set-frame-parameter (selected-frame) 'alpha '(95 95))
+(add-to-list 'default-frame-alist '(alpha 95 95))
+#+end_src
+
+La transparencia la tengo definida a 95, pues es el valor que considero lo suficientemente opaco para no perder el texto de la ventana de Emacs, pero lo suficientemente transparente para poder ver texto detrás.
+
+
+*** Org Mode
+
+Para poder tener un espacio de trabajo adecuado a mis necesidades, necesito realizar ciertas configuraciones a los plugins de mi Emacs relacionados con Org-Mode. Debo de admitir que, por ahora, mi setup de trabajo de org-mode, aunque funcional, sigue siendo bastante rudimentaria a comparación de varios sistemas que he visto en Internet.
+
+En general solamente uso algunas cosillas básicas como org-agenda y babel para mis necesidades de literate programming. Comencemos con org-agenda.
+
+La variable org-directory define la ruta por defecto en la que vamos a guardar todos los archivos .org que pueda necesitar para mi flujo de trabajo. Esto NO es lo mismo que la variable org-agenda-files, la cual explicaré en su momento. Por ahora no uso mucho este directorio, pero nunca está de más tener su definición clara para más adelante.
+
+En un futuro, aquí podría colocar notas, planificación, gestión de proyectos, y en general los archivos auxiliares que necesite cuando enriquezca mi flujo de trabajo GTD.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-directory "~/org/")
+#+end_src
+
+Luego defino org-agenda-files, la cual es la variable que org-agenda utiliza para encontrar los archivos .org de los que va a construir la agenda. Es decir, de los archivos .org que vivan dentro de este directorio es donde la Agenda va a extraer los TODOs, tareas, proyectos, deadlines, etc que tenga en el momento y me los va a mostrar en la Org Agenda View.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-agenda-files '("~/Documents/agendaORG"))
+#+end_src
+
+Tal vez luego debería de documentar también mis flujos de trabajo, pero eso por ahora se escapa al enfoque de este proyecto.
+
+Algo que necesito que org-mode respete para mi agenda son los siguientes puntos:
+
+- Me gusta planificar mi semana con antelación, y para ello me gusta siempre tener claro cuáles de mis tareas con Deadline próxima ya fueron consideradas en esta planeación y cuáles no. Quiero olvidarme de las que ya fueron Scheduled hasta que llegue el día que planee para hacerlas, por desgracia, org-mode gusta de mostrar siempre las Deadlines próximas, sin importarle esto, lo cual me estresa. Para esto, configuro Emacs para que solamente me avise de las tareas que tienen una Deadline proxíma pero no hayan sido Scheduleds, pues esto significa que no las he considerado dentro de mi planeación.
+
+  #+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
+  #+end_src
+
+- Mi método de planificación es semanal, es decir, cada domingo me siento a revisar todos mis archivos de orgAgenda para revisar qué pendientes necesito planificar y construyo mi semana en base a eso. Particularmente me interesa darle énfasis a los pendientes cuya deadline caiga dentro de la semana y no haya planeado, me gusta entonces que org-mode me avise de estos. Pero también me gusta ir pensando en los pendientes cuya deadline se aproxima a la siguiente semana; solamente en caso de que sea necesario comenzar a trabajarlos con dos semanas de antelación. Para esto defino la variable org-deadline-warning-days como 14, esto combinado con la variable pasada me permite tener una visión más clara de mis pendientes planeados, no planeados, y particularmente de los pendientes cuya deadline es próxima y no he planeado.
+
+  #+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-deadline-warning-days 14)
+  #+end_src
+
+- Otra cosa que uso para eliminar ruido de la vista de Agenda es asegurarme de que los pendientes que ya tengo hechos (marcados como DONE) desaparezcan de mi vista, esto me ayuda a concentrarme en los que no he terminado. Para esto cambio tres variables.
+
+  #+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-agenda-skip-scheduled-if-done t
+      org-agenda-skip-deadline-if-done t
+      org-agenda-skip-timestamp-if-done t)
+  #+end_src
+
+Estas son las especificaciones principales de mi flujo de trabajo, luego solamente agrego un pequeño detalle de calidad de vida para poder usar atajos de teclado para cambiar los estados de mis tareas rápidamente.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-use-fast-todo-selection t)
+#+end_src
+
+Y finalmente, los estados que utilizo para mis tareas. Estos están directamente inspirados del flujo de trabajo de otra persona, pero no recuerdo quién jajaja. Tal vez cuando haga mi documentación sobre mi flujo de trabajo lo defina de manera más clara.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-todo-keywords
+   '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "|" "DONE(d)")
+	 (sequence "TASK(T)")
+	 (sequence "WAITING(w@/!)" "INACTIVE(i)" "SOMEDAY(s)" "|" "CANCELLED(c@/!)")))
+
+(setq org-todo-keyword-faces
+      '(("TODO" :foreground "red" :weight bold)
+	    ("TASK" :foreground "#5C888B" :weight bold)
+	    ("NEXT" :foreground "blue" :weight bold)
+	    ("PROJ" :foreground "magenta" :weight bold)
+	    ("DONE" :foreground "forest green" :weight bold)
+	    ("WAITING" :foreground "orange" :weight bold)
+	    ("INACTIVE" :foreground "magenta" :weight bold)
+	    ("SOMEDAY" :foreground "cyan" :weight bold)
+	    ("CANCELLED" :foreground "forest green" :weight bold)))
+#+end_src
+
+De una vez también defino los colores para cada estado.
+
+- Org-agenda crea algo llamado "Logbook" para tareas que se completan de manera diaria. Esto en resúmen lo que hace es crear una lista de veces que se ha completado una tarea bajo el título de la misma. El problema es que para tareas que se completan todos los días (hábitos por ejemplo) esto crea listas muy largas, de este estilo:
+
+  #+begin_src org :eval never
+ ** TODO Revisar correo electrónico
+SCHEDULED: <2026-01-12 Mon +1d>
+:PROPERTIES:
+:LAST_REPEAT: [2026-01-11 Sun 17:49]
+:END:
+- State "DONE"       from "TODO"       [2026-01-11 Sun 17:49]
+- State "DONE"       from "TODO"       [2026-01-11 Sun 17:49]
+- State "DONE"       from "TODO"       [2026-01-09 Fri 17:47]
+- State "DONE"       from "TODO"       [2026-01-08 Thu 21:41]
+- State "DONE"       from "TODO"       [2026-01-08 Thu 14:31]
+- State "DONE"       from "TODO"       [2026-01-06 Tue 11:41]
+- State "DONE"       from "TODO"       [2026-01-05 Mon 19:54]
+- State "DONE"       from "TODO"       [2026-01-04 Sun 21:48]
+- State "DONE"       from "TODO"       [2026-01-03 Sat 19:35]
+- State "DONE"       from "TODO"       [2026-01-02 Fri 19:54]
+- State "DONE"       from "TODO"       [2026-01-01 Thu 23:36]
+- State "DONE"       from "TODO"       [2026-01-01 Thu 23:36]
+- State "DONE"       from "TODO"       [2025-12-30 Tue 15:28]
+- State "DONE"       from "TODO"       [2025-10-06 Mon 18:11]
+
+  #+end_src
+
+Para aminorar esto, la siguiente linea hace que todas las lineas del logbook se guarden en un drawer del mismo nombre abajo de la tarea correspondiente.
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-log-into-drawer t)
+#+end_src
+
+
+*** Atomic Chrome
+
+Esta es una configuración que viene de tiempos en los que me hice directamente dependiente de los atajos de Vim y me sentía un completo inútil en entornos donde no los pudiera usar (me sigue pasando, pero ahora uso Vimium C). Particularmente, para editar texto en el navegador me gustaba poder abrir un buffer de Emacs, editar el texto ahí y regresar a la aburrida vida del navegador. Esto ha ido cayendo en desuso por mi flujo de trabajo debido a que poco a poco he usado cosas como Vimium C y me he vuelto a acostumbrar a usar el mouse, pero conservo estas configuraciones por si algún día las necesito.
+
+#+begin_quote
+This is the Emacs version of Atomic Chrome which is an extension for Google Chrome browser that allows you to edit text areas of the browser in Emacs. It's similar to Edit with Emacs, but has some advantages as below with the help of websocket.
+#+end_quote
+
+Para esto, no se necesita más que requerir (obviamente) el susodicho plugin Atomic Chrome y habilitar el servidor cada vez que abra emacs.
+
+#+begin_src lisp :eval never :noweb-ref atomic-Chrome
+(require 'atomic-chrome)
+(atomic-chrome-start-server)
+#+end_src
+
+
+*** LaTeX
+
+Por ahora no realizo otra configuración que no sea ajustar mi visor preferido para mis compilados de LaTeX, el cual es KDE Okular, porque honestamente es una chulada de visor.
+
+#+begin_src lisp :eval never :noweb-ref latex
+(setq +latex-viewers '(okular))
+#+end_src
+
+
+*** Programación Letrada
+
+Mis configuraciones relacionadas con Literate Programming y los documentos letrados que genero con este precioso paradigma de programación (o marco de trabajo?)
+
+Por ahora tengo un flujo de trabajo bastante sencillo, por lo que solamente defino dos cosas:
+
+- Los lenguajes de programación que uso para mis documentos letrados, esta lista es extremadamente mutable conforme van creciendo mis proyectos.
+
+  #+begin_src lisp :eval never :noweb-ref programacionLetrada
+ (org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (go . t)
+   (haskell . t)
+   (sql . t)
+   ))
+ #+end_src
+
+- Me gusta ponerle imágenes a mis proyectos (no se nota en este lol) y me gusta que se vean no solamente en sus versiones imprimibles, pero también en el mismo editor.
+
+#+begin_src lisp :eval never :noweb-ref programacionLetrada
+(setq org-startup-with-inline-images t)
+#+end_src
+
+Con esto terminamos la subsección dedicada a mi config.el, ya casi nos falta poco para terminar la sección de Doom Emacs, solamente nos falta la sección de packages.el
+
+
+** packages.el
+
+#+begin_quote
+This file is where package declarations belong. It’s also a good place to look if you want to see what packages a module manages (and where they are installed from).
+#+end_quote
+
+Aquí, según la documentación oficial de Doom Emacs, definiremos los packages que vamos a usar y que no se encuentran en alguno de los módulos definidos previamente. Por ahora, es una sección bastante reducida de este texto porque en realidad lo único que uso fuera de los módulos es Atomic Chrome (el cual explico para qué es en la sección de config.el)
+
+#+begin_src lisp :eval never :tangle ../doomEmacs/packages.el
+(package! atomic-chrome)
+#+end_src
+
+
+Terminando este archivo, finalmente tenemos completa la configuración de Doom Emacs
+
+* Hyprland
+
+Desde que conozco los gestores de ventanas y la gran ventaja de rapidez que ofrecen cuando les tomas el ritmo correcto (porque es inherentemente más rápido manejar la computadora con el teclado que con el mouse), no he logrado escapar de usar uno en niguna de las encarnaciones de mis estaciones de trabajo. Si eres lector de mi blog, puedes consultar un artículo al respecto, que de hecho es la [[https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/][primera publicación de mi blog]].
+
+A tal punto de que lo primero que suelo hacer cuando llega una nueva computadora a mis manos es reemplazar su entorno de escritorio por un gestor de ventanas. Esto es algo bastante fácil de realizar en Linux (que es el enfoque de estas dotfiles), y un poco más complicado de realizar en otros sistemas operativos, pero no imposible.
+
+Previamente usaba un entorno de escritorio basado en KDE Plasma al cual le reemplazaba su gestor de ventanas nativo (KWin) por i3. Esto me permitía conservar todo lo mejor de ambos mundos: la integración y herramientas que te ofrece tener un entorno de escritorio completo con su respectivo ecosistema curado por alguna comunidad dedicada a eso; junto con la sencilleza y agilidad que provee el manejar tus ventanas con puros atajos de teclado y acomodados automáticos de un gestor de ventanas.
+
+Pero desde los cambios que ha hecho este ecosistema para [[https://blogs.kde.org/2025/11/26/going-all-in-on-a-wayland-future/][migrar a Wayland]], esta alternativa se ha vuelto cada vez más inviable en cada actualización que pasa de KDE, llegando a un punto en el que directamente no pude hacerlo funcionar. Esto se debe a la naturaleza del nuevo KDE Wayland, donde directamente es imposible (al menos a la fecha) de sustituir su gestor de ventanas nativo.
+
+Esto me lleva a escribir esta nueva configuración: intentar abrazar de manera incómoda el avance del mundo y utilizar un gestor de ventanas moderno: Hyprland. Todavía tengo un gusto agridulce al respecto de esto, pero ni modo, vamos a comenzar.
+
+** Instalación
+
+Vamos a utilizar la versión de desarrollo de Hyprland, porque es la única que admite plugins que vamos a utilizar más adelante. Así que necesitaremos configurar un Flake dentro de nuestro flakes.nix:
+
+#+begin_src nix :noweb-ref inputsFlakes
+  hyprland.url = "github:hyprwm/Hyprland";
+#+end_src
+
+Declaramos las siguientes lineas en el configuration.nix:
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
+
+  programs.hyprland = {
+    enable = true;
+    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    # make sure to also set the portal package, so that they are in sync
+    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+    # usual Nixpkgs module options
+    plugins = [
+      #...
+    ];
+    settings = {
+    # ...
+    };
+  };
+#+end_src
+
+
+* Conclusión
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+}
+#+end_src
+
+# Local Variables:
+# eval: (add-to-list 'org-structure-template-alist '("n" . "src nix :tangle ../nixOS/configuration.nix"))
+# End:
