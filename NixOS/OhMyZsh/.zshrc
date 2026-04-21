@@ -12,6 +12,8 @@ alias pls="sudo"
 
 alias arcli="arduino-cli"
 
+
+
 PATH=$PATH:~/.config/emacs/bin
 
 PATH=$PATH:/usr/bin/flutter/bin
@@ -51,3 +53,5 @@ unset __conda_setup
 export TERMINAL="alacritty"
 
 source /usr/share/nvm/init-nvm.sh
+
+source ~/.groq-secret

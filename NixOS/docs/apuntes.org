@@ -1,0 +1,15 @@
+#+title: Apuntes
+
+Esto son notas sobre trabajos puntuales que esté haciendo sobre la configuración en un momento dado. Ignóralo :p
+
+* Refs
+systemPackages
+imports
+userPackages
+inputsFlakes
+substitutersFlakes
+publicKeysFlakes
+aliasesCLI
+pluginsHyprland
+
+

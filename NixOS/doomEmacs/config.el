@@ -36,3 +36,23 @@
    (sql . t)
    ))
 (setq org-startup-with-inline-images t)
+
+(use-package! gptel
+  :config
+  (setq gptel-backend
+        (gptel-make-openai "Groq"
+          :host "api.groq.com"
+          :endpoint "/v1/chat/completions"
+          :stream t
+          :key (lambda () 
+       (with-temp-buffer
+         (insert-file-contents "~/.groq-secret")
+         (if (string-match "export GROQ_API_KEY=\"\\(.*\\)\"" (buffer-string))
+             (match-string 1 (buffer-string))
+           (string-trim (buffer-string)))))
+          :models '(llama-3.3-70b-versatile
+                    llama-3.1-8b-instant
+                    mixtral-8x7b-32768)))
+
+  ;; 2. Establecer el modelo por defecto
+  (setq gptel-model 'llama-3.3-70b-versatile))
