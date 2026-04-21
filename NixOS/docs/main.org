@@ -1,12 +1,12 @@
+
 #+title: PersonalDotFiles - NixOS Edition
 #+author: mrtaichi
+#+toc: t
 
 * Introducción
-
 Voy a escribir esto cuando termine. Se vienen cositas.
 
 - Documentar todo mi flujo de trabajo
-
 
 * Especificación
 El flujo de trabajo y configuración que explica este documento es el que utilizo para las encarnaciones de mis máquinas de trabajo principales.
