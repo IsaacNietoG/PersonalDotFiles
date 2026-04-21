@@ -353,6 +353,62 @@ Where you’ll find your doom! block, which controls what Doom modules are enabl
 This file is evaluated early when Emacs is starting up; before any other module has loaded. You generally shouldn’t add code to this file unless you’re targeting Doom’s CLI or something that needs to be configured very early in the startup process.
 \end{quote}
 
+(doom!
+    :input
+    :completion
+    (company +childframe)
+    vertico
+    :ui
+    doom
+    doom-dashboard
+    hl-todo
+    modeline
+    ophints
+    (popup +defaults)
+    (vc-gutter +pretty)
+    vi-tilde-fringe
+    workspaces
+    :editor
+    file-templates
+    fold
+    snippets
+    (evil +everywhere)
+    :emacs
+    dired
+    electric
+    undo
+    vc
+    :term
+    vterm
+    :checkers
+    syntax
+    :tools
+    lookup
+    lsp
+    magit
+    :os
+    (:if (featurep :system 'macos) macos)
+    :lang
+    (cc +lsp)
+    clojure
+    (dart +flutter)
+    emacs-lisp
+    (go +lsp)
+    (haskell +lsp)
+    json
+    (java +lsp)
+    javascript
+    latex
+    markdown
+    (rust +lsp)
+    sh
+    :email
+    :app
+    everywhere
+    :config
+    (default +bindings +smartparens)
+)
+
 En este archivo seleccionamos los \emph{doom modules} que vamos a necesitar para el flujo de trabajo. Siendo la lista original la siguiente:
 
 \begin{verbatim}
