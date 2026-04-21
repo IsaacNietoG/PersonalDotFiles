@@ -30,7 +30,10 @@ NixOS admite configuraciones reproducibles y declarativas a través de un manejo
 
 Este sistema de configuraciones se basa en archivos .nix, que serán los que iremos construyendo para formar prácticamente todo el sistema.
 
+
+#+begin_quote
 ** Instalación y Sistema de Archivos
+### Introducción a BTRFS
 
 #+begin_quote
 Si BTRFS opina, estoy de acuerdo.
@@ -41,6 +44,8 @@ Si BTRFS tiene 100 fans, yo soy uno de ellos.
 Si BTRFS tiene 1 fan, yo soy ese fan.
 Si BTRFS no tiene fans, es porque estoy muerto.
 #+end_quote
+
+### Configuración del Sistema de Archivos
 
 La base de mi máquina de trabajo será un sistema de archivos BTRFS con los siguientes subvolúmenes:
 
