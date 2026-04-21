@@ -1,13 +1,14 @@
-
-
 #+title: PersonalDotFiles - NixOS Edition
 #+author: mrtaichi
 #+toc: t
 
 * Introducción
-Voy a escribir esto cuando termine. Se vienen cositas.
 
-- Documentar todo mi flujo de trabajo
+Bienvenido a mis PersonalDotFiles, la recopilación de configuraciones y dotfiles de mi sistema operativo NixOS. En este documento, exploraré las diferentes herramientas y configuraciones que utilicé para crear un entorno de trabajo personalizado y eficiente.
+
+Comenzaré explicando mi flujo de trabajo y las razones detrás de mi elección de NixOS como sistema operativo. Luego, profundizaré en las configuraciones específicas de mi sistema, incluyendo la instalación y configuración de NixOS, la creación de un sistema de archivos BTRFS, y la configuración de Systemd-boot como gestor de arranque.
+
+Además, exploraré las herramientas y configuraciones que utilicé para crear un entorno de trabajo productivo, incluyendo la configuración de OhMyZSH, Doom Emacs, Hyprland, y otras herramientas esenciales para mi flujo de trabajo. También cubriré la configuración de los paquetes y dependencias necesarias para cada herramienta, utilizando NixOS y su gestor de paquetes.
 
 * Especificación
 El flujo de trabajo y configuración que explica este documento es el que utilizo para las encarnaciones de mis máquinas de trabajo principales.
@@ -31,10 +32,7 @@ NixOS admite configuraciones reproducibles y declarativas a través de un manejo
 
 Este sistema de configuraciones se basa en archivos .nix, que serán los que iremos construyendo para formar prácticamente todo el sistema.
 
-
-#+begin_quote
 ** Instalación y Sistema de Archivos
-### Introducción a BTRFS
 
 #+begin_quote
 Si BTRFS opina, estoy de acuerdo.
@@ -1729,7 +1727,7 @@ Y ya hablando de fondos de pantalla, podemos asomarnos un poco al archivo de con
 #+begin_src conf :tangle ../hypr/hyprpaper.conf
 wallpaper {
     monitor =
-    path = ~/PersonalDotFiles/wallpapers/wallpaperLaptop.jpg
+    path = ~/PersonalDotFiles/Arch/wallpapers/wallpaperLaptop.jpg
     fit_mode = fill
 }
 #+end_src
@@ -2371,7 +2369,9 @@ inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
 * Programación con IA
 
-Para el tema de programación con IA me voy a servir de dos herramientas: Gptel y Aider. Ambas van a utilizar modelos provenientes de Groq, que es mi enrutador de modelos de lenguaje predilecto. Comencemos con gptel.
+Para el tema de programación con IA me voy a servir de tres herramientas: Gptel, Aider y copilot.el. Las primeras dos van a utilizar modelos provenientes de Groq, que es mi enrutador de modelos de lenguaje predilecto. Mientras que la última es una implementación de Github Copilot para Emacs, así que en realidad no tengo mucha elección sobre el modelo de lenguaje a utilizar.
+
+Utilizo estas tres porque me gusta que las features de IA formen parte de mi flujo de trabajo pero no tomen un rol esencial dentro del mismo. Quiero seguir usando Emacs, que es mi editor de texto favorito justamente porque es bastante reducido y sólo contiene lo que necesito, pero a la vez quiero tener en fácil alcance las features de IA para mantenerme competitivo en el mundo laboral actual; el cual evidentemente cada vez requerirá un uso más predominante de la IA en nuestros flujos de trabajo. Este flujo de trabajo es la forma que tengo de hacerlo "bajo mis términos"
 
 ** Gptel
 
@@ -2387,7 +2387,7 @@ Este es un plugin de emacs que voy a utilizar para interactuar con IA dentro del
   (setq gptel-backend
         (gptel-make-openai "Groq"
           :host "api.groq.com"
-          :endpoint "/v1/chat/completions"
+          :endpoint "/openai/v1/chat/completions"
           :stream t
           :key (lambda () 
        (with-temp-buffer
@@ -2449,6 +2449,33 @@ alias aico="aider --model groq/llama-3.3-70b-versatile --edit-format diff"
 #+end_src
 
 Hecho esto, terminamos de configurar nuestro flujo de trabajo para uso de IA.
+
+** Copilot.el
+
+Esta es una implementación de Github Copilot dentro de Emacs. No hace más que proporcionar los autocompletados pasivos que Copilot da, que de hecho es lo suficiente para recibir un boost bastante bueno de productividad sin ceder autonomía.
+
+Empezamos declarando el uso del paquete dentro de =packages.el=
+
+#+begin_src lisp :tangle ../doomEmacs/packages.el
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
+#+end_src
+
+Y luego, en la configuración, vamos a definir la aceptación de los autocompletados de Copilot mediante TAB y sus distintos modos de hacerlo.
+
+#+begin_src lisp :tangle ../doomEmacs/config.el
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+#+end_src
+
+#+begin_quote
+Then run M-x copilot-install-server and M-x copilot-login. That's it!
+#+end_quote
 
 * Conclusión
 

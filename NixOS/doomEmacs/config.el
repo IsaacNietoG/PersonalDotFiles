@@ -42,7 +42,7 @@
   (setq gptel-backend
         (gptel-make-openai "Groq"
           :host "api.groq.com"
-          :endpoint "/v1/chat/completions"
+          :endpoint "/openai/v1/chat/completions"
           :stream t
           :key (lambda () 
        (with-temp-buffer
@@ -62,3 +62,11 @@
       :desc "Gptel Menu" "l" #'gptel-menu
       :desc "Gptel Send" "s" #'gptel-send
       :desc "Gptel Chat" "c" #'gptel)
+
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))

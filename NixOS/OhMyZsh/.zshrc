@@ -12,7 +12,7 @@ alias pls="sudo"
 
 alias arcli="arduino-cli"
 
-alias aico="aider --model groq/llama-3.3-70b-versatile"
+alias aico="aider --model groq/llama-3.3-70b-versatile --edit-format diff"
 
 PATH=$PATH:~/.config/emacs/bin
 
