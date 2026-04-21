@@ -56,3 +56,9 @@
 
   ;; 2. Establecer el modelo por defecto
   (setq gptel-model 'llama-3.3-70b-versatile))
+
+(map! :leader
+      :prefix "l" ; "l" de LLM
+      :desc "Gptel Menu" "l" #'gptel-menu
+      :desc "Gptel Send" "s" #'gptel-send
+      :desc "Gptel Chat" "c" #'gptel)
