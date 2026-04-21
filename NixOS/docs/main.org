@@ -2439,7 +2439,7 @@ source ~/.groq-secret
 Ahora, finalmente para terminar de configurar aider completamente, voy a agregar un alias para cargarlo rápidamente con el mejor modelo de Groq utilizable en estos momentos.
 
 #+begin_src bash :noweb-ref aliasesCLI
-alias aico="aider --model groq/llama-3.3-70b-versatile"
+alias aico="aider --model groq/llama-3.3-70b-versatile --edit-format diff"
 #+end_src
 
 Hecho esto, terminamos de configurar nuestro flujo de trabajo para uso de IA.
