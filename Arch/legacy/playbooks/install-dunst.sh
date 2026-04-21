@@ -70,7 +70,7 @@ mkdir -p ~/.config/dunst
 
 # Install dunst config
 echo -e "\n${GREEN}Installing dunst config...${NC}"
-create_symlink "$REPO_ROOT/dunst/dunstrc" ~/.config/dunst/dunstrc
+create_symlink "$REPO_ROOT/legacy/dunst/dunstrc" ~/.config/dunst/dunstrc
 
 echo -e "\n${GREEN}=== Dunst Installation Complete ===${NC}"
 echo -e "${YELLOW}Note: You may need to restart dunst for changes to take effect.${NC}" 
