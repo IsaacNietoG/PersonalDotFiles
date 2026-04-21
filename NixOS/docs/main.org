@@ -2436,6 +2436,12 @@ En este caso, Aider utiliza la API Key desde una variable de entorno, la cual de
 source ~/.groq-secret
 #+end_src
 
+Ahora, finalmente para terminar de configurar aider completamente, voy a agregar un alias para cargarlo rápidamente con el mejor modelo de Groq utilizable en estos momentos.
+
+#+begin_src bash :noweb-ref aliasesCLI
+alias aico="aider --model groq/llama-3.3-70b-versatile"
+#+end_src
+
 Hecho esto, terminamos de configurar nuestro flujo de trabajo para uso de IA.
 
 * Conclusión
