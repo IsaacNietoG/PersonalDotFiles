@@ -1,5 +1,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 
+[[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
+
 ZSH_THEME="agnoster"
 
 plugins=(git)

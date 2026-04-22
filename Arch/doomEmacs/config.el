@@ -36,31 +36,3 @@
    (sql . t)
    ))
 (setq org-startup-with-inline-images t)
-
-;; --- Configuración de Exportación Agenda a ICS ---
-
-(setq my-agenda-path (expand-file-name "~/Documents/agendaORG/")) ;; Añadida barra final
-(setq my-ics-export-file (expand-file-name "~/Dropbox/Apps/Org/mi_agenda.ics"))
-
-(defun my/export-agenda-to-ics ()
-  "Exporta archivos .org a un solo archivo .ics forzando la ruta de destino."
-  (interactive)
-  (let* ((files (cl-remove-if (lambda (file) (string-match-p "_archive" file))
-                             (directory-files my-agenda-path t "\\.org$")))
-         ;; FORZAMOS las variables de Org aquí dentro:
-         (org-agenda-files files)
-         (org-icalendar-combined-agenda-file my-ics-export-file)
-         (org-icalendar-directory (file-name-directory my-ics-export-file)))
-
-    ;; Ejecutamos la exportación
-    (org-icalendar-combine-agenda-files)
-
-    (message "Agenda exportada correctamente a: %s" my-ics-export-file)))
-
-(add-hook 'org-mode-hook ;; Es mejor añadirlo al hook de org-mode directamente
-          (lambda ()
-            (add-hook 'after-save-hook
-                      (lambda ()
-                        (when (file-in-directory-p (buffer-file-name) my-agenda-path)
-                          (my/export-agenda-to-ics)))
-                      nil t))) ;; El 't' final hace que el hook sea local al buffer
