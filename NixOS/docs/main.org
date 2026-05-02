@@ -11,11 +11,13 @@ Comenzaré explicando mi flujo de trabajo y las razones detrás de mi elección 
 Además, exploraré las herramientas y configuraciones que utilicé para crear un entorno de trabajo productivo, incluyendo la configuración de OhMyZSH, Doom Emacs, Hyprland, y otras herramientas esenciales para mi flujo de trabajo. También cubriré la configuración de los paquetes y dependencias necesarias para cada herramienta, utilizando NixOS y su gestor de paquetes.
 
 * Especificación
+
 El flujo de trabajo y configuración que explica este documento es el que utilizo para las encarnaciones de mis máquinas de trabajo principales.
 
-Como estudiante de Ciencias de la Computación que además tiene bastantes intereses que lo llevan a trabajar en un par de cosillas a la vez, no me siento seguro de afirmar que mi marco de trabajo es el correcto para nadie más que mi mismo, pero si te sirve de algo, esto es lo que tengo.
+Como estudiante de Ciencias de la Computación que además tiene bastantes intereses que lo llevan a trabajar en un par de cosillas a la vez, no me siento seguro de afirmar que mi marco de trabajo es el correcto para nadie más que mi mismo, pero creo que puede ser un buen punto de partida para cualquier persona que quiera construir su máquina de trabajo desde cero, o simplemente quiera tener una referencia de cómo configurar ciertas herramientas y programas.
 
 * NixOS
+
 El sistema operativo sobre el que construyo mi máquina de trabajo es Linux, más específicamente la distribución NixOS.
 
 La razón por la que utilizo Linux es en realidad una lista extremadamente extensa que incluye razones tanto pragmáticas como inclusive filosóficas (fuck closed-source).
@@ -43,8 +45,6 @@ Si BTRFS tiene 100 fans, yo soy uno de ellos.
 Si BTRFS tiene 1 fan, yo soy ese fan.
 Si BTRFS no tiene fans, es porque estoy muerto.
 #+end_quote
-
-### Configuración del Sistema de Archivos
 
 La base de mi máquina de trabajo será un sistema de archivos BTRFS con los siguientes subvolúmenes:
 
@@ -215,6 +215,12 @@ Luego tenemos Zerotier One, que es uno de mis herramientas para definir VPNs pre
   zerotierone
 #+end_src
 
+Y finalmente, declaramos Node JS, ya que, para mi mala suerte, se ha vuelto una dependencia esencial para muchas herramientas
+
+#+begin_src nix :noweb-ref systemPackages
+  nodejs
+#+end_src
+
 *** User Packages
 
 En el nivel de usuario voy a definir algunas herramientas generales que efectivamente usaré en varios flujos de trabajo, pero no considero que me den "vibras" de ser paquetes de sistema.
@@ -285,6 +291,29 @@ Luego crearemos un archivo llamado flake.nix, el cual contendrá lo siguiente:
 En este es en el que realizaremos los cambios necesarios para instalar paquetes de NixOS mediante Flakes. Generalmente solamente agregaremos cosillas a inputs, substituters o publicKeys.
 
 Además y para finalizar, ya que los packages que obtengamos mediante flakes generalmente no se encontrarán precompilados en la cache oficial de NixOS, varias veces tendremos que agregar las caches de los flakes que queramos agregar para ahorrarnos compilar todo el tiempo.
+
+** Cron
+
+Cron es un programa de Linux que nos permite programar tareas para que se ejecuten automáticamente en momentos específicos. Es una herramienta muy útil para automatizar tareas repetitivas o programar tareas que deben ejecutarse en momentos específicos. Particularmente para este caso, voy a configurar ciertos cronjobs que me permiten mantener mi máquina de trabajo actualizada y con ciertas tareas de mantenimiento que me gusta hacer de manera regular.
+
+Comenzamos por agregar el servicio de cron a nuestro configuration.nix
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  services.cron.enable = true;
+#+end_src
+
+Y el primer cronjob que voy a declarar es que cada 2 semanas corra el garbage collector de NixOS, el cual se encarga de eliminar los paquetes y dependencias que ya no se están utilizando en el sistema. Esto es algo que me gusta hacer de manera regular para mantener mi sistema limpio y evitar que se acumulen paquetes innecesarios.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix :noweb tangle
+  services.cron.systemCronJobs = [
+    {
+      name = "nix-garbage-collector";
+      schedule = "0 0 */14 * *"; # Cada 2 semanas
+      command = "nix-collect-garbage -d";
+    }
+  ];
+
+#+end_src
 
 ** stateVersion
 
@@ -2478,6 +2507,10 @@ Then run M-x copilot-install-server and M-x copilot-login. That's it!
 #+end_quote
 
 * Conclusión
+
+En este documento hemos visto la configuración de mi entorno de trabajo en NixOS, el cual se basa en Hyprland como gestor de ventanas, Waybar como barra de estado, y una variedad de herramientas para mejorar mi productividad y experiencia de usuario. Además, hemos configurado herramientas para aprovechar la inteligencia artificial en nuestro flujo de trabajo, como Gptel, Aider y Copilot.el. Esta configuración me permite tener un entorno de trabajo eficiente, personalizado y adaptado a mis necesidades, manteniendo un equilibrio entre simplicidad y funcionalidad.
+
+Finalmente, es importante mencionar que esta configuración es un punto de partida y puede ser ajustada y mejorada con el tiempo a medida que descubro nuevas herramientas y formas de optimizar mi flujo de trabajo. La flexibilidad de NixOS y la comunidad de software libre me permiten experimentar y adaptar mi entorno de trabajo según mis necesidades cambiantes.
 
 #+begin_src nix :tangle ../nixOS/configuration.nix
 }
