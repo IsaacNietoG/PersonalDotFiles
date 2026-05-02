@@ -72,15 +72,12 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  services.cron.enable = true;
-
-  services.cron.systemCronJobs = [
-    {
-      name = "nix-garbage-collector";
-      schedule = "0 0 */14 * *"; # Cada 2 semanas
-      command = "nix-collect-garbage -d";
-    }
-  ];
+  services.cron = {
+    enable = true;
+    systemCronJobs = [
+      "0 0 */14 * *  root  nix-collect-garbage -d"
+    ];
+  };
 
   programs.zsh = {
     enable = true; # Enable Zsh

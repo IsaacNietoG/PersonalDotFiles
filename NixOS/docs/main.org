@@ -298,20 +298,15 @@ Cron es un programa de Linux que nos permite programar tareas para que se ejecut
 
 Comenzamos por agregar el servicio de cron a nuestro configuration.nix
 
-#+begin_src nix :tangle ../nixOS/configuration.nix
-  services.cron.enable = true;
-#+end_src
-
 Y el primer cronjob que voy a declarar es que cada 2 semanas corra el garbage collector de NixOS, el cual se encarga de eliminar los paquetes y dependencias que ya no se están utilizando en el sistema. Esto es algo que me gusta hacer de manera regular para mantener mi sistema limpio y evitar que se acumulen paquetes innecesarios.
 
 #+begin_src nix :tangle ../nixOS/configuration.nix :noweb tangle
-  services.cron.systemCronJobs = [
-    {
-      name = "nix-garbage-collector";
-      schedule = "0 0 */14 * *"; # Cada 2 semanas
-      command = "nix-collect-garbage -d";
-    }
-  ];
+  services.cron = {
+    enable = true;
+    systemCronJobs = [
+      "0 0 */14 * *  root  nix-collect-garbage -d"
+    ];
+  };
 
 #+end_src
 
