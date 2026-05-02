@@ -315,6 +315,26 @@ Y el primer cronjob que voy a declarar es que cada 2 semanas corra el garbage co
 
 #+end_src
 
+** Configuraciones privadas
+
+Una cosa bastante interesante de NixOS es que nos permite definir nuestra configuración a través de varios archivos .nix.
+
+Esto se puede aprovechar de distintas maneras dependiendo de la forma que busques de configurar tu sistema. Tal vez quieras separar las configuraciones por temáticas para que cada .nix sea más legible, o según funcionalidades.
+
+En mi caso, debido a que este documento ya sirve como una forma de darle legibilidad a mi configuración, lo único que haré para aprovechar esta feature será definir un private.nix, el cual será ignorado por este repositorio y contendrá configuraciones privadas que no quiero que queden aquí. Garantizo que ninguna es parte de mis flujos de trabajo.
+
+Solo debemos de declarar en nuestros imports este archivo para que sea trackeado y usado a la hora de declarar nuestro sistema.
+
+#+begin_src nix :noweb-ref imports
+./private.nix
+#+end_src
+
+Y para que no lo trackee git, creamos su correspondiente .gitignore, y dentro del mismo excluimos el trackeo de este archivo.
+
+#+begin_src gitignore :tangle ../nixOS/.gitignore :noweb tangle
+private.nix
+#+end_src
+
 ** stateVersion
 
 Antes de dejar de hablar de NixOS, debemos de abordar una variable muy importante que se define en estos archivos de configuración: system.stateVersion.
