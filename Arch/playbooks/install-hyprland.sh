@@ -50,16 +50,23 @@ create_symlink() {
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
-echo -e "${GREEN}=== Installing i3 Window Manager ===${NC}"
+echo -e "${GREEN}=== Installing Hyprland Window Manager ===${NC}"
 
-install_package "i3-wm"
+install_package "hyprland"
 
-install_package "plasma-meta"
-install_package "plasma-x11-session"
+install_package "hyprpaper"
 
-install_package "picom"
+install_package "waybar"
 
-install_package "feh"
+install_package "hyprshot"
+
+install_package "xdg-desktop-portal-hyprland"
+
+install_package "bluetui"
+
+install_package "gnome-keyring"
+
+install_package "hyprlock"
 
 install_package "rofi"
 
@@ -75,10 +82,17 @@ else
     echo -e "${YELLOW}Rofi themes are already installed${NC}"
 fi
 
-create_symlink "$REPO_ROOT/i3/config" ~/.config/i3/config
+install_package "alacritty"
 
-create_symlink "$REPO_ROOT/i3/plasma-i3.service" ~/.config/systemd/user/plasma-i3.service
+install_package "cmake"
+install_package "cpio"
 
-systemctl mask plasma-kwin_x11.service --user
+echo -e "\n${GREEN}Installing Hyprland config...${NC}"
+create_symlink "$REPO_ROOT/hypr/hyprland.conf" ~/.config/hypr/hyprland.conf
+create_symlink "$REPO_ROOT/hypr/hyprpaper.conf" ~/.config/hypr/hyprpaper.conf
+create_symlink "$REPO_ROOT/waybar/config.jsonc" ~/.config/waybar/config.jsonc
 
-systemctl enable plasma-i3 --user
+hyprland &
+hyprpm add https://github.com/outfoxxed/hy3
+hyprpm update
+pkill hyprland
