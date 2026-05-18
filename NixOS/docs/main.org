@@ -965,6 +965,9 @@ Mi favorito, con este podemos tener servidores de lenguaje, que nos implementan 
 **** Magit
 Agrega integración con Git, principalmente lo uso para ver en el lateral izquierdo los cambios que he introducido a un archivo y que no he commiteado.
 
+**** PDF
+Agrega mejoras para poder trabajar con PDFs dentro de Emacs. Esto me resulta muy útil para poder trabajar con LaTeX y org-mode en una ventana mientras en la otra veo la exportación final en PDF, verificando que se vea de la forma que yo quiero.
+
 Finalmente, esta sección queda de la siguiente forma:
 
 #+NAME: modulos_Tools
@@ -973,6 +976,7 @@ Finalmente, esta sección queda de la siguiente forma:
 lookup
 lsp
 magit
+pdf
 
 #+end_src
 
@@ -1015,11 +1019,11 @@ latex
 markdown
 (rust +lsp)
 sh
-(org +evil)
+(org +evil +dragndrop +pretty)
 
 #+end_src
 
-Algo para comentar particularmente aquí es que Emacs tiene soporte para org-mode de manera nativa, entonces uno podría pensar que no es necesario el módulo de org. La principal razón por la que lo agrego es por compatibilidad con Evil Mode. Si no explicito esta compatibilidad, los bindings dentro de la Org-Agenda se revierten a los defaults y eso me hace mucha fricción para trabajar.
+Algo para comentar particularmente aquí es que Emacs tiene soporte para org-mode de manera nativa, entonces uno podría pensar que no es necesario el módulo de org. La principal razón por la que lo agrego es por compatibilidad con Evil Mode. Si no explicito esta compatibilidad, los bindings dentro de la Org-Agenda se revierten a los defaults y eso me hace mucha fricción para trabajar... Además, agrego soporte para drag and drop y la flag de pretty para que se vea más bonito :)
 
 *** Módulos de Email
 

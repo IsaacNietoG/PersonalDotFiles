@@ -36,6 +36,7 @@
     lookup
     lsp
     magit
+    pdf
     
     :os
     (:if (featurep :system 'macos) macos)
@@ -54,7 +55,7 @@
     markdown
     (rust +lsp)
     sh
-    (org +evil)
+    (org +evil +dragndrop +pretty)
     
     :email
     
