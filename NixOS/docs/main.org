@@ -1302,7 +1302,7 @@ Esto me lleva a escribir esta nueva configuración: intentar abrazar de manera i
 Vamos a utilizar la versión de desarrollo de Hyprland, porque es la única que admite plugins que vamos a utilizar más adelante. Así que necesitaremos configurar un Flake dentro de nuestro flakes.nix:
 
 #+begin_src nix :noweb-ref inputsFlakes
-  hyprland.url = "github:hyprwm/Hyprland/59f9f2688ac508a0584d1462151195a6c4992f99";
+  hyprland.url = "github:hyprwm/Hyprland";
 #+end_src
 
 Para ahorrarnos compilaciones innecesarias, también agregamos el repositorio cache de Hyprland. Primero lo declaramos en substituters:
@@ -1539,7 +1539,6 @@ animations {
 
 # See https://wiki.hypr.land/Configuring/Dwindle-Layout/ for more
 dwindle {
-    pseudotile = true # Master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
     preserve_split = true # You probably want this
 }
 
@@ -1609,7 +1608,6 @@ bind = $mainMod, M, exec, command -v hyprshutdown >/dev/null 2>&1 && hyprshutdow
 bind = $mainMod SHIFT, space, togglefloating,
 bind = $mainMod, D, exec, $menu
 bind = $mainMod, P, pseudo, # dwindle
-bind = $mainMod, V, togglesplit, # dwindle
 
 # Emacs
 bind = $mainMod, E, exec, emacs
