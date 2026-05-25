@@ -266,7 +266,6 @@
       
       # See https://wiki.hypr.land/Configuring/Dwindle-Layout/ for more
       dwindle {
-          pseudotile = true # Master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
           preserve_split = true # You probably want this
       }
       
@@ -336,7 +335,6 @@
       bind = $mainMod SHIFT, space, togglefloating,
       bind = $mainMod, D, exec, $menu
       bind = $mainMod, P, pseudo, # dwindle
-      bind = $mainMod, V, togglesplit, # dwindle
       
       # Emacs
       bind = $mainMod, E, exec, emacs
