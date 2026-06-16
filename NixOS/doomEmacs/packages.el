@@ -1,5 +1,7 @@
 (package! atomic-chrome)
 
+(package! org-edna)
+
 (package! gptel)
 
 (package! copilot

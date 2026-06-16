@@ -48,15 +48,15 @@ Si BTRFS no tiene fans, es porque estoy muerto.
 
 La base de mi máquina de trabajo será un sistema de archivos BTRFS con los siguientes subvolúmenes:
 
-- Un subvolumen raíz el cual contendrá la raíz del sistema.
-- Un subvolumen /home el cual contendrá el directorio /home del sistema
-- Un subvolumen /nix el cual contendrá el directorio /nix del sistema
+- Un subvolumen =/= el cual contendrá la raíz del sistema.
+- Un subvolumen =/home= el cual contendrá el directorio =/home= del sistema
+- Un subvolumen =/nix= el cual contendrá el directorio =/nix= del sistema
 
 Las razones para separar mi sistema en tres subvolúmenes son un par y de varias índoles dependiendo de cada uno de estos subvolúmenes.
 
-Para los tres porque me interesa tener políticas de snapshots distintas en cada uno. De la raíz potencialmente quisiera guardar una snapshot en cada actualización del sistema sólo por si los ya existentes mecanismos de protección de NixOS no me pudieran salvar en algún momento; de /home me quiero poner paranóico y guardar snapshots de manera bastante regular, porque son mis archivos personales, y de /nix es totalmente innecesario tener alguna política de snapshots, porque su contenido se genera de manera 100% declarativa.
+Para los tres porque me interesa tener políticas de snapshots distintas en cada uno. De la raíz, potencialmente quisiera guardar una snapshot en cada actualización del sistema sólo por si los ya existentes mecanismos de protección de NixOS no me pudieran salvar en algún momento; de =/home= me quiero poner paranóico y guardar snapshots de manera bastante regular, porque son mis archivos personales, y de =/nix= es totalmente innecesario tener alguna política de snapshots, porque su contenido se genera de manera 100% declarativa.
 
-Además, tener un subvolumen separado de /home me otorga el beneficio de independizar mis archivos personales de la instalación de Linux que tenga en un momento dado. Esto podría lograrlo de una manera incluso más fuerte con una partición separada, pero crear particiones trae el problema de eventualmente tener que redimensionarlas a nivel físico, y eso me da miedo.
+Además, tener un subvolumen separado de =/home= me otorga el beneficio de independizar mis archivos personales de la instalación de Linux que tenga en un momento dado. Esto podría lograrlo de una manera incluso más fuerte con una partición separada, pero crear particiones trae el problema de eventualmente tener que redimensionarlas a nivel físico, y eso me da miedo.
 
 Para instalar NixOS en BTRFS el proceso es bastante sencillo y directo, entonces omitiré esa sección y simplemente citaré [[https://wiki.nixos.org/wiki/Btrfs][este artículo de la Wiki al respecto]].
 
@@ -99,7 +99,7 @@ Y como está en el mejor de nuestros intereses de seguridad y features, siempre 
   boot.kernelPackages = pkgs.linuxPackages;
 #+end_src
 
-El hostname de nuestra computadora es dependiente al contexto. Pero por ahora, mi máquina de trabajo es mi laptop. Ya hablando en temas de networking, también me interesa poder trabajar con las herramientas nmtui y nmcli, a las cuales ya estoy bastante acostumbrado desde hacia varias encarnaciones de mi máquina de trabajo.
+El hostname de nuestra computadora es dependiente al contexto. Pero por ahora, mi máquina de trabajo es mi laptop.
 
 #+begin_src nix :tangle ../nixOS/configuration.nix
   networking.hostName = "mrtaichi-laptop";
@@ -154,9 +154,9 @@ No hay mucho que definir aquí excepto tal vez el preludio a [[OhMyZSH]] al defi
 
 Con esto terminamos las configuraciones iniciales respecto al sistema operativo como tal. El resto de configuraciones las haremos en la siguiente capa de abstracción: los programas :D
 
-** Programas generales
+** Utilidades principales
 
-En NixOS la mayoría de los programas se pueden instalar de tres maneras: Las maneras declarativas son mediante la sección environment.systemPackages, donde podremos definir los programas que necesitaremos a nivel sistema; y mediante la sección users.users.<nombre>.packages.
+En NixOS la mayoría de los programas se pueden instalar de tres maneras: Las maneras declarativas son mediante la sección =environment.systemPackages=, donde podremos definir los programas que necesitaremos a nivel sistema; y mediante la sección =users.users.<nombre>.packages=.
 La diferencia entre estas dos reside más que nada en la disponibilidad del programa. Los paquetes declarados como del sistema se instalan de manera global y al alcance de cualquier usuario, mientras que los paquetes instalados de manera local -o a nivel de usuario- justamente solo estáran disponibles para el usuario que se les haya definido. La norma es mantener los paquetes de sistema lo más reducidos posible, a solamente las cosas que nos hagan sentido que estén instaladas de manera global.
 La tercera forma es imperativa, mediante nix-shell. Esta forma no la voy a tratar aquí porque de hecho no la veremos en ninguna parte de nuestra configuración, pues está reservada para momentos en los que tenga que instalar programas de manera rápida y esté seguro de que los vaya a usar durante un periodo corto de tiempo.
 
@@ -171,7 +171,7 @@ Entonces, para definir los programas, herramientas y dependencias fijas de mi eq
 
 La primera línea es para permitir la instalación de software de código cerrado. Porque, aunque filosóficamente odio el código cerrado, he de admitir que hay ciertas instancias de mi flujo de trabajo que desgraciadamente dependen de algún software con copyright.
 
-Tanto la sección de systemPackages como la de userPackages las seguiré tratando a lo largo del texto en varios flujos de trabajo (todos los que requieran instalación de programas, que son muchos) pero de una vez puedo empezar a declarar algunos esenciales.
+Tanto la sección de *systemPackages* como la de *userPackages* las seguiré tratando a lo largo del texto en varios flujos de trabajo (todos los que requieran instalación de programas, que son muchos) pero de una vez puedo empezar a declarar algunos esenciales.
 
 *** System Packages
 
@@ -203,7 +203,7 @@ La Github CLI, para configurar mis credenciales de Github y poder subir cambios 
   gh
 #+end_src
 
-Y finalmente la suite de TeX Live en su versión full, ya que compilo documentos en LaTeX de manera bastante frecuente (de hecho siendo este trabajo un ejemplo bastante directo) y la versión 25 del OpenJDK.
+Y finalmente la suite de TeX Live en su versión full, ya que compilo documentos en LaTeX de manera bastante frecuente (de hecho siendo este trabajo un ejemplo bastante directo).
 
 #+begin_src nix :noweb-ref systemPackages
   texlive.combined.scheme-full
@@ -1217,6 +1217,15 @@ Para aminorar esto, la siguiente linea hace que todas las lineas del logbook se 
 (setq org-log-into-drawer t)
 #+end_src
 
+Finalmente, agregamos las líneas correspondientes a activar el ~package~ Org Edna. La función de este paquete la explico en la sección de [[packages.el]]
+
+#+begin_src lisp :eval never :noweb-ref orgMode
+(after! org
+  (require 'org-edna)
+  (org-edna-mode 1))
+#+end_src
+
+
 
 *** Atomic Chrome
 
@@ -1276,10 +1285,16 @@ Con esto terminamos la subsección dedicada a mi config.el, ya casi nos falta po
 This file is where package declarations belong. It’s also a good place to look if you want to see what packages a module manages (and where they are installed from).
 #+end_quote
 
-Aquí, según la documentación oficial de Doom Emacs, definiremos los packages que vamos a usar y que no se encuentran en alguno de los módulos definidos previamente. Por ahora, es una sección bastante reducida de este texto porque en realidad lo único que uso fuera de los módulos es Atomic Chrome (el cual explico para qué es en la sección de config.el)
+Aquí, según la documentación oficial de Doom Emacs, definiremos los packages que vamos a usar y que no se encuentran en alguno de los módulos definidos previamente. Primero agregamos el paquete =atomic-chrome=, el cual nos servirá para complementar el flujo de trabajo entre Emacs y navegador que describo en [[config.el]]
 
 #+begin_src lisp :eval never :tangle ../doomEmacs/packages.el
 (package! atomic-chrome)
+#+end_src
+
+Parte del flujo de trabajo -que debería de documentar- en mi agenda Org requiere establecer relaciones de dependencia entre tareas que puede que no se encuentren en el mismo árbol, o tal vez incluso, ni siquiera en el mismo archivo. Para esto, necesito agregar el ~package~ Org Edna, el cual nos permite justamente realizar esto.
+
+#+begin_src lisp :eval never :tangle ../doomEmacs/packages.el
+(package! org-edna)
 #+end_src
 
 

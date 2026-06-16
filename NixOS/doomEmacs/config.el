@@ -26,6 +26,9 @@
 	    ("SOMEDAY" :foreground "cyan" :weight bold)
 	    ("CANCELLED" :foreground "forest green" :weight bold)))
 (setq org-log-into-drawer t)
+(after! org
+  (require 'org-edna)
+  (org-edna-mode 1))
 
 (setq +latex-viewers '(okular))
  (org-babel-do-load-languages
