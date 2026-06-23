@@ -1003,14 +1003,12 @@ Modules that bring support for a language or group of languages to Emacs.
 
 Esta es una de las categorías más importantes para un programador, pues literalmente aquí podemos encontrar los paquetes de soporte para lenguajes de programación que nos proporciona Emacs. Me encantaría poder activar todos de una vez, porque sé que al ritmo que voy eventualmente los terminaría usando; pero la traba es que mientras más módulos tenga activos en esta setup, me exhibo más a tiempos de arranque reducidos y posibles pérdidas de rendimiento. Por este motivo, prefiero solamente activar estos módulos conforme los vaya necesitando.
 
-#+NAME: modulos_Lang
-#+begin_src lisp :eval never
+#+begin_src lisp :eval never :noweb-ref modulos_Lang
 :lang
 (cc +lsp)
 clojure
 (dart +flutter)
 emacs-lisp
-(go +lsp)
 (haskell +lsp)
 json
 (java +lsp)
@@ -1020,7 +1018,6 @@ markdown
 (rust +lsp)
 sh
 (org +evil +dragndrop +pretty)
-
 #+end_src
 
 Algo para comentar particularmente aquí es que Emacs tiene soporte para org-mode de manera nativa, entonces uno podría pensar que no es necesario el módulo de org. La principal razón por la que lo agrego es por compatibilidad con Evil Mode. Si no explicito esta compatibilidad, los bindings dentro de la Org-Agenda se revierten a los defaults y eso me hace mucha fricción para trabajar... Además, agrego soporte para drag and drop y la flag de pretty para que se vea más bonito :)
@@ -2464,6 +2461,16 @@ Este es un plugin de emacs que voy a utilizar para interactuar con IA dentro del
   (setq gptel-model 'llama-3.3-70b-versatile))
 #+end_src
 
+Estas lineas son la configuración básica para que el plugin funcione correctamente. Hacen poco más que declarar el backend (uso [[https://groq.com/][Groq]]) y el modelo de lenguaje por default que usaré de este mismo.
+
+Luego, también dentro de config.el, agrego algunas opciones de configuración más relacionadas directamente con el funcionamiento de la herramienta.
+
+La primera es ajustar la variable =gptel-context-restrict-to-project-files= a =nil=. Esto ya que, en ciertos casos necesito ignorar ciertas restricciones que la herramienta coloca para agregar al contexto del modelo ciertos archivos que sean parte de un repositorio en git.
+
+#+begin_src lisp :tangle ../doomEmacs/config.el :noweb tangle :eval never
+(setq gptel-context-restrict-to-project-files 'nil)
+#+end_src
+
 Y cargamos el paquete declarando lo siguiente en packages.el
 #+begin_src lisp :tangle ../doomEmacs/packages.el :eval never
 (package! gptel)
@@ -2537,6 +2544,29 @@ Y luego, en la configuración, vamos a definir la aceptación de los autocomplet
 #+begin_quote
 Then run M-x copilot-install-server and M-x copilot-login. That's it!
 #+end_quote
+
+
+* Lenguajes de programación
+
+Para cada lenguaje de programación necesito configurar mi entorno en base a las herramientas necesarias vinculadas al flujo de trabajo de dicho lenguaje. En esta sección, veremos uno a uno los requerimentos que necesito para empezar a trabajar con todos los lenguajes de programación con los que trabaje en ese momento.
+
+** Golang
+
+Este es el lenguaje de programación con el que he estado más fijado últimamente. Me gusta mucho su sintaxis y me agrada bastante el estilo de escritura y los comentarios de sus mantenedores en su [[https://go.dev/blog/][Dev blog]]
+
+Lo primero que hago es declarar su compilador dentro de mis *userPackages*
+
+#+begin_src nix :noweb-ref userPackages
+go
+#+end_src
+
+No fijo la versión de Golang a ninguna en particular, pues, por lo general, siempre estaré trabajando en la última versión para mis desarrollos personales. Si en algún caso necesitara una versión particular para algún proyecto, creo que mi opción será usar *nix-shells* o entornos virtuales para ese caso particular.
+
+Luego, para preparar mi IDE (Emacs) para trabajar con Go, agrego su módulo respectivo a los módulos de lenguajes.
+
+#+begin_src nix :noweb-ref modulos_Lang
+(go +lsp)
+#+end_src
 
 * Conclusión
 

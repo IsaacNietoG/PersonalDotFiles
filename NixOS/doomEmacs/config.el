@@ -60,6 +60,8 @@
   ;; 2. Establecer el modelo por defecto
   (setq gptel-model 'llama-3.3-70b-versatile))
 
+(setq gptel-context-restrict-to-project-files 'nil)
+
 (map! :leader
       :prefix "l" ; "l" de LLM
       :desc "Gptel Menu" "l" #'gptel-menu

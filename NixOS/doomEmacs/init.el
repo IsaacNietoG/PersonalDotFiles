@@ -46,7 +46,6 @@
     clojure
     (dart +flutter)
     emacs-lisp
-    (go +lsp)
     (haskell +lsp)
     json
     (java +lsp)
@@ -56,7 +55,7 @@
     (rust +lsp)
     sh
     (org +evil +dragndrop +pretty)
-    
+    (go +lsp)
     :email
     
     :app
