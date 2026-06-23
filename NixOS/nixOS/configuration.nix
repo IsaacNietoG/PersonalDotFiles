@@ -41,6 +41,7 @@
     extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user. Y VMs
     packages = with pkgs; [
       aider-chat
+      go
     ];
     shell = pkgs.zsh;
   };
