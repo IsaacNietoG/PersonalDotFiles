@@ -23,12 +23,13 @@
     ];
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: {
+  outputs = { self, nixpkgs,  ... }@inputs: {
     nixosConfigurations.mrtaichi-laptop = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
         ./configuration.nix
+        
       ];
     };
   };

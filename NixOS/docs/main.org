@@ -2597,45 +2597,273 @@ Vamos a comenzar con la primera feature:
 
 ** Suite de herramientas
 
+Usando como punto de partida el proyecto de [[https://github.com/fabaff/nix-security-box][Nix-Security Box]] de Fabian Affolter, voy a seleccionar un conjunto de herramientas particular para ciberseguridad, dividido en categorías. Todas las declararé como paquetes de usuario.
 
+*** Proxies
 
-BORRAR ABAJO
+Agregamos las siguientes herramientas de proxies para tener una buena variedad, aunque generalmente usaré solamente ZAP y BurpSuite.
 
-Para mi suite de herramientas voy a usar el trabajo realizado por Fabian Affolter en su [[https://github.com/fabaff/nix-security-box][Nix-Security Box]], la cual es un conjunto de herramientas de ciberseguridad para NixOS divididas en categorías. Estas vienen declaradas en varios archivos .nix que, parafraseando sus instrucciones de uso oficiales, se pueden usar de la siguiente manera:
-
-Una vez tenemos el repo disponible en alguna ubicación dentro de nuestro sistema, incluimos la categoría que queramos dentro de nuestro configuration.nix
-
-#+begin_src nix :eval never
-{ config, pkgs, ... }:
-
-{
-  imports =
-    [ # Include the results of the hardware scan.
-      <nixos-hardware/intel/nuc/8i7beh>
-      ./hardware-configuration.nix
-      ./port-scanners.nix
-    ];
-[...]
+#+begin_src nix :noweb-ref userPackages
+bettercap
+burpsuite
+ettercap
+mitmproxy
+mubeng
+proxify
+proxychains
+redsocks
+rshijack
+zap
 #+end_src
 
-Pero la manera nix que me gusta más y que lo hace completamente declarativo es la siguiente:
+*** Port Scanners
 
-Dentro de nuestro flake.nix, declaramos el repositorio de Fabian como input.
+En general solo usaré nmap y rustscan
 
-Y lo agregamos dentro de las outputs de flake.nix
+#+begin_src nix :noweb-ref userPackages
+nmap
+rustscan
+#+end_src
 
+*** Web
 
-Luego, en los modules de nuestra flake, declaramos las categorías que vamos a necesitar, siendo:
+Esta sección viene extraída directamente de el proyecto de Fabian, porque necesito variedad.
 
-- proxies, pues ZAP es mi herramienta predilecta para cualquier cosa que responda solicitudes HTTP
-- port-scanners, por nmap y rustscan
-- web por prácticamente todo
-- generic idem
-- services, porque contiene muchas herramientas para escanear servicios, particularmente sqlmap, ssh-audit; y además aquí está metasploit
-- password, ya que, aunque no le doy tanta prioridad a crackear contraseñas, siempre existe el caso en el CTF de turno
-- exploits, aquí está searchsploit
-- fuzzers, el nombre lo dice todo
+#+begin_src nix :noweb-ref userPackages
+albedo
+arjun
+atac
+brakeman
+cameradar
+cansina
+cariddi
+cf-hero
+chopchop
+clairvoyance
+commix
+crackql
+crlfsuite
+dalfox
+dismap
+dirstalk
+dontgo403
+forbidden
+galer
+gau
+genzai
+gospider
+gotestwaf
+gowitness
+graphpython
+graphqlmaker
+graphqlmap
+graphw00f
+h2spec
+hakrawler
+python3Packages.hakuin
+hey
+http-server
+httpx
+jaeles
+jsubfinder
+jwt-hack
+katana
+kiterunner
+mantra
+mitmproxy2swagger
+monsoon
+nikto
+nomore403
+ntlmrecon
+offat
+photon
+plecost
+scraper
+slowlorust
+snallygaster
+subjs
+swaggerhole
+uddup
+urlfinder
+urx
+wad
+wappalyzergo
+webanalyze
+websecprobe
+whatweb
+wprecon
+wpscan
+wsrepl
+wuzz
+xcrawl3r
+xnlinkfinder
+xsubfind3r
+#+end_src
 
+*** Generic
+
+#+begin_src nix :noweb-ref userPackages
+certinfo-go
+chrony
+clamav
+curl
+cyberchef
+dorkscout
+easyeasm
+exiflooter
+flashrom
+girsh
+gtfocli
+httpie
+hurl
+inetutils
+inxi
+iproute2
+iw
+lynx
+macchanger
+nano
+parted
+pwgen
+spyre
+utillinux
+wget
+xh
+xnldorker
+btop
+iftop
+iotop
+eternal-terminal
+mosh
+shellz
+certinfo-go
+cifs-utils
+freerdp
+net-snmp
+nfs-utils
+ntp
+openssh
+openvpn
+samba
+step-cli
+wireguard-go
+wireguard-tools
+xrdp
+ipcalc
+netmask
+tmux
+zellij
+cabextract
+p7zip
+unrar
+unzip
+#+end_src
+
+*** Services
+
+La sección de variedad por excelencia, aquí tenemos metasploit, sqlmap, etc.
+
+#+begin_src nix :noweb-ref userPackages
+acltoolkit
+checkip
+ghunt
+ike-scan
+keepwn
+metasploit
+nbutools
+nerva
+nuclei
+nuclei-templates
+openrisk
+osv-scanner
+uncover
+traitor
+vuls
+mx-takeover
+ruler
+swaks
+trustymail
+agneyastra
+ghauri
+laudanum
+mongoaudit
+nosqli
+pysqlrecon
+sqlmap
+sqlmc
+braa
+onesixtyone
+snmpen
+baboossh
+sshchecker
+ssh-audit
+ssh-mitm
+teler
+waf-tester
+wafw00f
+cryptoscan
+mini-pqc
+pqc-bench
+pqcscan
+oshka
+trajan
+terrascan
+tfsec
+chain-bench
+witness
+davtest
+#+end_src
+
+*** Password
+
+#+begin_src nix :noweb-ref userPackages
+authoscope
+bruteforce-luks
+conpass
+crunch
+h8mail
+hashcat
+hashcat-utils
+hashdeep
+legba
+nasty
+ncrack
+nth
+pywhisker
+sh4d0wup
+spearspray
+spraycharles
+thc-hydra
+truecrack
+#+end_src
+
+*** Exploits
+
+#+begin_src nix :noweb-ref userPackages
+exploitdb
+go-exploitdb
+keedump
+padre
+sploitscan
+lmp
+logmap
+#+end_src
+
+*** Fuzzers
+
+#+begin_src nix :noweb-ref userPackages
+aflplusplus
+feroxbuster
+ffuf
+gobuster
+honggfuzz
+radamsa
+regexploit
+scout
+ssdeep
+wfuzz
+zzuf
+#+end_src
 
 * Conclusión
 
