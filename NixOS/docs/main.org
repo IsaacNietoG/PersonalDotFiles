@@ -215,10 +215,12 @@ Luego tenemos Zerotier One, que es uno de mis herramientas para definir VPNs pre
   zerotierone
 #+end_src
 
-Y finalmente, declaramos Node JS, ya que, para mi mala suerte, se ha vuelto una dependencia esencial para muchas herramientas
+Y finalmente, declaramos Node JS, ya que, para mi mala suerte, se ha vuelto una dependencia esencial para muchas herramientas. Por esta misma razón, pero ya sin tanta mala suerte, agrego también Python 3 y el GNU Compiler
 
 #+begin_src nix :noweb-ref systemPackages
   nodejs
+  python3
+  gcc
 #+end_src
 
 *** User Packages
@@ -276,19 +278,20 @@ Luego crearemos un archivo llamado flake.nix, el cual contendrá lo siguiente:
     ];
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: {
+  outputs = { self, nixpkgs, <<outputsFlakes>> ... }@inputs: {
     nixosConfigurations.mrtaichi-laptop = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
         ./configuration.nix
+        <<modulesFlakes>>
       ];
     };
   };
 }
 #+end_src
 
-En este es en el que realizaremos los cambios necesarios para instalar paquetes de NixOS mediante Flakes. Generalmente solamente agregaremos cosillas a inputs, substituters o publicKeys.
+En este es en el que realizaremos los cambios necesarios para instalar paquetes de NixOS mediante Flakes. Generalmente solamente agregaremos cosillas a inputs, substituters o publicKeys. En casos particulares, también a modules, pero por default sólo contendría ./configuration.nix. Mismo caso con las outputs.
 
 Además y para finalizar, ya que los packages que obtengamos mediante flakes generalmente no se encontrarán precompilados en la cache oficial de NixOS, varias veces tendremos que agregar las caches de los flakes que queramos agregar para ahorrarnos compilar todo el tiempo.
 
@@ -2567,6 +2570,72 @@ Luego, para preparar mi IDE (Emacs) para trabajar con Go, agrego su módulo resp
 #+begin_src nix :noweb-ref modulos_Lang
 (go +lsp)
 #+end_src
+
+* Ciberseguridad
+
+Otro de los grandes pilares de mi especialización dentro de mi carrera, y de hecho el que más frutos me ha rendido hasta el momento en el que redacto esta sección es la ciberseguridad. Para dedicarse a la ciberseguridad de manera adecuada, de igual manera que en muchas otras áreas, uno necesita una buena cantidad de herramientas configuradas y entornos separados para según que actividad quiera realizar.
+
+Para el flujo de trabajo que reconozco hasta estos momentos, distingo las siguientes necesidades:
+
+- Lo más común que hago en ciberseguridad tiene que ver con pentesting web y en general todo el flujo de trabajo general de un pentesting: reconocimiento, análisis de vulnerabilidades, explotación y post-explotación. Para esto ocupo una colección de herramientas bastante tradicional que todos conocemos, herramientas como nmap, algún proxy como ZAP, conexión a VPNs, fuzzers, etc.
+
+- No planeo quebrar hashes con mi máquina personal, entonces probablemente no sea necesario particularmente alguna herramienta como hashcat, pero probablemente, si encuentro una lista lo suficientemente amplia de herramientas de ciberseguridad, venga ahí por default. En ese caso, tampoco le haría el feo.
+
+- Tal vez agradecería ciertas herramientas relacionadas a OSINT, como theHarvester, pero tampoco son mi prioridad ni mi caso de uso principal.
+
+- Navajas suizas como metasploit y searchsploit también resultan ser bastante útiles para ciertos escenarios en los cuales no necesariamente estás analizando una aplicación o entorno en busca de vulnerabilidades, si no que las vulnerabilidades ya se encuentran descubiertas y disponibles en alguna de esas dos. Este es obviamente un caso bastante común de hecho. Es rara la vez en que descubres un CVE (pero se viene la mía próximamente :D) propio.
+
+- Me gusta realizar ocasionalmente análisis de malware, para estos casos, obviamente primero que nada necesito una serie de entornos aislados y las herramientas pertinentes tanto para análisis estático como dinámico. Por ahora, sólo hago análisis estático para binarios hechos en Windows pero que, por si acaso, no me gustaría tener fuera de un entorno aislado de todas maneras.
+
+Entonces, he llegado a la conclusión de que necesito al menos dos features nuevas dentro de mi flujo de trabajo para manejar todos estos requerimentos:
+
+- Una suite de herramientas instaladas dentro de mi sistema operativo principal, destinadas a ciberseguridad.
+
+- Una máquina virtual aislada pero también configurada de manera declarativa para correr análsis de malware aislado y para otros casos de uso en general que también requieran ese aislamiento que solamente una máquina virtual debidamente configurada puede proporcionar.
+
+Vamos a comenzar con la primera feature:
+
+** Suite de herramientas
+
+
+
+BORRAR ABAJO
+
+Para mi suite de herramientas voy a usar el trabajo realizado por Fabian Affolter en su [[https://github.com/fabaff/nix-security-box][Nix-Security Box]], la cual es un conjunto de herramientas de ciberseguridad para NixOS divididas en categorías. Estas vienen declaradas en varios archivos .nix que, parafraseando sus instrucciones de uso oficiales, se pueden usar de la siguiente manera:
+
+Una vez tenemos el repo disponible en alguna ubicación dentro de nuestro sistema, incluimos la categoría que queramos dentro de nuestro configuration.nix
+
+#+begin_src nix :eval never
+{ config, pkgs, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      <nixos-hardware/intel/nuc/8i7beh>
+      ./hardware-configuration.nix
+      ./port-scanners.nix
+    ];
+[...]
+#+end_src
+
+Pero la manera nix que me gusta más y que lo hace completamente declarativo es la siguiente:
+
+Dentro de nuestro flake.nix, declaramos el repositorio de Fabian como input.
+
+Y lo agregamos dentro de las outputs de flake.nix
+
+
+Luego, en los modules de nuestra flake, declaramos las categorías que vamos a necesitar, siendo:
+
+- proxies, pues ZAP es mi herramienta predilecta para cualquier cosa que responda solicitudes HTTP
+- port-scanners, por nmap y rustscan
+- web por prácticamente todo
+- generic idem
+- services, porque contiene muchas herramientas para escanear servicios, particularmente sqlmap, ssh-audit; y además aquí está metasploit
+- password, ya que, aunque no le doy tanta prioridad a crackear contraseñas, siempre existe el caso en el CTF de turno
+- exploits, aquí está searchsploit
+- fuzzers, el nombre lo dice todo
+
 
 * Conclusión
 
