@@ -273,7 +273,6 @@
        bluetui
        gh
        texlive.combined.scheme-full
-       zerotierone
        nodejs
        python3
        gcc
@@ -289,6 +288,8 @@
      waybar
      maestral
      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+       zerotierone
+     pkgs.netbird-ui
    ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -669,7 +670,9 @@
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
   services.spice-vdagentd.enable = true;
-  # Mover a sección de tailscale
-  services.tailscale.enable = true;
+
+services.netbird.enable = true;
+
+services.tailscale.enable = true;
 
 }

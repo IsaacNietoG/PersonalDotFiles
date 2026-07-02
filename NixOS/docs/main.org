@@ -209,12 +209,6 @@ Y finalmente la suite de TeX Live en su versión full, ya que compilo documentos
   texlive.combined.scheme-full
 #+end_src
 
-Luego tenemos Zerotier One, que es uno de mis herramientas para definir VPNs preferidas.
-
-#+begin_src nix :noweb-ref systemPackages
-  zerotierone
-#+end_src
-
 Y finalmente, declaramos Node JS, ya que, para mi mala suerte, se ha vuelto una dependencia esencial para muchas herramientas. Por esta misma razón, pero ya sin tanta mala suerte, agrego también Python 3 y el GNU Compiler
 
 #+begin_src nix :noweb-ref systemPackages
@@ -2405,8 +2399,6 @@ maestral
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
   services.spice-vdagentd.enable = true;
-  # Mover a sección de tailscale
-  services.tailscale.enable = true;
 #+end_src
 
 * Zen Browser
@@ -2864,6 +2856,35 @@ ssdeep
 wfuzz
 zzuf
 #+end_src
+
+* VPNs
+
+Las VPNs son una forma de poder interactuar con equipos como si estuvieran en una red local, aunque en realidad lo estemos haciendo a través de internet. Estamos efectivamente usando la infraestructura pública ya establecida de internet para emular redes privadas. Y esto es algo muy útil para varios proyectos en equipo y para aplicaciones personales que requiero.
+
+El servicio de VPNs que suelo utilizar más es ZeroTier One, así que lo declaro como paquete de sistema. No hay configuraciones adicionales por realizar de manera declarativa.
+
+#+begin_src nix :noweb-ref systemPackages
+  zerotierone
+#+end_src
+
+Luego declaramos Netbird, otro servicio de VPNs que de hecho recientemente he descubierto, y muy potencialmente, sea de mis favoritos para aplicaciones en las que necesite self-hostear VPNs
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+services.netbird.enable = true;
+#+end_src
+
+Habilitamos también su interfaz gráfica, por si acaso.
+
+#+begin_src nix :noweb-ref systemPackages
+pkgs.netbird-ui
+#+end_src
+
+Y finalizamos esta sección con tailscale, yet another servicio de VPNs que también me gusta utilizar por su facilidad de uso.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+services.tailscale.enable = true;
+#+end_src
+
 
 * Conclusión
 
