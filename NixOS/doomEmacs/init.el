@@ -42,20 +42,19 @@
     (:if (featurep :system 'macos) macos)
     
     :lang
-    (cc +lsp)
-    clojure
-    (dart +flutter)
     emacs-lisp
-    (haskell +lsp)
     json
-    (java +lsp)
-    javascript
     latex
     markdown
     (rust +lsp)
     sh
     (org +evil +dragndrop +pretty)
+    (cc +lsp)
     (go +lsp)
+    javascript
+    python
+    clojure
+    (java +lsp)
     :email
     
     :app

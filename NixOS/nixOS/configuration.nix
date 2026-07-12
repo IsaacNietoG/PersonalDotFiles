@@ -40,8 +40,22 @@
     isNormalUser = true;
     extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user. Y VMs
     packages = with pkgs; [
+        tree
+        spotify
+        anki-bin
+        zip
+        tar
+        file
+        remmina
+        htop
       aider-chat
       go
+      pyenv
+      conda
+      clojure
+      leiningen
+      pkgs.javaPackages.compiler.openjdk25
+      maven
       bettercap
       burpsuite
       ettercap
@@ -273,13 +287,6 @@
        bluetui
        gh
        texlive.combined.scheme-full
-       nodejs
-       python3
-       gcc
-       tree
-       spotify
-       anki-bin
-       pkgs.javaPackages.compiler.openjdk25
      emacs
      rofi
      hyprlock
@@ -288,6 +295,9 @@
      waybar
      maestral
      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+       gcc
+       nodejs
+       python3
        zerotierone
      pkgs.netbird-ui
    ];

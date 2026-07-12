@@ -15,7 +15,8 @@ pluginsHyprland
 
 * Lista de cosas x hacer
 
-- [ ] Snapshots
-- [ ] Utilidades generales (zip, tar, java, file, python3, unzip, remmina, htop)
+- [X] En proceso: Crear una subsección por lenguaje de programación
+- [X] Utilidades generales (zip, tar, java, file, python3, unzip, remmina, htop)
 - [ ] Contenedor de ciberseguridad?
 - [ ] Explicación de Flakes
+- [ ] Atomizar PATH de mi .zshrc

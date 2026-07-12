@@ -29,6 +29,10 @@ PATH=$PATH:$HOME/.local/share/gem/ruby/3.2.0/bin
 PATH=$PATH:$HOME/go/bin
 export GEM_HOME=$HOME/.gem
 
+export TERMINAL="alacritty"
+
+source ~/.groq-secret
+
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
@@ -47,11 +51,3 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
-
-[ -f "/home/mrtaichi/.ghcup/env" ] && . "/home/mrtaichi/.ghcup/env"
-
-export TERMINAL="alacritty"
-
-source /usr/share/nvm/init-nvm.sh
-
-source ~/.groq-secret

@@ -209,35 +209,31 @@ Y finalmente la suite de TeX Live en su versión full, ya que compilo documentos
   texlive.combined.scheme-full
 #+end_src
 
-Y finalmente, declaramos Node JS, ya que, para mi mala suerte, se ha vuelto una dependencia esencial para muchas herramientas. Por esta misma razón, pero ya sin tanta mala suerte, agrego también Python 3 y el GNU Compiler
-
-#+begin_src nix :noweb-ref systemPackages
-  nodejs
-  python3
-  gcc
-#+end_src
-
 *** User Packages
 
 En el nivel de usuario voy a definir algunas herramientas generales que efectivamente usaré en varios flujos de trabajo, pero no considero que me den "vibras" de ser paquetes de sistema.
 
 Empezamos con tree, que no es más que una herramienta de linea de comandos para mostrar de una manera más visual la estructura del directorio en el que estemos.
 
-#+begin_src nix :noweb-ref systemPackages
+#+begin_src nix :noweb-ref userPackages
   tree
 #+end_src
 
 También Spotify y Anki, que son mis herramientas de estudio esenciales. (sí, Spotify es mi herramienta de estudio favorita)
 
-#+begin_src nix :noweb-ref systemPackages
+#+begin_src nix :noweb-ref userPackages
   spotify
   anki-bin
 #+end_src
 
-Y finalmente el OpenJDK 25. Lo pongo aquí y no en otro flujo de trabajo particular porque Java es el lenguaje de programación esencial y prácticamente primigenio para las necesidades de mi carrera.
+Y algunas utilidades básicas que necesitaré para cualquier flujo de trabajo en general, y que no caben en uno en específico (por ahora).
 
-#+begin_src nix :noweb-ref systemPackages
-  pkgs.javaPackages.compiler.openjdk25
+#+begin_src nix :noweb-ref userPackages
+  zip
+  tar
+  file
+  remmina
+  htop
 #+end_src
 
 ** Flakes
@@ -493,56 +489,6 @@ export GEM_HOME=$HOME/.gem
 #+end_src
 
 
-** Pyenv
-
-Pyenv es una herramienta que he usado durante algo de tiempo -probablemente más de un año- porque me permite cambiar entre versiones de Python de una manera bastante rápida y conveniente. Es, como [[https://github.com/pyenv/pyenv][su página]] lo dice, "simple, unobtrusive, and follows the UNIX tradition of single-purpose tools that do one thing well.".
-
-Para usar esta herramienta necesitamos agregar algunas líneas que vienen también en su página. Las cuales son las siguientes:
-
-#+begin_src bash :tangle ../OhMyZsh/.zshrc
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-#+end_src
-
-Con estas líneas, estoy preparado para poder instalar Pyenv en cualquier momento sin hacer otro paso que sea pedir el paquete con mi gestor de paquetes predilecto.
-
-
-** Conda
-
-Anaconda es una distribución de Python y R orientada a ciencia de datos y machine learning. En un principio la usaba para montarme entornos virtuales de Python.
-
-Esta es una suerte de sección legacy porque en realidad desde que uso Virtual Envs y Pyenv he dejado de usar Anaconda, pero creo que no sobra tampoco.
-
-#+begin_src bash :tangle ../OhMyZsh/.zshrc
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/mrtaichi/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/mrtaichi/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/mrtaichi/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/mrtaichi/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-#+end_src
-
-
-** GHCUP
-
-GHCUP es una herramienta que nos permite manejar varias versiones de Haskell y su GHC, en general, es el equivalente de [[*Pyenv]] pero para Haskell.
-
-#+begin_src bash :tangle ../OhMyZsh/.zshrc
-[ -f "/home/mrtaichi/.ghcup/env" ] && . "/home/mrtaichi/.ghcup/env"
-#+end_src
-
-
 ** Terminal
 
 Mi terminal predilecta es Alacritty, y para que i3 pueda invocar esta terminal adecuadamente, necesito fijar una variable de entorno TERMINAL.
@@ -552,14 +498,6 @@ export TERMINAL="alacritty"
 #+end_src
 
 
-** NVM
-
-Finalmente tenemos a NVM, el cual es un manejador de versiones pero para Node, al igual que los anteriores [[*GHCUP]]
-y [[*Pyenv]]
-
-#+begin_src bash :tangle ../OhMyZsh/.zshrc
-source /usr/share/nvm/init-nvm.sh
-#+end_src
 
 * Doom Emacs
 
@@ -998,24 +936,20 @@ El módulo que viene por default es el de MacOS, bajo el condicional de activars
 Modules that bring support for a language or group of languages to Emacs.
 #+end_quote
 
-Esta es una de las categorías más importantes para un programador, pues literalmente aquí podemos encontrar los paquetes de soporte para lenguajes de programación que nos proporciona Emacs. Me encantaría poder activar todos de una vez, porque sé que al ritmo que voy eventualmente los terminaría usando; pero la traba es que mientras más módulos tenga activos en esta setup, me exhibo más a tiempos de arranque reducidos y posibles pérdidas de rendimiento. Por este motivo, prefiero solamente activar estos módulos conforme los vaya necesitando.
+Esta es una de las categorías más importantes para un programador, pues literalmente aquí podemos encontrar los paquetes de soporte para lenguajes de programación que nos proporciona Emacs. Me encantaría poder activar todos de una vez, porque sé que al ritmo que voy eventualmente los terminaría usando; pero la traba es que mientras más módulos tenga activos en esta setup, me exhibo más a tiempos de arranque reducidos y posibles pérdidas de rendimiento. Por este motivo, prefiero solamente activar estos módulos conforme los vaya necesitando. Declaro la etiqueta modulos_Lang, y será la que usaré para agregar módulos a esta sección.
 
 #+begin_src lisp :eval never :noweb-ref modulos_Lang
 :lang
-(cc +lsp)
-clojure
-(dart +flutter)
 emacs-lisp
-(haskell +lsp)
 json
-(java +lsp)
-javascript
 latex
 markdown
 (rust +lsp)
 sh
 (org +evil +dragndrop +pretty)
 #+end_src
+
+El intended debería de ser que cada lenguaje de programación tenga su propia sección en [[Lenguajes de programación]], y con ello, su propio flujo de trabajo curado y asentado. Pero por ahora, dejaré varios lenguajes aquí sueltos sólo para no perder capacidades en mi IDE, mientras creo los flujos de trabajo correspondientes para cada idioma.
 
 Algo para comentar particularmente aquí es que Emacs tiene soporte para org-mode de manera nativa, entonces uno podría pensar que no es necesario el módulo de org. La principal razón por la que lo agrego es por compatibilidad con Evil Mode. Si no explicito esta compatibilidad, los bindings dentro de la Org-Agenda se revierten a los defaults y eso me hace mucha fricción para trabajar... Además, agrego soporte para drag and drop y la flag de pretty para que se vea más bonito :)
 
@@ -1293,6 +1227,7 @@ Parte del flujo de trabajo -que debería de documentar- en mi agenda Org requier
 
 
 Terminando este archivo, finalmente tenemos completa la configuración de Doom Emacs
+
 
 * Hyprland
 
@@ -2545,6 +2480,22 @@ Then run M-x copilot-install-server and M-x copilot-login. That's it!
 
 Para cada lenguaje de programación necesito configurar mi entorno en base a las herramientas necesarias vinculadas al flujo de trabajo de dicho lenguaje. En esta sección, veremos uno a uno los requerimentos que necesito para empezar a trabajar con todos los lenguajes de programación con los que trabaje en ese momento.
 
+** C y C++
+
+La madre de todos los lenguajes modernos y su hijo cuestionable. Lo uso sobre todo para proyectos de bajo nivel, como por ejemplo Arduino y cosas IoT.
+
+Empezamos por declarar su compilador como paquete de sistema.
+
+#+begin_src nix :noweb-ref systemPackages
+  gcc
+#+end_src
+
+Y agregamos soporte a mi IDE para estos lenguajes, con su respectivo módulo lang.
+
+#+begin_src lisp :eval never :noweb-ref modulos_Lang
+(cc +lsp)
+#+end_src
+
 ** Golang
 
 Este es el lenguaje de programación con el que he estado más fijado últimamente. Me gusta mucho su sintaxis y me agrada bastante el estilo de escritura y los comentarios de sus mantenedores en su [[https://go.dev/blog/][Dev blog]]
@@ -2562,6 +2513,132 @@ Luego, para preparar mi IDE (Emacs) para trabajar con Go, agrego su módulo resp
 #+begin_src nix :noweb-ref modulos_Lang
 (go +lsp)
 #+end_src
+
+** Javascript
+
+Casi no suelo trabajar con Javascript. Tengo poca experiencia con este lenguaje porque mi opinión a título personal es que nunca debió salir del frontend, pero ajá.
+
+Necesito Node para ciertas dependencias de mi sistema, así que lo declaro como systemPackage.
+
+#+begin_src nix :noweb-ref systemPackages
+  nodejs
+#+end_src
+
+Luego, para preparar mi IDE (Emacs) para trabajar con este lenguaje, agrego su módulo de lenguaje a mi configuración.
+
+#+begin_src lisp :eval never :noweb-ref modulos_Lang
+javascript
+#+end_src
+
+** Python
+
+En mis primeros semestres de universidad llegué a caer bajo las ideas de que "Python no es un lenguaje de programación real" y pasé a evitarlo como la peste durante un rato. Todo cambió cuando, gracias a Dios, mi lóbulo frontal se terminó de desarrollar y me dí cuenta de que no tiene sentido que existan guerras de lenguajes siempre que nunca endiosemos ni odiemos conscientemente ningún lenguaje de programación y los utilicemos como lo que son: herramientas para realizar un trabajo, con sus propios casos de uso y sus ventajas y desventajas.
+
+Y el caso de uso que le suelo a dar Python es para scripts rápidos, cuentas rápidas en su intérprete (que he pasado a usar como calculadora) y para obviamente correr ciertas herramientas desarrolladas en el mismo.
+
+Hablando de su intérprete, lo agregamos a los paquetes de sistema.
+
+#+begin_src nix :noweb-ref systemPackages
+  python3
+#+end_src
+
+Luego agregamos soporte para este lenguaje en mi IDE (Emacs), agregando su módulo a los módulos de lenguaje en configuraciones.
+
+#+begin_src lisp :eval never :noweb-ref modulos_Lang
+python
+#+end_src
+
+*** Pyenv
+
+Pyenv es una herramienta que he usado durante algo de tiempo -probablemente más de un año- porque me permite cambiar entre versiones de Python de una manera bastante rápida y conveniente. Es, como [[https://github.com/pyenv/pyenv][su página]] lo dice, "simple, unobtrusive, and follows the UNIX tradition of single-purpose tools that do one thing well.".
+
+Lo declaro como paquete de usuario en la configuración de NixOS
+
+#+begin_src nix :noweb-ref userPackages
+pyenv
+#+end_src
+
+Luego agregro a mi =.zshrc= (véase [[OhMyZSH][OhMyZSH]]) algunas líneas que vienen también en su página. Las cuales son las siguientes:
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+#+end_src
+
+*** Conda
+
+Anaconda es una distribución de Python y R orientada a ciencia de datos y machine learning. En un principio la usaba para montarme entornos virtuales de Python.
+
+Esta es una suerte de sección legacy porque en realidad desde que uso Virtual Envs y Pyenv he dejado de usar Anaconda, pero creo que no sobra tampoco. Agregamos las siguientes líneas a mi =.zshrc=
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/mrtaichi/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/mrtaichi/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/mrtaichi/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/mrtaichi/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+#+end_src
+
+Y luego declaro el paquete correspondiente como paquete de usuario.
+
+#+begin_src nix :noweb-ref userPackages
+conda
+#+end_src
+
+** Haskell
+
+Haskell es un lenguaje de programación que, no lo puedo negar, al inicio me parecía bastante pesado y tedioso. Cuando uno proviene de los lenguajes imperativos, es complicado comenzar a pensar de manera funcional.
+
+Pero conforme más lo uso y más me sumerjo en las matemáticas y el cariño detrás de su compilador y en general de todo este paradigma de programación, más me gusta usarlo. Tal vez algún día le invierta más tiempo a su uso, quizás en forma de algún proyecto interesante.
+
+Cuando usaba Arch, era tan sencillo como tener GHCup instalado, pero al investigar 5 minutos sobre cómo empezar a trabajar con Haskell en NixOS, me doy cuenta de que es un problema que voy a procrastinar hasta que me toque desarrollar un proyecto en este lenguaje. Por lo que esta sección queda pendiente.
+
+** Clojure
+
+Otro lenguaje funcional, pero esta vez hecho para funcionar en la máquina virtual de Java. Necesito trabajar más en él, ya que no tengo la memoria de por qué tengo un entorno de trabajo preparado para el mismo.
+
+Comenzamos con declarar como userPackage las dos cosas esenciales de este lenguaje: Su compilador y su herramienta de gestión de proyectos principal.
+
+#+begin_src nix :noweb-ref userPackages
+clojure
+leiningen
+#+end_src
+
+Y, como siempre, agrego su módulo de lenguaje a mi IDE (Emacs)
+
+#+begin_src lisp :eval never :noweb-ref modulos_Lang
+clojure
+#+end_src
+
+** Java
+
+Qué sería un estudiante de CC sin Java?
+
+Agrego su último compilador a la fecha (OpenJDK25) a mis userPackages, junto con Maven, mi gestor de proyectos favorito.
+
+#+begin_src nix :noweb-ref userPackages
+pkgs.javaPackages.compiler.openjdk25
+maven
+#+end_src
+
+Y adapto mi IDE, agregando su respectivo módulo de lenguaje.
+
+#+begin_src lisp :eval never :noweb-ref modulos_Lang
+(java +lsp)
+#+end_src
+
 
 * Ciberseguridad
 
@@ -2590,6 +2667,7 @@ Vamos a comenzar con la primera feature:
 ** Suite de herramientas
 
 Usando como punto de partida el proyecto de [[https://github.com/fabaff/nix-security-box][Nix-Security Box]] de Fabian Affolter, voy a seleccionar un conjunto de herramientas particular para ciberseguridad, dividido en categorías. Todas las declararé como paquetes de usuario.
+
 
 *** Proxies
 
@@ -2856,6 +2934,7 @@ ssdeep
 wfuzz
 zzuf
 #+end_src
+
 
 * VPNs
 
