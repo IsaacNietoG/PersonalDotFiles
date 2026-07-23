@@ -44,11 +44,10 @@
         spotify
         anki-bin
         zip
-        tar
         file
         remmina
         htop
-      aider-chat
+      opencode
       go
       pyenv
       conda

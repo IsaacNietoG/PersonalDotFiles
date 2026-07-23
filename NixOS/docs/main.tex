@@ -1,4 +1,4 @@
-% Created 2026-07-11 Sat 20:02
+% Created 2026-07-23 Thu 16:35
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 
@@ -29,7 +29,7 @@
 \tableofcontents
 
 \section{Introducción}
-\label{sec:org2ac1c80}
+\label{sec:org3d21aaa}
 
 Bienvenido a mis PersonalDotFiles, la recopilación de configuraciones y dotfiles de mi sistema operativo NixOS. En este documento, exploraré las diferentes herramientas y configuraciones que utilicé para crear un entorno de trabajo personalizado y eficiente.
 
@@ -37,13 +37,13 @@ Comenzaré explicando mi flujo de trabajo y las razones detrás de mi elección 
 
 Además, exploraré las herramientas y configuraciones que utilicé para crear un entorno de trabajo productivo, incluyendo la configuración de OhMyZSH, Doom Emacs, Hyprland, y otras herramientas esenciales para mi flujo de trabajo. También cubriré la configuración de los paquetes y dependencias necesarias para cada herramienta, utilizando NixOS y su gestor de paquetes.
 \section{Especificación}
-\label{sec:org429eb98}
+\label{sec:org26278e9}
 
 El flujo de trabajo y configuración que explica este documento es el que utilizo para las encarnaciones de mis máquinas de trabajo principales.
 
 Como estudiante de Ciencias de la Computación que además tiene bastantes intereses que lo llevan a trabajar en un par de cosillas a la vez, no me siento seguro de afirmar que mi marco de trabajo es el correcto para nadie más que mi mismo, pero creo que puede ser un buen punto de partida para cualquier persona que quiera construir su máquina de trabajo desde cero, o simplemente quiera tener una referencia de cómo configurar ciertas herramientas y programas.
 \section{NixOS}
-\label{sec:org8973e2d}
+\label{sec:orgf5d032a}
 
 El sistema operativo sobre el que construyo mi máquina de trabajo es Linux, más específicamente la distribución NixOS.
 
@@ -61,7 +61,7 @@ NixOS admite configuraciones reproducibles y declarativas a través de un manejo
 
 Este sistema de configuraciones se basa en archivos .nix, que serán los que iremos construyendo para formar prácticamente todo el sistema.
 \subsection{Instalación y Sistema de Archivos}
-\label{sec:orge6e0b48}
+\label{sec:org5ead44c}
 
 \begin{quote}
 Si BTRFS opina, estoy de acuerdo.
@@ -113,7 +113,7 @@ Cuando montamos una partición con la opción noatime, le prohibimos al sistema 
 
 Normalmente, cada vez que lees un archivo (aunque no lo modifiques), el sistema tiene que hacer una operación de escritura para actualizar la hora de acceso. Con noatime, esa escritura se elimina. Esto nos trae una optimización para el rendimiento y la vida útil de nuestro SSD que podemos tomar muy fácilmente aquí.
 \subsection{Configuraciones globales}
-\label{sec:orgcd169e4}
+\label{sec:org914b259}
 
 El arranque de nuestro sistema será delegado a Systemd-boot. Esta es la primera vez que creo una configuración no basada en GRUB. Tal vez lo cambie más adelante, pero por ahora me gusta mucho el hecho de que este sistema ``fuera de la caja'' ya tenga soporte para las ``Generaciones'' de NixOS (lo veremos más adelante probablemente).
 
@@ -164,11 +164,11 @@ Y activo el soporte para tener sonido en mi máquina de trabajo usando PipeWire.
   };
 \end{verbatim}
 \subsection{Cuentas de usuario}
-\label{sec:org8e6202b}
+\label{sec:org484c5c7}
 
 Mi equipo de trabajo solamente tiene un usuario interactivo: el mío.
 
-No hay mucho que definir aquí excepto tal vez el preludio a \ref{sec:org777f3d7} al definir que voy a usar zsh como emulador de terminal.
+No hay mucho que definir aquí excepto tal vez el preludio a \ref{sec:orgb814cfb} al definir que voy a usar zsh como emulador de terminal.
 
 \begin{verbatim}
   users.users.mrtaichi = {
@@ -183,7 +183,7 @@ No hay mucho que definir aquí excepto tal vez el preludio a \ref{sec:org777f3d7
 
 Con esto terminamos las configuraciones iniciales respecto al sistema operativo como tal. El resto de configuraciones las haremos en la siguiente capa de abstracción: los programas :D
 \subsection{Utilidades principales}
-\label{sec:orge942c15}
+\label{sec:org885c801}
 
 En NixOS la mayoría de los programas se pueden instalar de tres maneras: Las maneras declarativas son mediante la sección \texttt{environment.systemPackages}, donde podremos definir los programas que necesitaremos a nivel sistema; y mediante la sección \texttt{users.users.<nombre>.packages}.
 La diferencia entre estas dos reside más que nada en la disponibilidad del programa. Los paquetes declarados como del sistema se instalan de manera global y al alcance de cualquier usuario, mientras que los paquetes instalados de manera local -o a nivel de usuario- justamente solo estáran disponibles para el usuario que se les haya definido. La norma es mantener los paquetes de sistema lo más reducidos posible, a solamente las cosas que nos hagan sentido que estén instaladas de manera global.
@@ -202,7 +202,7 @@ La primera línea es para permitir la instalación de software de código cerrad
 
 Tanto la sección de \textbf{systemPackages} como la de \textbf{userPackages} las seguiré tratando a lo largo del texto en varios flujos de trabajo (todos los que requieran instalación de programas, que son muchos) pero de una vez puedo empezar a declarar algunos esenciales.
 \subsubsection{System Packages}
-\label{sec:org4a864e8}
+\label{sec:orge5c8b97}
 
 A nivel de sistema voy a definir los siguientes packages, comenzando por vim, wget y git
 
@@ -238,7 +238,7 @@ Y finalmente la suite de \TeX{} Live en su versión full, ya que compilo documen
   texlive.combined.scheme-full
 \end{verbatim}
 \subsubsection{User Packages}
-\label{sec:orga8fd975}
+\label{sec:orgb08f980}
 
 En el nivel de usuario voy a definir algunas herramientas generales que efectivamente usaré en varios flujos de trabajo, pero no considero que me den ``vibras'' de ser paquetes de sistema.
 
@@ -259,13 +259,12 @@ Y algunas utilidades básicas que necesitaré para cualquier flujo de trabajo en
 
 \begin{verbatim}
   zip
-  tar
   file
   remmina
   htop
 \end{verbatim}
 \subsection{Flakes}
-\label{sec:org272685a}
+\label{sec:org615d5a1}
 
 Para algunos programas que vamos a usar más adelante, nos interesa mantener un registro claro de las versiones de las dependencias que estarán instalando y usando. Esto tanto para mantener la reproducibilidad como para ciertas situaciones nicho que requieren algunas versiones particulares de ciertos programas que vamos a utilizar.
 
@@ -314,7 +313,7 @@ En este es en el que realizaremos los cambios necesarios para instalar paquetes 
 
 Además y para finalizar, ya que los packages que obtengamos mediante flakes generalmente no se encontrarán precompilados en la cache oficial de NixOS, varias veces tendremos que agregar las caches de los flakes que queramos agregar para ahorrarnos compilar todo el tiempo.
 \subsection{Cron}
-\label{sec:org7532b39}
+\label{sec:orgdba8171}
 
 Cron es un programa de Linux que nos permite programar tareas para que se ejecuten automáticamente en momentos específicos. Es una herramienta muy útil para automatizar tareas repetitivas o programar tareas que deben ejecutarse en momentos específicos. Particularmente para este caso, voy a configurar ciertos cronjobs que me permiten mantener mi máquina de trabajo actualizada y con ciertas tareas de mantenimiento que me gusta hacer de manera regular.
 
@@ -332,7 +331,7 @@ Y el primer cronjob que voy a declarar es que cada 2 semanas corra el garbage co
 
 \end{verbatim}
 \subsection{Configuraciones privadas}
-\label{sec:org2182031}
+\label{sec:org4443877}
 
 Una cosa bastante interesante de NixOS es que nos permite definir nuestra configuración a través de varios archivos .nix.
 
@@ -352,7 +351,7 @@ Y para que no lo trackee git, creamos su correspondiente .gitignore, y dentro de
 private.nix
 \end{verbatim}
 \subsection{stateVersion}
-\label{sec:org2384834}
+\label{sec:org94ac8aa}
 
 Antes de dejar de hablar de NixOS, debemos de abordar una variable muy importante que se define en estos archivos de configuración: system.stateVersion.
 
@@ -362,7 +361,7 @@ Por este motivo, esta variable al igual que todas las configuraciones especifica
 
 Por default esta variable vive en configuration.nix, que es el archivo de configuración que estamos generando en estos momentos, pero por lo explicado anteriormente, la moveré a hardware-configuration.nix, el cual es, como dije previamente, generado automáticamente por el instalador de NixOS cada vez que instale el sistema en un equipo físico nuevo.
 \section{OhMyZSH}
-\label{sec:org777f3d7}
+\label{sec:orgb814cfb}
 
 El inicio de todo buen sistema es una buena shell. Es aquí donde la voy a pasar el 60\% del tiempo porque mi flujo de trabajo está diseñado para depender lo menos posible de cualquier interfaz gráfica.
 
@@ -380,7 +379,7 @@ Once installed, your terminal shell will become the talk of the town or your mon
 Finally, you'll begin to get the sort of attention that you have always felt you deserved. \ldots{}or maybe you'll use the time that you're saving to start flossing more often. 😬
 \end{quote}
 \subsection{Instalación}
-\label{sec:org475c63d}
+\label{sec:org99cdd24}
 
 En el archivo de configuración de NixOS agregamos las siguientes entradas:
 
@@ -401,7 +400,7 @@ En el archivo de configuración de NixOS agregamos las siguientes entradas:
 
 Y con eso tenemos :D
 \subsection{Configuraciones preliminares}
-\label{sec:orgc8c7cc3}
+\label{sec:org8a5bb24}
 
 Comenzaremos a ensamblar mi configuración para la shell de ZSH. En este capítulo vamos a abordar algunas configuraciones preliminares que no entran bajo ninguna categoría y en general solamente sirven para preparar el terreno para las features posteriores.
 
@@ -440,13 +439,13 @@ source $ZSH/oh-my-zsh.sh
 
 \end{verbatim}
 \subsection{Aliases}
-\label{sec:orgbbff506}
+\label{sec:org8c7a44e}
 
 Un alias es, como su mismo nombre lo dice, un nombre corto para un comando largo que podemos definir usando el comando alias.
 
 Tal vez debería de agregar más, pero por ahora los aliases que tengo son los siguientes:
 \subsubsection{Sudo}
-\label{sec:org3373668}
+\label{sec:orgaa70a6e}
 
 Se me hace tierno usar la palabra ``pls'' en lugar de sudo, lo cual además proporciona menos palabras, por lo que cumple con el propósito de ser un alias.
 
@@ -454,7 +453,7 @@ Se me hace tierno usar la palabra ``pls'' en lugar de sudo, lo cual además prop
 alias pls="sudo"
 \end{verbatim}
 \subsubsection{Arduino CLI}
-\label{sec:org29d9204}
+\label{sec:org757bb28}
 
 Cuando utilizo la CLI de Arduino siempre se me hace una tortura poner el nombre completo de la herramienta, así que lo reduzco a arcli
 
@@ -469,13 +468,13 @@ El resto de aliases las definiré por flujo de trabajo, usando la etiqueta noweb
 <<aliasesCLI>>
 \end{verbatim}
 \subsection{PATH}
-\label{sec:orge12b494}
+\label{sec:org6d7af3e}
 
 PATH es una variable de entorno que se utiliza para indicarle a nuestra shell \textbf{las rutas del sistema donde puede encontrar archivos ejecutables}. Esto para que luego podamos simplemente correr estos programas por sus nombres en lugar de referirnos a rutas completas.
 
 La variable PATH es una lista de rutas separada por \emph{:}. A esta le vamos a agregar las rutas necesarias por nuestros programas para poder acceder a los mismos de manera más sencilla.
 
-Comenzamos por agregar la ruta de los binarios de \ref{sec:orgd31e244} la cual es por lo general:
+Comenzamos por agregar la ruta de los binarios de \ref{sec:orgbb5ec86} la cual es por lo general:
 
 \begin{verbatim}
 PATH=$PATH:~/.config/emacs/bin
@@ -515,7 +514,7 @@ export GEM_HOME=$HOME/.gem
 
 \end{verbatim}
 \subsection{Terminal}
-\label{sec:org5aef8bf}
+\label{sec:orgf283cf8}
 
 Mi terminal predilecta es Alacritty, y para que i3 pueda invocar esta terminal adecuadamente, necesito fijar una variable de entorno TERMINAL.
 
@@ -523,14 +522,14 @@ Mi terminal predilecta es Alacritty, y para que i3 pueda invocar esta terminal a
 export TERMINAL="alacritty"
 \end{verbatim}
 \section{Doom Emacs}
-\label{sec:orgd31e244}
+\label{sec:orgbb5ec86}
 
 Si todo este proyecto utiliza programación letrada, es imperativo que las primeras dotfiles que se creen sean las necesarias para hacer mi entorno de trabajo de programación letrada. Entonces comencemos con la herramienta principal, la cual es Doom Emacs. Si estás leyendo este documento en org, abajo verás el enlace al archivo org de toda esta herramienta, si estás leyendo PDF\ldots{} pues sigue leyendo lol.
 \subsection{Introducción}
-\label{sec:orgb1e61c4}
+\label{sec:orgdddb586}
 Doom Emacs es mi principal editor de texto. Emacs en sí es el editor de texto que llevo usando desde que inicié la carrera -por influencia de la cultura de mi facultad-. El problema con Emacs es que es, a mi gusto, difícil de configurar en su versión básica. Por esto decidí usar Doom Emacs, el cual es un framework de configuración que me sirve para tener todo el poder de Emacs de una manera sencilla y que, además, no me hace perder la configurabilidad que me provee un Emacs vainilla.
 \subsection{Instalación}
-\label{sec:org4807973}
+\label{sec:org83cf259}
 
 Para instalar Doom Emacs bajo NixOS lo único que necesitamos es tener la última versión de Emacs instalada en el equipo de trabajo. Para esto agregamos el paquete emacs a nuestros systemPackages.
 
@@ -556,7 +555,7 @@ ln -sf ~/PersonalDotFiles/doomEmacs/packages.el ~/.config/doom/packages.el
 doom sync
 \end{verbatim}
 \subsection{init.el}
-\label{sec:orgddecba1}
+\label{sec:org46fc8fc}
 
 \begin{quote}
 Where you’ll find your doom! block, which controls what Doom modules are enabled and in what order they will be loaded.
@@ -792,7 +791,7 @@ Luego, dentro de los módulos elegidos, necesitamos considerar que existen varia
 
 Vamos a movernos entre cada categoría para armar nuestros selectos módulos.
 \subsubsection{Módulos Input}
-\label{sec:org9ddf33c}
+\label{sec:orgc3cc8e1}
 
 Esta categoría de módulos no posee una descripción oficial, y sus módulos tampoco están documentados, pero podemos asumir que son módulos que tienen que ver con soluciones de compatibilidad con layouts o idiomas con caracteres de entrada extraños (sea Chino o Japonés). Así que por el momento, no necesitamos nada de aquí.
 
@@ -800,7 +799,7 @@ Esta categoría de módulos no posee una descripción oficial, y sus módulos ta
 :input
 \end{verbatim}
 \subsubsection{Módulos Completion}
-\label{sec:orgafdbab5}
+\label{sec:orgd1f63cf}
 
 \begin{quote}
 Modules that provide new interfaces or frameworks for completion, including code completion.
@@ -815,7 +814,7 @@ vertico
 
 \end{verbatim}
 \subsubsection{Módulos UI}
-\label{sec:orge9266fa}
+\label{sec:org42b2a8d}
 
 \begin{quote}
 Aesthetic modules that affect the Emacs interface or user experience.
@@ -836,7 +835,7 @@ vi-tilde-fringe
 workspaces
 \end{verbatim}
 \subsubsection{Módulos Editor}
-\label{sec:org97b3569}
+\label{sec:org19489f8}
 
 \begin{quote}
 Modules that affect and augment your ability to manipulate or insert text.
@@ -853,7 +852,7 @@ snippets
 
 \end{verbatim}
 \subsubsection{Módulos Emacs}
-\label{sec:org36cd839}
+\label{sec:org645c549}
 
 \begin{quote}
 Modules that reconfigure or augment packages or features built into Emacs.
@@ -870,7 +869,7 @@ vc
 
 \end{verbatim}
 \subsubsection{Módulos Term}
-\label{sec:org5cb4e66}
+\label{sec:orge1a6e63}
 
 \begin{quote}
 Modules that offer terminal emulation.
@@ -884,7 +883,7 @@ vterm
 
 \end{verbatim}
 \subsubsection{Módulos Checkers}
-\label{sec:orgc6ed868}
+\label{sec:org983a668}
 
 Esta categoría de módulos no tiene una descripción oficial, pero podemos decir que engloba aquellos módulos relacionados con la corrección de ortografía.
 
@@ -896,7 +895,7 @@ syntax
 
 \end{verbatim}
 \subsubsection{Módulos Tools}
-\label{sec:orga23eb52}
+\label{sec:orgfc1931c}
 
 \begin{quote}
 Small modules that give Emacs access to external tools \& services.
@@ -905,19 +904,19 @@ Small modules that give Emacs access to external tools \& services.
 Dentro de esta categoría incluiremos los siguientes módulos:
 \begin{enumerate}
 \item Eval
-\label{sec:org9c2cba6}
+\label{sec:orgdf98f28}
 Para realizar evaluaciones de bloques de código en el momento. Me parece que este es uno de los módulos habilitados por default, así que desconozco realmente la funcionalidad de tenerlo habilitado.
 \item Lookup
-\label{sec:orge0c73ac}
+\label{sec:org8aa9035}
 Para navegar a través del código, buscando ``símbolos'' y definiciones.
 \item Lsp
-\label{sec:org46e83a0}
+\label{sec:orgf1d66c1}
 Mi favorito, con este podemos tener servidores de lenguaje, que nos implementan varias de las funcionalidades que podríamos extrañar de un IDE convencional. Con este módulo, junto con los correspondientes a cada lenguaje que necesitemos (en Módulos Lenguajes), convertimos a Emacs en un IDE completo.
 \item Magit
-\label{sec:org979cc87}
+\label{sec:org710c1b3}
 Agrega integración con Git, principalmente lo uso para ver en el lateral izquierdo los cambios que he introducido a un archivo y que no he commiteado.
 \item PDF
-\label{sec:orgdda1965}
+\label{sec:org2f10d53}
 Agrega mejoras para poder trabajar con PDFs dentro de Emacs. Esto me resulta muy útil para poder trabajar con \LaTeX{} y org-mode en una ventana mientras en la otra veo la exportación final en PDF, verificando que se vea de la forma que yo quiero.
 
 Finalmente, esta sección queda de la siguiente forma:
@@ -932,7 +931,7 @@ pdf
 \end{verbatim}
 \end{enumerate}
 \subsubsection{Módulos OS}
-\label{sec:org104df4f}
+\label{sec:orgad30226}
 
 \begin{quote}
 Modules to improve integration into your OS, system, or devices.
@@ -946,7 +945,7 @@ El módulo que viene por default es el de MacOS, bajo el condicional de activars
 
 \end{verbatim}
 \subsubsection{Módulos de lenguajes}
-\label{sec:org28b8ac9}
+\label{sec:org8dad601}
 
 \begin{quote}
 Modules that bring support for a language or group of languages to Emacs.
@@ -965,11 +964,11 @@ sh
 (org +evil +dragndrop +pretty)
 \end{verbatim}
 
-El intended debería de ser que cada lenguaje de programación tenga su propia sección en \ref{sec:orgba2b14e}, y con ello, su propio flujo de trabajo curado y asentado. Pero por ahora, dejaré varios lenguajes aquí sueltos sólo para no perder capacidades en mi IDE, mientras creo los flujos de trabajo correspondientes para cada idioma.
+El intended debería de ser que cada lenguaje de programación tenga su propia sección en \ref{sec:org6dfcec5}, y con ello, su propio flujo de trabajo curado y asentado. Pero por ahora, dejaré varios lenguajes aquí sueltos sólo para no perder capacidades en mi IDE, mientras creo los flujos de trabajo correspondientes para cada idioma.
 
 Algo para comentar particularmente aquí es que Emacs tiene soporte para org-mode de manera nativa, entonces uno podría pensar que no es necesario el módulo de org. La principal razón por la que lo agrego es por compatibilidad con Evil Mode. Si no explicito esta compatibilidad, los bindings dentro de la Org-Agenda se revierten a los defaults y eso me hace mucha fricción para trabajar\ldots{} Además, agrego soporte para drag and drop y la flag de pretty para que se vea más bonito :)
 \subsubsection{Módulos de Email}
-\label{sec:org8d64e8b}
+\label{sec:orgd92d334}
 
 Esta categoría no posee una descripción oficial, pero proporciona los medios para poder conectar un cliente de correo a Emacs.
 
@@ -980,7 +979,7 @@ Me parece un campo sin dudar bastante atractivo poder usar mi correo electrónic
 
 \end{verbatim}
 \subsubsection{Módulos de Apps}
-\label{sec:org68a52d6}
+\label{sec:org718cb32}
 
 \begin{quote}
 Application modules are complex and opinionated modules that transform Emacs toward a specific purpose. They may have additional dependencies and should be loaded last, before :config modules.
@@ -994,7 +993,7 @@ everywhere
 
 \end{verbatim}
 \subsubsection{Módulos de configuración}
-\label{sec:orga68df92}
+\label{sec:org2a1c9b3}
 
 \begin{quote}
 Modules that configure Emacs one way or another, or focus on making it easier for you to customize it yourself. It is best to load these last.
@@ -1012,7 +1011,7 @@ Así que nos quedamos solamente con el módulo default, el cual \textbf{obviamen
 
 \end{verbatim}
 \subsection{config.el}
-\label{sec:org61adc23}
+\label{sec:org72ca58f}
 
 \begin{quote}
 Here is where 99.99\% of your private configuration should go. Anything in here is evaluated after all other modules have loaded, when starting up Emacs.
@@ -1030,7 +1029,7 @@ Vamos a dividir la estructura de este archivo por las features a las que aportan
 <<programacionLetrada>>
 \end{verbatim}
 \subsubsection{Estética y estilo}
-\label{sec:org09d4b87}
+\label{sec:org35bcb84}
 
 Primero comenzamos con la elección de tema, la cual hacemos cambiando el nombre de la variable \emph{doom-theme}. No recuerdo bien si he cambiado este tema o el que estoy usando es el default, pero en todo caso, actualmente utilizo doom-one, y no he tenido ninguna queja hasta el momento.
 
@@ -1053,7 +1052,7 @@ Luego está el tema de las transparencias. A mí me gusta definir una ligera tra
 
 La transparencia la tengo definida a 95, pues es el valor que considero lo suficientemente opaco para no perder el texto de la ventana de Emacs, pero lo suficientemente transparente para poder ver texto detrás.
 \subsubsection{Org Mode}
-\label{sec:org2640e36}
+\label{sec:org39c25bd}
 
 Para poder tener un espacio de trabajo adecuado a mis necesidades, necesito realizar ciertas configuraciones a los plugins de mi Emacs relacionados con Org-Mode. Debo de admitir que, por ahora, mi setup de trabajo de org-mode, aunque funcional, sigue siendo bastante rudimentaria a comparación de varios sistemas que he visto en Internet.
 
@@ -1160,7 +1159,7 @@ Para aminorar esto, la siguiente linea hace que todas las lineas del logbook se 
 (setq org-log-into-drawer t)
 \end{verbatim}
 
-Finalmente, agregamos las líneas correspondientes a activar el \texttt{package} Org Edna. La función de este paquete la explico en la sección de \ref{sec:org8ced1cb}
+Finalmente, agregamos las líneas correspondientes a activar el \texttt{package} Org Edna. La función de este paquete la explico en la sección de \ref{sec:orgbe37b05}
 
 \begin{verbatim}
 (after! org
@@ -1168,7 +1167,7 @@ Finalmente, agregamos las líneas correspondientes a activar el \texttt{package}
   (org-edna-mode 1))
 \end{verbatim}
 \subsubsection{Atomic Chrome}
-\label{sec:org6f69ba5}
+\label{sec:org8538383}
 
 Esta es una configuración que viene de tiempos en los que me hice directamente dependiente de los atajos de Vim y me sentía un completo inútil en entornos donde no los pudiera usar (me sigue pasando, pero ahora uso Vimium C). Particularmente, para editar texto en el navegador me gustaba poder abrir un buffer de Emacs, editar el texto ahí y regresar a la aburrida vida del navegador. Esto ha ido cayendo en desuso por mi flujo de trabajo debido a que poco a poco he usado cosas como Vimium C y me he vuelto a acostumbrar a usar el mouse, pero conservo estas configuraciones por si algún día las necesito.
 
@@ -1183,7 +1182,7 @@ Para esto, no se necesita más que requerir (obviamente) el susodicho plugin Ato
 (atomic-chrome-start-server)
 \end{verbatim}
 \subsubsection{\LaTeX{}}
-\label{sec:orgc379c97}
+\label{sec:orgf47a4d7}
 
 Por ahora no realizo otra configuración que no sea ajustar mi visor preferido para mis compilados de \LaTeX{}, el cual es KDE Okular, porque honestamente es una chulada de visor.
 
@@ -1191,7 +1190,7 @@ Por ahora no realizo otra configuración que no sea ajustar mi visor preferido p
 (setq +latex-viewers '(okular))
 \end{verbatim}
 \subsubsection{Programación Letrada}
-\label{sec:org52d1aa9}
+\label{sec:org8ebab3c}
 
 Mis configuraciones relacionadas con Literate Programming y los documentos letrados que genero con este precioso paradigma de programación (o marco de trabajo?)
 
@@ -1219,13 +1218,13 @@ Por ahora tengo un flujo de trabajo bastante sencillo, por lo que solamente defi
 
 Con esto terminamos la subsección dedicada a mi config.el, ya casi nos falta poco para terminar la sección de Doom Emacs, solamente nos falta la sección de packages.el
 \subsection{packages.el}
-\label{sec:org8ced1cb}
+\label{sec:orgbe37b05}
 
 \begin{quote}
 This file is where package declarations belong. It’s also a good place to look if you want to see what packages a module manages (and where they are installed from).
 \end{quote}
 
-Aquí, según la documentación oficial de Doom Emacs, definiremos los packages que vamos a usar y que no se encuentran en alguno de los módulos definidos previamente. Primero agregamos el paquete \texttt{atomic-chrome}, el cual nos servirá para complementar el flujo de trabajo entre Emacs y navegador que describo en \ref{sec:org61adc23}
+Aquí, según la documentación oficial de Doom Emacs, definiremos los packages que vamos a usar y que no se encuentran en alguno de los módulos definidos previamente. Primero agregamos el paquete \texttt{atomic-chrome}, el cual nos servirá para complementar el flujo de trabajo entre Emacs y navegador que describo en \ref{sec:org72ca58f}
 
 \begin{verbatim}
 (package! atomic-chrome)
@@ -1240,7 +1239,7 @@ Parte del flujo de trabajo -que debería de documentar- en mi agenda Org requier
 
 Terminando este archivo, finalmente tenemos completa la configuración de Doom Emacs
 \section{Hyprland}
-\label{sec:org4d1168c}
+\label{sec:org5a14c7f}
 
 Desde que conozco los gestores de ventanas y la gran ventaja de rapidez que ofrecen cuando les tomas el ritmo correcto (porque es inherentemente más rápido manejar la computadora con el teclado que con el mouse), no he logrado escapar de usar uno en niguna de las encarnaciones de mis estaciones de trabajo. Si eres lector de mi blog, puedes consultar un artículo al respecto, que de hecho es la \href{https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/}{primera publicación de mi blog}.
 
@@ -1252,7 +1251,7 @@ Pero desde los cambios que ha hecho este ecosistema para \href{https://blogs.kde
 
 Esto me lleva a escribir esta nueva configuración: intentar abrazar de manera incómoda el avance del mundo y utilizar un gestor de ventanas moderno: Hyprland. Todavía tengo un gusto agridulce al respecto de esto, pero ni modo, vamos a comenzar.
 \subsection{Instalación}
-\label{sec:orgd51896c}
+\label{sec:orgb75ca5e}
 
 Vamos a utilizar la versión de desarrollo de Hyprland, porque es la única que admite plugins que vamos a utilizar más adelante. Así que necesitaremos configurar un Flake dentro de nuestro flakes.nix:
 
@@ -1309,7 +1308,7 @@ hyprpaper
 waybar
 \end{verbatim}
 \subsection{Hy3}
-\label{sec:orgb0a9e84}
+\label{sec:org89d775f}
 
 Hy3 es un plugin para Hyprland que me permite tener stacking, algo que en Hyprland nativo no existe. Sin stacking terminaría teniendo 6 espacios de trabajo en mi flujo de trabajo más tranquilo, con stacking, podría reducirlo a sólo dos espacios. Es evidente entonces que es algo esencial.
 
@@ -1328,7 +1327,7 @@ Y declaramos su uso en la configuración de plugins de Hyprland.
 inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3
 \end{verbatim}
 \subsection{Configuraciones (nuevo)}
-\label{sec:orgdec3b47}
+\label{sec:org56f9d0e}
 
 TODO: Documentar este pedo
 
@@ -1672,11 +1671,11 @@ windowrule {
     '';
 \end{verbatim}
 \subsection{Configuraciones}
-\label{sec:orgf610e5d}
+\label{sec:org5fe60a9}
 
 Las configuraciones principales de este gestor de ventanas se concentran en un sólo archivo que vive en \textasciitilde{}/.config/hypr/hyprland.conf. De todas formas, existe otra variedad de archivos para cada uno de los módulos que vamos a ir configurando para crear mi configuración final. Por lo que iré avanzando feature por feature -aclarando el archivo que estamos modificando- hasta terminar.
 \subsubsection{Configuración de los monitores}
-\label{sec:orga6873eb}
+\label{sec:orge4a3168}
 
 Tengo que reconocer que configurar los monitores en Hyprland es algo que me sorprendió de lo sencillo y tan bien logrado que está. En otros gestores de ventanas, generalmente tendríamos que recurrir a scripts externos de xrandr que realicen automáticamente estas configuraciiones -y meternos con xrandr es algo que todavía me despierta sudando en noches frías-. Por lo que el enterarme de que en Hyprland, esto es algo que vamos a configurar desde su archivo de configuración, fue algo bastante agradable.
 
@@ -1705,7 +1704,7 @@ monitor=,highres,auto,auto
 
 \end{verbatim}
 \subsubsection{Defaults}
-\label{sec:org58de2ec}
+\label{sec:orgb1c2262}
 
 En teoría en esta sección debería de configurar varios defaults. Pero tengo la sospecha de que me perdí de esto por no tener un sistema limpio. Por ahora tengo esto, pero probablemente cuando regrese con una configuración limpia tendré que revisar esta sección.
 
@@ -1715,7 +1714,7 @@ $menu = ~/.config/rofi/launchers/type-1/launcher.sh
 
 \end{verbatim}
 \subsubsection{Wallpaper}
-\label{sec:org2a463c1}
+\label{sec:orge65d24a}
 
 Aquí empezamos con aquellas aplicaciones que deberían de arrancar al iniciar el entorno. Para esto, usamos el comando exec-once.
 
@@ -1737,7 +1736,7 @@ wallpaper {
 
 La herramienta tiene mucho potencial para crear cosas bastante fancys como wallpapers que se van rotando, sets de estos para cada uno de los monitores que tengas y ajá\ldots{} Yo por mi parte soy una persona bastante simple y solamente quiero que mi fondo de pantalla de siempre se vea en todos mis monitores.
 \subsubsection{Waybar}
-\label{sec:org0564549}
+\label{sec:orgb7acd8c}
 
 Esta es la barra de estado por default de Hyprland y la que utilizo porque en realidad no necesito mucho más. Siendo honestos, mantengo la configuración por default excepto por alguna configuración extremadamente puntual que ni siquiera podría recordar que hice, así que voy a romper un poco el paradigma letrado de este y pegar directamente la configuración. Si algún día realizo algún cambio a los defaults que merezca ser señalado, modificaré esta sección.
 
@@ -2302,7 +2301,7 @@ Y finalmente agregamos su entrada de exec-once al archivo de configuración prin
 exec-once = waybar
 \end{verbatim}
 \subsubsection{Variables de entorno}
-\label{sec:org756172a}
+\label{sec:org7887dfa}
 
 Necesitamos gestionar la creación de algunas variables de entorno que serán necesarias para que los programas bajo esta configuración puedan funcionar correctamente. Para hacer esto, Hyprland nos proporciona su utilidad env la cual crea las variables de entorno directamente en el proceso de Hyprland, y todos los procesos hijos las heredarán sin problemas.
 
@@ -2332,29 +2331,29 @@ env = HYPRCURSOR_SIZE,24
 
 Porque con estas vamos a determinar el tamaño del cursor. Usamos dos porque XCURSOR\textsubscript{SIZE} es la utilizada por aplicaciones que tengan que correr bajo Xwayland (la capa de compatibilidad de Wayland con X11) para funcionar.
 \subsubsection{}
-\label{sec:org1080b8b}
+\label{sec:orgf6b0433}
 \section{Dropbox}
-\label{sec:org857b725}
+\label{sec:orgf581a93}
 
 Utilizo Dropbox muy seguido para mantener la sincronización de mi agendaORG
 \subsection{Instalación}
-\label{sec:orgac422db}
+\label{sec:orga716b30}
 
 \begin{verbatim}
 maestral
 \end{verbatim}
 \section{Virtual Box}
-\label{sec:orgeac8b98}
+\label{sec:org41dece6}
 \begin{verbatim}
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
   services.spice-vdagentd.enable = true;
 \end{verbatim}
 \section{Zen Browser}
-\label{sec:org209a0cc}
+\label{sec:org02221ca}
 
 \subsection{Instalación}
-\label{sec:orge241acc}
+\label{sec:orge62233a}
 
 Ya que no hay paquete oficial, nos habremos de servir de un Flake.
 
@@ -2371,13 +2370,13 @@ Y luego lo declaramos como paquete de sistema
 inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 \end{verbatim}
 \section{Programación con IA}
-\label{sec:org07ddce4}
+\label{sec:org6b9d24d}
 
-Para el tema de programación con IA me voy a servir de tres herramientas: Gptel, Aider y copilot.el. Las primeras dos van a utilizar modelos provenientes de Groq, que es mi enrutador de modelos de lenguaje predilecto. Mientras que la última es una implementación de Github Copilot para Emacs, así que en realidad no tengo mucha elección sobre el modelo de lenguaje a utilizar.
+Para el tema de programación con IA me voy a servir de tres herramientas: Gptel, OpenCode, y copilot.el. Las primeras dos van a utilizar modelos provenientes de Groq, que es mi enrutador de modelos de lenguaje predilecto. Mientras que la última es una implementación de Github Copilot para Emacs, así que en realidad no tengo mucha elección sobre el modelo de lenguaje a utilizar.
 
-Utilizo estas tres porque me gusta que las features de IA formen parte de mi flujo de trabajo pero no tomen un rol esencial dentro del mismo. Quiero seguir usando Emacs, que es mi editor de texto favorito justamente porque es bastante reducido y sólo contiene lo que necesito, pero a la vez quiero tener en fácil alcance las features de IA para mantenerme competitivo en el mundo laboral actual; el cual evidentemente cada vez requerirá un uso más predominante de la IA en nuestros flujos de trabajo. Este flujo de trabajo es la forma que tengo de hacerlo ``bajo mis términos''
+Utilizo estas tres porque me gusta que las features de IA formen parte de mi flujo de trabajo pero no tomen un rol esencial dentro del mismo. Quiero seguir usando Emacs, que es mi editor de texto favorito justamente porque es bastante reducido y sólo contiene lo que necesito, pero a la vez quiero tener en fácil alcance las features de IA para mantenerme competitivo en el mundo laboral actual; el cual evidentemente cada vez requerirá un uso más predominante de la IA en nuestros flujos de trabajo. Este flujo de trabajo es la forma que tengo de hacerlo ``bajo mis términos''. Aunque, dicho sea de paso, OpenCode es un agente autónomo que toma con bastante fuerza el control del proyecto en el que lo use. Particularmente con ciertas herramientas que veré más adelante que le agrego; por esto, lo uso sólo para ciertos casos de experimentación o sprints extremadamente rápidos.
 \subsection{Gptel}
-\label{sec:org4929d5d}
+\label{sec:org0b63e57}
 
 \begin{quote}
 gptel is a simple Large Language Model chat client for Emacs, with support for many models and backends. It works in the spirit of Emacs, available at any time and uniformly in any buffer. 
@@ -2433,38 +2432,24 @@ Finalmente, definimos los bindings de teclado:
       :desc "Gptel Send" "s" #'gptel-send
       :desc "Gptel Chat" "c" #'gptel)
 \end{verbatim}
-\subsection{Aider}
-\label{sec:org299315a}
+\subsection{OpenCode}
+\label{sec:orge759d9d}
 
 \begin{quote}
-Aider lets you pair program with LLMs to start a new project or build on your existing codebase. 
+OpenCode is an open source agent that helps you write code in your terminal, IDE, or desktop.
 \end{quote}
 
-Para trabajar con IA dentro de mi CLI usaré Aider, pues es la herramienta de programación con IA con más comunidad.
+Esta es mi integración para linea de comandos y mi agente autónomo para proyectos que busco realizar puramente con IA, o que busco que salgan en sprints extremadamente rápidos. Es mi alternativa Open Source a tener Claude Code, con miras a en un futuro autohostear los modelos de lenguaje que utilice.
 
-Para esto, primero comenzamos instalándola como paquete de usuario en nuestro sistema:
-
-\begin{verbatim}
-aider-chat
-\end{verbatim}
-
-Una vez hecho esto tenemos que pasar también a su uso de la API Key.
-
-En este caso, Aider utiliza la API Key desde una variable de entorno, la cual definimos con:
+Para comenzar, la instalamos como paquete de usuario en nuestro sistema:
 
 \begin{verbatim}
-source ~/.groq-secret
+opencode
 \end{verbatim}
 
-Ahora, finalmente para terminar de configurar aider completamente, voy a agregar un alias para cargarlo rápidamente con el mejor modelo de Groq utilizable en estos momentos.
-
-\begin{verbatim}
-alias aico="aider --model groq/llama-3.3-70b-versatile --edit-format diff"
-\end{verbatim}
-
-Hecho esto, terminamos de configurar nuestro flujo de trabajo para uso de IA.
+El resto de la configuración inicial es desde la interfaz (TUI) de la herramienta. Consiste en primicia en especificarle qué proveedor de IA utilizar (en mi caso Groq), especificarle la API key para este uso, y seleccionar el modelo. El asistente de instalación se inicia con \texttt{opencode} y luego con \texttt{/connect}
 \subsection{Copilot.el}
-\label{sec:org5b9170f}
+\label{sec:orgf0755f1}
 
 Esta es una implementación de Github Copilot dentro de Emacs. No hace más que proporcionar los autocompletados pasivos que Copilot da, que de hecho es lo suficiente para recibir un boost bastante bueno de productividad sin ceder autonomía.
 
@@ -2491,11 +2476,11 @@ Y luego, en la configuración, vamos a definir la aceptación de los autocomplet
 Then run M-x copilot-install-server and M-x copilot-login. That's it!
 \end{quote}
 \section{Lenguajes de programación}
-\label{sec:orgba2b14e}
+\label{sec:org6dfcec5}
 
 Para cada lenguaje de programación necesito configurar mi entorno en base a las herramientas necesarias vinculadas al flujo de trabajo de dicho lenguaje. En esta sección, veremos uno a uno los requerimentos que necesito para empezar a trabajar con todos los lenguajes de programación con los que trabaje en ese momento.
 \subsection{C y C++}
-\label{sec:org31fc806}
+\label{sec:org248ea00}
 
 La madre de todos los lenguajes modernos y su hijo cuestionable. Lo uso sobre todo para proyectos de bajo nivel, como por ejemplo Arduino y cosas IoT.
 
@@ -2511,7 +2496,7 @@ Y agregamos soporte a mi IDE para estos lenguajes, con su respectivo módulo lan
 (cc +lsp)
 \end{verbatim}
 \subsection{Golang}
-\label{sec:org429601e}
+\label{sec:orge33c405}
 
 Este es el lenguaje de programación con el que he estado más fijado últimamente. Me gusta mucho su sintaxis y me agrada bastante el estilo de escritura y los comentarios de sus mantenedores en su \href{https://go.dev/blog/}{Dev blog}
 
@@ -2529,7 +2514,7 @@ Luego, para preparar mi IDE (Emacs) para trabajar con Go, agrego su módulo resp
 (go +lsp)
 \end{verbatim}
 \subsection{Javascript}
-\label{sec:orga245434}
+\label{sec:orgbb3b5a0}
 
 Casi no suelo trabajar con Javascript. Tengo poca experiencia con este lenguaje porque mi opinión a título personal es que nunca debió salir del frontend, pero ajá.
 
@@ -2545,7 +2530,7 @@ Luego, para preparar mi IDE (Emacs) para trabajar con este lenguaje, agrego su m
 javascript
 \end{verbatim}
 \subsection{Python}
-\label{sec:orgc9713d0}
+\label{sec:orge87e5d9}
 
 En mis primeros semestres de universidad llegué a caer bajo las ideas de que ``Python no es un lenguaje de programación real'' y pasé a evitarlo como la peste durante un rato. Todo cambió cuando, gracias a Dios, mi lóbulo frontal se terminó de desarrollar y me dí cuenta de que no tiene sentido que existan guerras de lenguajes siempre que nunca endiosemos ni odiemos conscientemente ningún lenguaje de programación y los utilicemos como lo que son: herramientas para realizar un trabajo, con sus propios casos de uso y sus ventajas y desventajas.
 
@@ -2563,7 +2548,7 @@ Luego agregamos soporte para este lenguaje en mi IDE (Emacs), agregando su módu
 python
 \end{verbatim}
 \subsubsection{Pyenv}
-\label{sec:org20d8f39}
+\label{sec:orgc82fc63}
 
 Pyenv es una herramienta que he usado durante algo de tiempo -probablemente más de un año- porque me permite cambiar entre versiones de Python de una manera bastante rápida y conveniente. Es, como \href{https://github.com/pyenv/pyenv}{su página} lo dice, ``simple, unobtrusive, and follows the UNIX tradition of single-purpose tools that do one thing well.''.
 
@@ -2573,7 +2558,7 @@ Lo declaro como paquete de usuario en la configuración de NixOS
 pyenv
 \end{verbatim}
 
-Luego agregro a mi \texttt{.zshrc} (véase \hyperref[sec:org777f3d7]{OhMyZSH}) algunas líneas que vienen también en su página. Las cuales son las siguientes:
+Luego agregro a mi \texttt{.zshrc} (véase \hyperref[sec:orgb814cfb]{OhMyZSH}) algunas líneas que vienen también en su página. Las cuales son las siguientes:
 
 \begin{verbatim}
 export PYENV_ROOT="$HOME/.pyenv"
@@ -2581,7 +2566,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init -)"
 \end{verbatim}
 \subsubsection{Conda}
-\label{sec:org652cb7f}
+\label{sec:orgc7ac314}
 
 Anaconda es una distribución de Python y R orientada a ciencia de datos y machine learning. En un principio la usaba para montarme entornos virtuales de Python.
 
@@ -2612,7 +2597,7 @@ Y luego declaro el paquete correspondiente como paquete de usuario.
 conda
 \end{verbatim}
 \subsection{Haskell}
-\label{sec:orgd9198b8}
+\label{sec:org44ac279}
 
 Haskell es un lenguaje de programación que, no lo puedo negar, al inicio me parecía bastante pesado y tedioso. Cuando uno proviene de los lenguajes imperativos, es complicado comenzar a pensar de manera funcional.
 
@@ -2620,7 +2605,7 @@ Pero conforme más lo uso y más me sumerjo en las matemáticas y el cariño det
 
 Cuando usaba Arch, era tan sencillo como tener GHCup instalado, pero al investigar 5 minutos sobre cómo empezar a trabajar con Haskell en NixOS, me doy cuenta de que es un problema que voy a procrastinar hasta que me toque desarrollar un proyecto en este lenguaje. Por lo que esta sección queda pendiente.
 \subsection{Clojure}
-\label{sec:orgf02c91a}
+\label{sec:orgb694c40}
 
 Otro lenguaje funcional, pero esta vez hecho para funcionar en la máquina virtual de Java. Necesito trabajar más en él, ya que no tengo la memoria de por qué tengo un entorno de trabajo preparado para el mismo.
 
@@ -2637,7 +2622,7 @@ Y, como siempre, agrego su módulo de lenguaje a mi IDE (Emacs)
 clojure
 \end{verbatim}
 \subsection{Java}
-\label{sec:org5e4c0fe}
+\label{sec:org562d5b2}
 
 Qué sería un estudiante de CC sin Java?
 
@@ -2654,7 +2639,7 @@ Y adapto mi IDE, agregando su respectivo módulo de lenguaje.
 (java +lsp)
 \end{verbatim}
 \section{Ciberseguridad}
-\label{sec:org5b6eacb}
+\label{sec:org175456e}
 
 Otro de los grandes pilares de mi especialización dentro de mi carrera, y de hecho el que más frutos me ha rendido hasta el momento en el que redacto esta sección es la ciberseguridad. Para dedicarse a la ciberseguridad de manera adecuada, de igual manera que en muchas otras áreas, uno necesita una buena cantidad de herramientas configuradas y entornos separados para según que actividad quiera realizar.
 
@@ -2682,11 +2667,11 @@ Entonces, he llegado a la conclusión de que necesito al menos dos features nuev
 
 Vamos a comenzar con la primera feature:
 \subsection{Suite de herramientas}
-\label{sec:org9334b78}
+\label{sec:org27c24fc}
 
 Usando como punto de partida el proyecto de \href{https://github.com/fabaff/nix-security-box}{Nix-Security Box} de Fabian Affolter, voy a seleccionar un conjunto de herramientas particular para ciberseguridad, dividido en categorías. Todas las declararé como paquetes de usuario.
 \subsubsection{Proxies}
-\label{sec:org31344d6}
+\label{sec:org144f6ff}
 
 Agregamos las siguientes herramientas de proxies para tener una buena variedad, aunque generalmente usaré solamente ZAP y BurpSuite.
 
@@ -2703,7 +2688,7 @@ rshijack
 zap
 \end{verbatim}
 \subsubsection{Port Scanners}
-\label{sec:org3c43c24}
+\label{sec:orgacd9b10}
 
 En general solo usaré nmap y rustscan
 
@@ -2712,7 +2697,7 @@ nmap
 rustscan
 \end{verbatim}
 \subsubsection{Web}
-\label{sec:orge4dea35}
+\label{sec:org0f7c4a8}
 
 Esta sección viene extraída directamente de el proyecto de Fabian, porque necesito variedad.
 
@@ -2787,7 +2772,7 @@ xnlinkfinder
 xsubfind3r
 \end{verbatim}
 \subsubsection{Generic}
-\label{sec:orga0a91e2}
+\label{sec:org9ad2321}
 
 \begin{verbatim}
 certinfo-go
@@ -2846,7 +2831,7 @@ unrar
 unzip
 \end{verbatim}
 \subsubsection{Services}
-\label{sec:org4cd34b1}
+\label{sec:org8d4c08f}
 
 La sección de variedad por excelencia, aquí tenemos metasploit, sqlmap, etc.
 
@@ -2901,7 +2886,7 @@ witness
 davtest
 \end{verbatim}
 \subsubsection{Password}
-\label{sec:org1e23e15}
+\label{sec:org595a4cf}
 
 \begin{verbatim}
 authoscope
@@ -2924,7 +2909,7 @@ thc-hydra
 truecrack
 \end{verbatim}
 \subsubsection{Exploits}
-\label{sec:org6afd85f}
+\label{sec:orga9faa7d}
 
 \begin{verbatim}
 exploitdb
@@ -2936,7 +2921,7 @@ lmp
 logmap
 \end{verbatim}
 \subsubsection{Fuzzers}
-\label{sec:org6087ee8}
+\label{sec:org7ead7d5}
 
 \begin{verbatim}
 aflplusplus
@@ -2952,7 +2937,7 @@ wfuzz
 zzuf
 \end{verbatim}
 \section{VPNs}
-\label{sec:org5bbdd0a}
+\label{sec:orgef43647}
 
 Las VPNs son una forma de poder interactuar con equipos como si estuvieran en una red local, aunque en realidad lo estemos haciendo a través de internet. Estamos efectivamente usando la infraestructura pública ya establecida de internet para emular redes privadas. Y esto es algo muy útil para varios proyectos en equipo y para aplicaciones personales que requiero.
 
@@ -2980,7 +2965,7 @@ Y finalizamos esta sección con tailscale, yet another servicio de VPNs que tamb
 services.tailscale.enable = true;
 \end{verbatim}
 \section{Conclusión}
-\label{sec:orgae57e45}
+\label{sec:orgd25536d}
 
 En este documento hemos visto la configuración de mi entorno de trabajo en NixOS, el cual se basa en Hyprland como gestor de ventanas, Waybar como barra de estado, y una variedad de herramientas para mejorar mi productividad y experiencia de usuario. Además, hemos configurado herramientas para aprovechar la inteligencia artificial en nuestro flujo de trabajo, como Gptel, Aider y Copilot.el. Esta configuración me permite tener un entorno de trabajo eficiente, personalizado y adaptado a mis necesidades, manteniendo un equilibrio entre simplicidad y funcionalidad.
 

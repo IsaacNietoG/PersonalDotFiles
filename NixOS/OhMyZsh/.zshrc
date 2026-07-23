@@ -12,7 +12,7 @@ alias pls="sudo"
 
 alias arcli="arduino-cli"
 
-alias aico="aider --model groq/llama-3.3-70b-versatile --edit-format diff"
+
 
 PATH=$PATH:~/.config/emacs/bin
 
@@ -30,8 +30,6 @@ PATH=$PATH:$HOME/go/bin
 export GEM_HOME=$HOME/.gem
 
 export TERMINAL="alacritty"
-
-source ~/.groq-secret
 
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"

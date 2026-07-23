@@ -230,7 +230,6 @@ Y algunas utilidades básicas que necesitaré para cualquier flujo de trabajo en
 
 #+begin_src nix :noweb-ref userPackages
   zip
-  tar
   file
   remmina
   htop
@@ -2357,9 +2356,9 @@ inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
 * Programación con IA
 
-Para el tema de programación con IA me voy a servir de tres herramientas: Gptel, Aider y copilot.el. Las primeras dos van a utilizar modelos provenientes de Groq, que es mi enrutador de modelos de lenguaje predilecto. Mientras que la última es una implementación de Github Copilot para Emacs, así que en realidad no tengo mucha elección sobre el modelo de lenguaje a utilizar.
+Para el tema de programación con IA me voy a servir de tres herramientas: Gptel, OpenCode, y copilot.el. Las primeras dos van a utilizar modelos provenientes de Groq, que es mi enrutador de modelos de lenguaje predilecto. Mientras que la última es una implementación de Github Copilot para Emacs, así que en realidad no tengo mucha elección sobre el modelo de lenguaje a utilizar.
 
-Utilizo estas tres porque me gusta que las features de IA formen parte de mi flujo de trabajo pero no tomen un rol esencial dentro del mismo. Quiero seguir usando Emacs, que es mi editor de texto favorito justamente porque es bastante reducido y sólo contiene lo que necesito, pero a la vez quiero tener en fácil alcance las features de IA para mantenerme competitivo en el mundo laboral actual; el cual evidentemente cada vez requerirá un uso más predominante de la IA en nuestros flujos de trabajo. Este flujo de trabajo es la forma que tengo de hacerlo "bajo mis términos"
+Utilizo estas tres porque me gusta que las features de IA formen parte de mi flujo de trabajo pero no tomen un rol esencial dentro del mismo. Quiero seguir usando Emacs, que es mi editor de texto favorito justamente porque es bastante reducido y sólo contiene lo que necesito, pero a la vez quiero tener en fácil alcance las features de IA para mantenerme competitivo en el mundo laboral actual; el cual evidentemente cada vez requerirá un uso más predominante de la IA en nuestros flujos de trabajo. Este flujo de trabajo es la forma que tengo de hacerlo "bajo mis términos". Aunque, dicho sea de paso, OpenCode es un agente autónomo que toma con bastante fuerza el control del proyecto en el que lo use. Particularmente con ciertas herramientas que veré más adelante que le agrego; por esto, lo uso sólo para ciertos casos de experimentación o sprints extremadamente rápidos.
 
 ** Gptel
 
@@ -2418,35 +2417,21 @@ Finalmente, definimos los bindings de teclado:
       :desc "Gptel Chat" "c" #'gptel)
 #+end_src
 
-** Aider
+** OpenCode
 
 #+begin_quote
-Aider lets you pair program with LLMs to start a new project or build on your existing codebase. 
+OpenCode is an open source agent that helps you write code in your terminal, IDE, or desktop.
 #+end_quote
 
-Para trabajar con IA dentro de mi CLI usaré Aider, pues es la herramienta de programación con IA con más comunidad.
+Esta es mi integración para linea de comandos y mi agente autónomo para proyectos que busco realizar puramente con IA, o que busco que salgan en sprints extremadamente rápidos. Es mi alternativa Open Source a tener Claude Code, con miras a en un futuro autohostear los modelos de lenguaje que utilice.
 
-Para esto, primero comenzamos instalándola como paquete de usuario en nuestro sistema:
+Para comenzar, la instalamos como paquete de usuario en nuestro sistema:
 
 #+begin_src nix :noweb-ref userPackages
-aider-chat
+opencode
 #+end_src
 
-Una vez hecho esto tenemos que pasar también a su uso de la API Key.
-
-En este caso, Aider utiliza la API Key desde una variable de entorno, la cual definimos con:
-
-#+begin_src bash :tangle ../OhMyZsh/.zshrc :eval never
-source ~/.groq-secret
-#+end_src
-
-Ahora, finalmente para terminar de configurar aider completamente, voy a agregar un alias para cargarlo rápidamente con el mejor modelo de Groq utilizable en estos momentos.
-
-#+begin_src bash :noweb-ref aliasesCLI
-alias aico="aider --model groq/llama-3.3-70b-versatile --edit-format diff"
-#+end_src
-
-Hecho esto, terminamos de configurar nuestro flujo de trabajo para uso de IA.
+El resto de la configuración inicial es desde la interfaz (TUI) de la herramienta. Consiste en primicia en especificarle qué proveedor de IA utilizar (en mi caso Groq), especificarle la API key para este uso, y seleccionar el modelo. El asistente de instalación se inicia con =opencode= y luego con =/connect=
 
 ** Copilot.el
 
