@@ -109,6 +109,12 @@ El hostname de nuestra computadora es dependiente al contexto. Pero por ahora, m
   networking.networkmanager.enable = true;
 #+end_src
 
+De una vez, desactivo el firewall. Esto porque generalmente, mi computadora personal suele encontrarse en situaciones en las cuales necesito desplegar servicios de manera rápida que queden a la escucha en alguno de mis puertos. Es un lío modificarlo sobre la marcha, así que prefiero cuidarme mucho.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  networking.firewall.enable = false;
+#+end_src
+
 Luego para la zona horaria definimos que estamos en Ciudad de México.
 
 #+begin_src nix :tangle ../nixOS/configuration.nix
@@ -2669,6 +2675,7 @@ proxychains
 redsocks
 rshijack
 zap
+firefox
 #+end_src
 
 *** Port Scanners
