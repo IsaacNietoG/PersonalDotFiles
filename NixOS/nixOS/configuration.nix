@@ -40,7 +40,7 @@
 
   users.users.mrtaichi = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user. Y VMs
+    extraGroups = [ "wheel" "libvirtd" "podman"]; # Enable ‘sudo’ for the user. Y VMs
     packages = with pkgs; [
         tree
         spotify
@@ -300,6 +300,7 @@
        gcc
        nodejs
        python3
+     distrobox
        zerotierone
      pkgs.netbird-ui
    ];
@@ -682,6 +683,11 @@
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
   services.spice-vdagentd.enable = true;
+
+virtualisation.podman = {
+  enable = true;
+  dockerCompat = true;
+};
 
 services.netbird.enable = true;
 

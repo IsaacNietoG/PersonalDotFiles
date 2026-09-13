@@ -150,7 +150,7 @@ No hay mucho que definir aquí excepto tal vez el preludio a [[OhMyZSH]] al defi
 #+begin_src nix :tangle ../nixOS/configuration.nix :noweb tangle
   users.users.mrtaichi = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user. Y VMs
+    extraGroups = [ "wheel" "libvirtd" <<userGroups>>]; # Enable ‘sudo’ for the user. Y VMs
     packages = with pkgs; [
       <<userPackages>>
     ];
@@ -2925,6 +2925,52 @@ scout
 ssdeep
 wfuzz
 zzuf
+#+end_src
+
+
+** Maquina virtual
+
+Para aplicativos en los que necesite una granularidad mucho más fina de lo que tenga que realizarle a mi sistema operativo. Para este aspecto de mi flujo de trabajo en ciberseguridad, busco un sistema operativo que voy a poder hacer y deshacer a mi gusto, pues esencialmente lo que busco para esta parte del flujo de trabajo es modificarlo de manera extremadamente rápida para la situación que lo amerite.
+
+Por esto, y aprovechando las distintas capas de abstracción que existen actualmente, decidí que el mejor aplicativo para cubrir esta parte de mi flujo de trabajo es Distrobox
+
+Distrobox es una herramienta que permite, entre otras cosas, construir máquinas virtuales de manera rápida, orientadas justamente a ejecutar herramientas en un entorno configurado, y de una manera bastante seamless. Por ejemplo, configura las VMs para que consuman el servidor gráfico y de sonido de la máquina host; lo cual permite que las aplicaciones de dentro de la VM puedan ser lanzadas dentro del entorno de escritorio de la máquina host. Pero en realidad, *Distrobox es una capa de abstracción sobre Podman*, así que habremos de instalar ambas herramientas.
+
+Para comenzar, agrego las siguientes líneas a mi =configuration.nix=, las cuales declaran la virtualización usando Podman.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+virtualisation.podman = {
+  enable = true;
+  dockerCompat = true;
+};
+#+end_src
+
+Agrego mi usuario al grupo de podman, para poder correr los comandos necesarios sin problemas.
+
+#+begin_src nix :noweb-ref userGroups
+"podman"
+#+end_src
+
+Y finalmente, el paquete de sistema de Distrobox.
+
+#+begin_src nix :noweb-ref systemPackages
+distrobox
+#+end_src
+
+Hecho esto, mi sistema está preparado para crear contenedores con Kali Linux y ahí crear todas las herramientas necesarias. Debido a que los contenedores me serán extremadamente volátiles y, por lo dicho anteriormente, su naturaleza será extremada imperativa y situacional a lo que necesite en este momento, los únicos comandos que guardo aquí sobre cómo interactuar con mi contenedor de ciberseguridad serán los siguientes:
+
+*** Flujo de trabajo con el contenedor de Kali Linux
+
+**** Creación de contenedor
+
+#+begin_src bash :eval never
+distrobox create --name kali --image docker.io/kalilinux/kali-rolling
+#+end_src
+
+**** Entrar al contenedor
+
+#+begin_src bash :eval never
+distrobox enter kali
 #+end_src
 
 

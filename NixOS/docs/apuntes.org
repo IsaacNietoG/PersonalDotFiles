@@ -6,6 +6,7 @@ Esto son notas sobre trabajos puntuales que est√© haciendo sobre la configuraci√
 systemPackages
 imports
 userPackages
+userGroups
 inputsFlakes
 substitutersFlakes
 publicKeysFlakes
