@@ -22,6 +22,8 @@
 
   networking.networkmanager.enable = true;
 
+  networking.firewall.enable = false;
+
   time.timeZone = "America/Mexico_City";
 
   services.xserver.enable = true;
@@ -65,6 +67,7 @@
       redsocks
       rshijack
       zap
+      firefox
       nmap
       rustscan
       albedo
