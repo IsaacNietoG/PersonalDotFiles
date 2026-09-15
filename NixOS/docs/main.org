@@ -1091,6 +1091,12 @@ Algo que necesito que org-mode respete para mi agenda son los siguientes puntos:
       org-agenda-skip-timestamp-if-done t)
   #+end_src
 
+- Finalmente, también agrego una configuración que hace que, al abrir los archivos =.org=, sus títulos y subtítulos aparezcan primero con sus contenidos colapsados. De esta manera puedo moverme entre ellos de manera mucho más rápida que si viera todos los títulos y su contenido de un solo vistazo de buenas a primeras.
+
+  #+begin_src lisp :eval never :noweb-ref orgMode
+(setq org-startup-folded t)
+  #+end_src
+  
 Estas son las especificaciones principales de mi flujo de trabajo, luego solamente agrego un pequeño detalle de calidad de vida para poder usar atajos de teclado para cambiar los estados de mis tareas rápidamente.
 
 #+begin_src lisp :eval never :noweb-ref orgMode
@@ -2973,6 +2979,19 @@ distrobox create --name kali --image docker.io/kalilinux/kali-rolling
 distrobox enter kali
 #+end_src
 
+*** QoL (Calidad de vida)
+
+Para finalizar mi flujo de interacción con el contenedor de ciberseguridad que pueda crear con Distrobox, voy a agregar algunas cosillas a la calidad de vida de mi flujo de trabajo.
+
+La primera es para crear una distinción entre la shell de mi equipo host y mis contenedores. Debido a que Distrobox y Podman montan la partición /home dentro del contenedor por default, esto significa que todas mis configuraciones de shell se trasladan a los contenedores. Y debido a que el hostname de los contenedores es idéntico al de la máquina host, esto resulta en que la shell del interior del contenedor y la del exterior resulten idénticas.
+
+Esto me podría traer problemas muy serios en un futuro, al no poder distinguir si estoy dentro de mi contenedor o no y correr comandos que afecten a uno u otro de manera negativa por este error. Por eso, agrego la siguiente verificación a mi =.zshrc= para que cambie de color al entrar al contenedor. Si detecta la variable de entorno adecuada.
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+if [[ -n "$CONTAINER_ID" ]]; then
+  export AGNOSTER_DIR_BG=magenta
+fi
+#+end_src
 
 * VPNs
 

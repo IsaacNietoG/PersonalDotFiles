@@ -49,3 +49,7 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+if [[ -n "$CONTAINER_ID" ]]; then
+  export AGNOSTER_DIR_BG=magenta
+fi
