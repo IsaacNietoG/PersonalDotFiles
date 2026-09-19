@@ -1243,6 +1243,58 @@ Parte del flujo de trabajo -que debería de documentar- en mi agenda Org requier
 Terminando este archivo, finalmente tenemos completa la configuración de Doom Emacs
 
 
+** Pegar imágenes del portapapeles
+
+Una parte necesaria de mi flujo de trabajo dentro de Emacs, sobre todo para elaboración de reportes y tareas, es la capacidad de poder pegar imágenes directamente dentro de los documentos =.org=. Particularmente, capturas de pantalla que tenga guardadas en el portapapeles.
+
+Para esto, voy a usar un paquete llamado =org-download= que, acompañado con algunos tweaks, cumple exactamente con esta función.
+
+Primero agregamos el paquete a =packages.el=
+
+#+begin_src lisp :eval never :tangle ../doomEmacs/packages.el
+(package! org-download)
+#+end_src
+
+Y agregamos la configuración necesaria a mi =config.el=
+
+#+begin_src lisp :tangle ../doomEmacs/config.el :eval never
+(after! org-download
+    (setq org-download-method 'directory)
+    (setq org-download-image-dir (concat (file-name-sans-extension (buffer-file-name)) "-img"))
+    (setq org-download-image-org-width 600)
+    (setq org-download-link-format "[[file:%s]]\n"
+          org-download-abbreviate-filename-function #'file-relative-name)
+    (setq org-download-link-format-function #'org-download-link-format-function-default))
+#+end_src
+
+Estas lineas de configuración solamente hacen estos ajustes:
+
+- =(after! org-download ...)=
+Nos asegura que estas configuraciones se apliquen únicamente después de que el paquete org-download haya sido cargado, evitando errores al iniciar Emacs.
+
+- =(setq org-download-method 'directory)=
+Establece que las imágenes guardadas se colocarán en un directorio físico dentro de tu sistema de archivos (en lugar de otros métodos de almacenamiento).
+
+- =(setq org-download-image-dir ...)=
+Define la ruta de la carpeta donde se guardarán las imágenes de forma automática:
+
+Toma el nombre de tu archivo de notas actual y le quita la extensión (file-name-sans-extension). Le añade el sufijo -img.
+
+Ejemplo: Si tu documento se llama notas.org, se creará automáticamente una carpeta llamada notas-img/ en la misma ruta para almacenar todas las imágenes de ese archivo.
+
+- =(setq org-download-image-org-width 600)=
+Le indica a Org-mode que reescale visualmente la imagen a un ancho de 600 píxeles dentro de Emacs (insertando el atributo #+ATTR_ORG: :width 600 en el enlace).
+
+- =(setq org-download-link-format "[[file:%s]]\n"=
+     =org-download-abbreviate-filename-function #'file-relative-name)=
+    org-download-link-format: Define la sintaxis de Org-mode para insertar la imagen ([[file:ruta/a/imagen.png]]).
+    org-download-abbreviate-filename-function #'file-relative-name: Fuerza a que la ruta de la imagen sea relativa al archivo .org en lugar de guardar una ruta absoluta (ej. notas-img/foto.png en vez de /home/usuario/documentos/notas-img/foto.png). Esto permite mover la carpeta de tus notas sin romper las imágenes.
+
+- =(setq org-download-link-format-function ...)=
+
+Restaura o asegura el uso de la función por defecto para dar formato al enlace de la imagen, garantizando compatibilidad con las variables configuradas en el paso anterior.
+
+
 * Hyprland
 
 Desde que conozco los gestores de ventanas y la gran ventaja de rapidez que ofrecen cuando les tomas el ritmo correcto (porque es inherentemente más rápido manejar la computadora con el teclado que con el mouse), no he logrado escapar de usar uno en niguna de las encarnaciones de mis estaciones de trabajo. Si eres lector de mi blog, puedes consultar un artículo al respecto, que de hecho es la [[https://blog.mrtaichi.dev/blogs/2025-01-14-gestordeventanas/][primera publicación de mi blog]].

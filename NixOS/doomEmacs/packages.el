@@ -2,6 +2,8 @@
 
 (package! org-edna)
 
+(package! org-download)
+
 (package! gptel)
 
 (package! copilot
