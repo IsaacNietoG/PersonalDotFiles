@@ -9,7 +9,8 @@
 (setq org-agenda-skip-scheduled-if-done t
       org-agenda-skip-deadline-if-done t
       org-agenda-skip-timestamp-if-done t)
-(setq org-startup-folded t)
+(after! org
+  (setq org-startup-folded t))
 (setq org-use-fast-todo-selection t)
 (setq org-todo-keywords
    '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "|" "DONE(d)")

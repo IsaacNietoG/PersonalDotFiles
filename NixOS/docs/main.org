@@ -10,11 +10,13 @@ Comenzaré explicando mi flujo de trabajo y las razones detrás de mi elección 
 
 Además, exploraré las herramientas y configuraciones que utilicé para crear un entorno de trabajo productivo, incluyendo la configuración de OhMyZSH, Doom Emacs, Hyprland, y otras herramientas esenciales para mi flujo de trabajo. También cubriré la configuración de los paquetes y dependencias necesarias para cada herramienta, utilizando NixOS y su gestor de paquetes.
 
+
 * Especificación
 
 El flujo de trabajo y configuración que explica este documento es el que utilizo para las encarnaciones de mis máquinas de trabajo principales.
 
 Como estudiante de Ciencias de la Computación que además tiene bastantes intereses que lo llevan a trabajar en un par de cosillas a la vez, no me siento seguro de afirmar que mi marco de trabajo es el correcto para nadie más que mi mismo, pero creo que puede ser un buen punto de partida para cualquier persona que quiera construir su máquina de trabajo desde cero, o simplemente quiera tener una referencia de cómo configurar ciertas herramientas y programas.
+
 
 * NixOS
 
@@ -1094,7 +1096,8 @@ Algo que necesito que org-mode respete para mi agenda son los siguientes puntos:
 - Finalmente, también agrego una configuración que hace que, al abrir los archivos =.org=, sus títulos y subtítulos aparezcan primero con sus contenidos colapsados. De esta manera puedo moverme entre ellos de manera mucho más rápida que si viera todos los títulos y su contenido de un solo vistazo de buenas a primeras.
 
   #+begin_src lisp :eval never :noweb-ref orgMode
-(setq org-startup-folded t)
+(after! org
+  (setq org-startup-folded t))
   #+end_src
   
 Estas son las especificaciones principales de mi flujo de trabajo, luego solamente agrego un pequeño detalle de calidad de vida para poder usar atajos de teclado para cambiar los estados de mis tareas rápidamente.
@@ -2330,6 +2333,7 @@ Porque con estas vamos a determinar el tamaño del cursor. Usamos dos porque XCU
 
 *** 
 
+
 * Dropbox
 
 Utilizo Dropbox muy seguido para mantener la sincronización de mi agendaORG
@@ -2340,12 +2344,14 @@ Utilizo Dropbox muy seguido para mantener la sincronización de mi agendaORG
 maestral
 #+end_src
 
+
 * Virtual Box
 #+begin_src nix :tangle ../nixOS/configuration.nix
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
   services.spice-vdagentd.enable = true;
 #+end_src
+
 
 * Zen Browser
 
@@ -2365,6 +2371,7 @@ Y luego lo declaramos como paquete de sistema
 #+begin_src nix :noweb-ref systemPackages
 inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 #+end_src
+
 
 * Programación con IA
 
@@ -2992,6 +2999,7 @@ if [[ -n "$CONTAINER_ID" ]]; then
   export AGNOSTER_DIR_BG=magenta
 fi
 #+end_src
+
 
 * VPNs
 
