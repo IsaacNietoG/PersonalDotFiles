@@ -1294,6 +1294,14 @@ Le indica a Org-mode que reescale visualmente la imagen a un ancho de 600 píxel
 
 Restaura o asegura el uso de la función por defecto para dar formato al enlace de la imagen, garantizando compatibilidad con las variables configuradas en el paso anterior.
 
+Pero, para que todo esto funcione, necesito agregar una dependencia más a mi sistema. Esta es wl-clipboard.
+
+wl-clipboard es un paquete del sistema que permite, como su nombre lo dice, manipular el portapapeles del sistema desde la linea de comandos. Es necesario porque, es justo lo que necesita hacer toda esta parte de mi flujo de trabajo para funcionar. Lo agregamos a los paquetes de sistema.
+
+#+begin_src nix :noweb-ref systemPackages
+wl-clipboard
+#+end_src
+
 
 * Hyprland
 

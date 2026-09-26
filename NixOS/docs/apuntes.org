@@ -18,6 +18,7 @@ pluginsHyprland
 
 - [X] En proceso: Crear una subsección por lenguaje de programación
 - [X] Utilidades generales (zip, tar, java, file, python3, unzip, remmina, htop)
-- [ ] Contenedor de ciberseguridad?
+- [X] Contenedor de ciberseguridad?
+- [ ] Separar configuraciones de Doom Emacs en features en lugar de archivos
 - [ ] Explicación de Flakes
 - [ ] Atomizar PATH de mi .zshrc

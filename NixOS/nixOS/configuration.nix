@@ -290,6 +290,7 @@
        gh
        texlive.combined.scheme-full
      emacs
+     wl-clipboard
      rofi
      hyprlock
      hyprshot
