@@ -190,6 +190,7 @@ A nivel de sistema voy a definir los siguientes packages, comenzando por vim, wg
   wget
   git
   pre-commit
+  git-credential-oauth
 #+end_src
 
 Estos son mis esenciales para trabajar en un sistema mínimo, siendo vim mi editor de texto "fallback" para cuando necesite editar cosas desde la consola de manera rápida (odio nano). Luego wget y git porque son esenciales para prácticamente cualquier dependencia necesaria en el sistema, y bueno, si hablamos de git, trabajar con este sistema de versiones es algo tan primordial para programadores que sobra la explicación. Pre-commit viene pegadita a git, ya que es uno de los hooks más populares para varios flujos de trabajo en git.

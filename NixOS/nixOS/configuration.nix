@@ -286,6 +286,7 @@
        wget
        git
        pre-commit
+       git-credential-oauth
        alacritty
        bluetui
        gh
