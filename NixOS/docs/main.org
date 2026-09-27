@@ -183,15 +183,16 @@ Tanto la sección de *systemPackages* como la de *userPackages* las seguiré tra
 
 *** System Packages
 
-A nivel de sistema voy a definir los siguientes packages, comenzando por vim, wget y git
+A nivel de sistema voy a definir los siguientes packages, comenzando por vim, wget, git y pre-commit
 
 #+begin_src nix :noweb-ref systemPackages
   vim
   wget
   git
+  pre-commit
 #+end_src
 
-Estos son mis esenciales para trabajar en un sistema mínimo, siendo vim mi editor de texto "fallback" para cuando necesite editar cosas desde la consola de manera rápida (odio nano). Luego wget y git porque son esenciales para prácticamente cualquier dependencia necesaria en el sistema, y bueno, si hablamos de git, trabajar con este sistema de versiones es algo tan primordial para programadores que sobra la explicación.
+Estos son mis esenciales para trabajar en un sistema mínimo, siendo vim mi editor de texto "fallback" para cuando necesite editar cosas desde la consola de manera rápida (odio nano). Luego wget y git porque son esenciales para prácticamente cualquier dependencia necesaria en el sistema, y bueno, si hablamos de git, trabajar con este sistema de versiones es algo tan primordial para programadores que sobra la explicación. Pre-commit viene pegadita a git, ya que es uno de los hooks más populares para varios flujos de trabajo en git.
 
 Luego tenemos alacritty, que es mi emulador de terminal preferido y el que me gustaría tener como emulador primordial y de "fallback"
 

@@ -285,6 +285,7 @@
        vim
        wget
        git
+       pre-commit
        alacritty
        bluetui
        gh
