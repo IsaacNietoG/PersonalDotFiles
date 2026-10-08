@@ -79,14 +79,13 @@
       cariddi
       cf-hero
       chopchop
-      clairvoyance
       commix
       crackql
       crlfsuite
       dalfox
       dismap
       dirstalk
-      dontgo403
+      nomore403
       forbidden
       galer
       gau
@@ -122,7 +121,6 @@
       slowlorust
       snallygaster
       subjs
-      swaggerhole
       uddup
       urlfinder
       urx
@@ -168,7 +166,6 @@
       btop
       iftop
       iotop
-      eternal-terminal
       mosh
       shellz
       certinfo-go
@@ -686,6 +683,9 @@
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
   services.spice-vdagentd.enable = true;
+
+  virtualisation.virtualbox.host.enable = true;
+  virtualisation.virtualbox.host.enableExtensionPack = true;
 
 virtualisation.podman = {
   enable = true;

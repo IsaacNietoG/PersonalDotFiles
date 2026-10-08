@@ -2407,12 +2407,25 @@ maestral
 #+end_src
 
 
-* Virtual Box
+* Virtual Box y QEMU/KVM
+
+Debido a varias aplicaciones de la escuela, necesitaré constantemente recurrir a máquinas virtuales de diversos índoles y distribuciones. Tanto por temas de materias como por temas de trabajo y cosas extracurriculares.
+
+Particularmente sobre QEMU/KVM debo de decir que esta es mi opción predilecta. Ya que es la plataforma de virtualización oficial de Linux, tiene muchas optimizaciones a nivel kernel y sí puedo notar que me ofrece un rendimiento bastante bueno.
+
 #+begin_src nix :tangle ../nixOS/configuration.nix
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
   services.spice-vdagentd.enable = true;
 #+end_src
+
+Por otro lado, también necesito Virtual Box. Sobre todo para temas de redes, ya que la configuración de máquinas virtuales en modo bridge y modo NAT es bastante sencilla y rápida en este aplicativo, cosa no tan cierta para la opción anterior. Es decir, para temas donde necesito configurar redes, utilizo Virtual Box, pero para el otro 99% de los casos, prefiero QEMU/KVM.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  virtualisation.virtualbox.host.enable = true;
+  virtualisation.virtualbox.host.enableExtensionPack = true;
+#+end_src
+
 
 
 * Zen Browser
@@ -2776,14 +2789,13 @@ cansina
 cariddi
 cf-hero
 chopchop
-clairvoyance
 commix
 crackql
 crlfsuite
 dalfox
 dismap
 dirstalk
-dontgo403
+nomore403
 forbidden
 galer
 gau
@@ -2819,7 +2831,6 @@ scraper
 slowlorust
 snallygaster
 subjs
-swaggerhole
 uddup
 urlfinder
 urx
@@ -2870,7 +2881,6 @@ xnldorker
 btop
 iftop
 iotop
-eternal-terminal
 mosh
 shellz
 certinfo-go
