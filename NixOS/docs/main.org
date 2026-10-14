@@ -3067,12 +3067,6 @@ La referencia al plugin dentro de nuestra pestaña de plugins
 pumablackops
 #+end_src
 
-Y una linea que necesitamos para mostrar el target activo (vease PumaBlackOps) en el PROMPT
-
-#+begin_src bash :tangle ../OhMyZsh/.zshrc
-PROMPT+=' $(pbo_target_info)'
-#+end_src
-
 Asi mismo, este proyecto se sirve fuertemente de =direnv= para poder cambiar dinámicamente de target. Por esto, agregamos también soporte para direnv en mi =.zshrc=
 
 #+begin_src bash :tangle ../OhMyZsh/.zshrc

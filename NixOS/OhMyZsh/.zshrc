@@ -54,6 +54,4 @@ if [[ -n "$CONTAINER_ID" ]]; then
   export AGNOSTER_DIR_BG=magenta
 fi
 
-PROMPT+=' $(pbo_target_info)'
-
 eval "$(direnv hook zsh)"
