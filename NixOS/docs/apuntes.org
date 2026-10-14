@@ -7,6 +7,7 @@ systemPackages
 imports
 userPackages
 userGroups
+pluginsOMZ
 inputsFlakes
 substitutersFlakes
 publicKeysFlakes
