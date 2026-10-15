@@ -1322,7 +1322,9 @@ Esto me lleva a escribir esta nueva configuración: intentar abrazar de manera i
 Vamos a utilizar la versión de desarrollo de Hyprland, porque es la única que admite plugins que vamos a utilizar más adelante. Así que necesitaremos configurar un Flake dentro de nuestro flakes.nix:
 
 #+begin_src nix :noweb-ref inputsFlakes
-  hyprland.url = "github:hyprwm/Hyprland";
+hyprland = {
+  url = "github:hyprwm/Hyprland/36b2e0cfe0c6094dbc47bd42a437431315bb3087";
+};
 #+end_src
 
 Para ahorrarnos compilaciones innecesarias, también agregamos el repositorio cache de Hyprland. Primero lo declaramos en substituters:
@@ -1382,7 +1384,7 @@ Empezamos declarando su flake en las inputs:
 
 #+begin_src nix :noweb-ref inputsFlakes
   hy3 = {
-    url = "github:outfoxxed/hy3";
+    url = "github:outfoxxed/hy3?ref=hl0.56.0.1";
     inputs.hyprland.follows = "hyprland";
   };
 #+end_src
@@ -2743,6 +2745,7 @@ Entonces, he llegado a la conclusión de que necesito al menos dos features nuev
 
 Vamos a comenzar con la primera feature:
 
+
 ** Suite de herramientas
 
 Usando como punto de partida el proyecto de [[https://github.com/fabaff/nix-security-box][Nix-Security Box]] de Fabian Affolter, voy a seleccionar un conjunto de herramientas particular para ciberseguridad, dividido en categorías. Todas las declararé como paquetes de usuario.
@@ -3011,7 +3014,6 @@ ssdeep
 wfuzz
 zzuf
 #+end_src
-
 
 ** Maquina virtual
 
