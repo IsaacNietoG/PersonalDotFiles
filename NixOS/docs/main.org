@@ -183,15 +183,17 @@ Tanto la sección de *systemPackages* como la de *userPackages* las seguiré tra
 
 *** System Packages
 
-A nivel de sistema voy a definir los siguientes packages, comenzando por vim, wget y git
+A nivel de sistema voy a definir los siguientes packages, comenzando por vim, wget, git y pre-commit
 
 #+begin_src nix :noweb-ref systemPackages
   vim
   wget
   git
+  pre-commit
+  git-credential-oauth
 #+end_src
 
-Estos son mis esenciales para trabajar en un sistema mínimo, siendo vim mi editor de texto "fallback" para cuando necesite editar cosas desde la consola de manera rápida (odio nano). Luego wget y git porque son esenciales para prácticamente cualquier dependencia necesaria en el sistema, y bueno, si hablamos de git, trabajar con este sistema de versiones es algo tan primordial para programadores que sobra la explicación.
+Estos son mis esenciales para trabajar en un sistema mínimo, siendo vim mi editor de texto "fallback" para cuando necesite editar cosas desde la consola de manera rápida (odio nano). Luego wget y git porque son esenciales para prácticamente cualquier dependencia necesaria en el sistema, y bueno, si hablamos de git, trabajar con este sistema de versiones es algo tan primordial para programadores que sobra la explicación. Pre-commit viene pegadita a git, ya que es uno de los hooks más populares para varios flujos de trabajo en git.
 
 Luego tenemos alacritty, que es mi emulador de terminal preferido y el que me gustaría tener como emulador primordial y de "fallback"
 
@@ -1294,6 +1296,14 @@ Le indica a Org-mode que reescale visualmente la imagen a un ancho de 600 píxel
 
 Restaura o asegura el uso de la función por defecto para dar formato al enlace de la imagen, garantizando compatibilidad con las variables configuradas en el paso anterior.
 
+Pero, para que todo esto funcione, necesito agregar una dependencia más a mi sistema. Esta es wl-clipboard.
+
+wl-clipboard es un paquete del sistema que permite, como su nombre lo dice, manipular el portapapeles del sistema desde la linea de comandos. Es necesario porque, es justo lo que necesita hacer toda esta parte de mi flujo de trabajo para funcionar. Lo agregamos a los paquetes de sistema.
+
+#+begin_src nix :noweb-ref systemPackages
+wl-clipboard
+#+end_src
+
 
 * Hyprland
 
@@ -1312,7 +1322,9 @@ Esto me lleva a escribir esta nueva configuración: intentar abrazar de manera i
 Vamos a utilizar la versión de desarrollo de Hyprland, porque es la única que admite plugins que vamos a utilizar más adelante. Así que necesitaremos configurar un Flake dentro de nuestro flakes.nix:
 
 #+begin_src nix :noweb-ref inputsFlakes
-  hyprland.url = "github:hyprwm/Hyprland";
+hyprland = {
+  url = "github:hyprwm/Hyprland/v0.56.0";
+};
 #+end_src
 
 Para ahorrarnos compilaciones innecesarias, también agregamos el repositorio cache de Hyprland. Primero lo declaramos en substituters:
@@ -1341,9 +1353,9 @@ Declaramos las siguientes lineas en el configuration.nix:
 
   programs.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    package = pkgs.hyprland;
     # make sure to also set the portal package, so that they are in sync
-    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+    portalPackage = pkgs.xdg-desktop-portal-hyprland;
     # usual Nixpkgs module options
     plugins = [
       <<pluginsHyprland>>
@@ -1352,6 +1364,8 @@ Declaramos las siguientes lineas en el configuration.nix:
       <<configuracionHyprland>>
     };
   };
+
+security.wrappers.Hyprland.enable = false;
 #+end_src
 
 Para las dependencias que especificaremos dentro de systemPackages, tendremos las siguientes:
@@ -1368,19 +1382,10 @@ waybar
 
 Hy3 es un plugin para Hyprland que me permite tener stacking, algo que en Hyprland nativo no existe. Sin stacking terminaría teniendo 6 espacios de trabajo en mi flujo de trabajo más tranquilo, con stacking, podría reducirlo a sólo dos espacios. Es evidente entonces que es algo esencial.
 
-Empezamos declarando su flake en las inputs:
-
-#+begin_src nix :noweb-ref inputsFlakes
-  hy3 = {
-    url = "github:outfoxxed/hy3";
-    inputs.hyprland.follows = "hyprland";
-  };
-#+end_src
-
 Y declaramos su uso en la configuración de plugins de Hyprland.
 
 #+begin_src nix :noweb-ref pluginsHyprland
-inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3
+pkgs.hyprlandPlugins.hy3
 #+end_src
 
 ** Configuraciones (nuevo)
@@ -1398,7 +1403,7 @@ TODO: Documentar este pedo
     "dropbox start"
     "gnome-keyring-daemon --start --components=secrets,pkcs11,ssh"
     # Carga del plugin hy3
-    "hyprctl plugin load ${inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3}/lib/libhy3.so"
+    "hyprctl plugin load ${pkgs.hyprlandPlugins.hy3}/lib/libhy3.so"
   ];
 
   extraConfig = ''
@@ -2397,12 +2402,25 @@ maestral
 #+end_src
 
 
-* Virtual Box
+* Virtual Box y QEMU/KVM
+
+Debido a varias aplicaciones de la escuela, necesitaré constantemente recurrir a máquinas virtuales de diversos índoles y distribuciones. Tanto por temas de materias como por temas de trabajo y cosas extracurriculares.
+
+Particularmente sobre QEMU/KVM debo de decir que esta es mi opción predilecta. Ya que es la plataforma de virtualización oficial de Linux, tiene muchas optimizaciones a nivel kernel y sí puedo notar que me ofrece un rendimiento bastante bueno.
+
 #+begin_src nix :tangle ../nixOS/configuration.nix
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
   services.spice-vdagentd.enable = true;
 #+end_src
+
+Por otro lado, también necesito Virtual Box. Sobre todo para temas de redes, ya que la configuración de máquinas virtuales en modo bridge y modo NAT es bastante sencilla y rápida en este aplicativo, cosa no tan cierta para la opción anterior. Es decir, para temas donde necesito configurar redes, utilizo Virtual Box, pero para el otro 99% de los casos, prefiero QEMU/KVM.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix
+  virtualisation.virtualbox.host.enable = true;
+  virtualisation.virtualbox.host.enableExtensionPack = true;
+#+end_src
+
 
 
 * Zen Browser
@@ -2413,7 +2431,7 @@ Ya que no hay paquete oficial, nos habremos de servir de un Flake.
 
 #+begin_src nix :noweb-ref inputsFlakes
 zen-browser = {
-    url = "github:youwen5/zen-browser-flake";
+    url = "github:youwen5/zen-browser-flake/458cd16116c362a5e92d5db6bdc3599e4e8b1f4a";
     inputs.nixpkgs.follows = "nixpkgs";
   };
 #+end_src
@@ -2720,6 +2738,7 @@ Entonces, he llegado a la conclusión de que necesito al menos dos features nuev
 
 Vamos a comenzar con la primera feature:
 
+
 ** Suite de herramientas
 
 Usando como punto de partida el proyecto de [[https://github.com/fabaff/nix-security-box][Nix-Security Box]] de Fabian Affolter, voy a seleccionar un conjunto de herramientas particular para ciberseguridad, dividido en categorías. Todas las declararé como paquetes de usuario.
@@ -2766,14 +2785,13 @@ cansina
 cariddi
 cf-hero
 chopchop
-clairvoyance
 commix
 crackql
 crlfsuite
 dalfox
 dismap
 dirstalk
-dontgo403
+nomore403
 forbidden
 galer
 gau
@@ -2809,7 +2827,6 @@ scraper
 slowlorust
 snallygaster
 subjs
-swaggerhole
 uddup
 urlfinder
 urx
@@ -2860,7 +2877,6 @@ xnldorker
 btop
 iftop
 iotop
-eternal-terminal
 mosh
 shellz
 certinfo-go
@@ -2991,7 +3007,6 @@ ssdeep
 wfuzz
 zzuf
 #+end_src
-
 
 ** Maquina virtual
 

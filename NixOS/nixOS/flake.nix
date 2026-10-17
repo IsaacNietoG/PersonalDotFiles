@@ -3,13 +3,11 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-      hyprland.url = "github:hyprwm/Hyprland";
-      hy3 = {
-        url = "github:outfoxxed/hy3";
-        inputs.hyprland.follows = "hyprland";
-      };
+    hyprland = {
+      url = "github:hyprwm/Hyprland/v0.56.0";
+    };
     zen-browser = {
-        url = "github:youwen5/zen-browser-flake";
+        url = "github:youwen5/zen-browser-flake/458cd16116c362a5e92d5db6bdc3599e4e8b1f4a";
         inputs.nixpkgs.follows = "nixpkgs";
       };
   };
