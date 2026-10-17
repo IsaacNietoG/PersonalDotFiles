@@ -332,12 +332,12 @@
 
   programs.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    package = pkgs.hyprland;
     # make sure to also set the portal package, so that they are in sync
-    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+    portalPackage = pkgs.xdg-desktop-portal-hyprland;
     # usual Nixpkgs module options
     plugins = [
-      inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3
+      pkgs.hyprlandPlugins.hy3
     ];
     settings = {
       "plugin:hy3" = {};
@@ -350,7 +350,7 @@
           "dropbox start"
           "gnome-keyring-daemon --start --components=secrets,pkcs11,ssh"
           # Carga del plugin hy3
-          "hyprctl plugin load ${inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3}/lib/libhy3.so"
+          "hyprctl plugin load ${pkgs.hyprlandPlugins.hy3}/lib/libhy3.so"
         ];
       
         extraConfig = ''
@@ -679,6 +679,8 @@
           '';
     };
   };
+
+security.wrappers.Hyprland.enable = false;
 
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;

@@ -4,14 +4,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     hyprland = {
-      url = "github:hyprwm/Hyprland/36b2e0cfe0c6094dbc47bd42a437431315bb3087";
+      url = "github:hyprwm/Hyprland/v0.56.0";
     };
-      hy3 = {
-        url = "github:outfoxxed/hy3?ref=hl0.56.0.1";
-        inputs.hyprland.follows = "hyprland";
-      };
     zen-browser = {
-        url = "github:youwen5/zen-browser-flake";
+        url = "github:youwen5/zen-browser-flake/458cd16116c362a5e92d5db6bdc3599e4e8b1f4a";
         inputs.nixpkgs.follows = "nixpkgs";
       };
   };

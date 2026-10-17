@@ -1323,7 +1323,7 @@ Vamos a utilizar la versión de desarrollo de Hyprland, porque es la única que 
 
 #+begin_src nix :noweb-ref inputsFlakes
 hyprland = {
-  url = "github:hyprwm/Hyprland/36b2e0cfe0c6094dbc47bd42a437431315bb3087";
+  url = "github:hyprwm/Hyprland/v0.56.0";
 };
 #+end_src
 
@@ -1353,9 +1353,9 @@ Declaramos las siguientes lineas en el configuration.nix:
 
   programs.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    package = pkgs.hyprland;
     # make sure to also set the portal package, so that they are in sync
-    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+    portalPackage = pkgs.xdg-desktop-portal-hyprland;
     # usual Nixpkgs module options
     plugins = [
       <<pluginsHyprland>>
@@ -1364,6 +1364,8 @@ Declaramos las siguientes lineas en el configuration.nix:
       <<configuracionHyprland>>
     };
   };
+
+security.wrappers.Hyprland.enable = false;
 #+end_src
 
 Para las dependencias que especificaremos dentro de systemPackages, tendremos las siguientes:
@@ -1380,19 +1382,10 @@ waybar
 
 Hy3 es un plugin para Hyprland que me permite tener stacking, algo que en Hyprland nativo no existe. Sin stacking terminaría teniendo 6 espacios de trabajo en mi flujo de trabajo más tranquilo, con stacking, podría reducirlo a sólo dos espacios. Es evidente entonces que es algo esencial.
 
-Empezamos declarando su flake en las inputs:
-
-#+begin_src nix :noweb-ref inputsFlakes
-  hy3 = {
-    url = "github:outfoxxed/hy3?ref=hl0.56.0.1";
-    inputs.hyprland.follows = "hyprland";
-  };
-#+end_src
-
 Y declaramos su uso en la configuración de plugins de Hyprland.
 
 #+begin_src nix :noweb-ref pluginsHyprland
-inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3
+pkgs.hyprlandPlugins.hy3
 #+end_src
 
 ** Configuraciones (nuevo)
@@ -1410,7 +1403,7 @@ TODO: Documentar este pedo
     "dropbox start"
     "gnome-keyring-daemon --start --components=secrets,pkcs11,ssh"
     # Carga del plugin hy3
-    "hyprctl plugin load ${inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3}/lib/libhy3.so"
+    "hyprctl plugin load ${pkgs.hyprlandPlugins.hy3}/lib/libhy3.so"
   ];
 
   extraConfig = ''
@@ -2438,7 +2431,7 @@ Ya que no hay paquete oficial, nos habremos de servir de un Flake.
 
 #+begin_src nix :noweb-ref inputsFlakes
 zen-browser = {
-    url = "github:youwen5/zen-browser-flake";
+    url = "github:youwen5/zen-browser-flake/458cd16116c362a5e92d5db6bdc3599e4e8b1f4a";
     inputs.nixpkgs.follows = "nixpkgs";
   };
 #+end_src
