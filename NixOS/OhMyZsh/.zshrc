@@ -4,7 +4,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="agnoster"
 
-plugins=(git)
+plugins=(git pumablackops)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -53,3 +53,5 @@ unset __conda_setup
 if [[ -n "$CONTAINER_ID" ]]; then
   export AGNOSTER_DIR_BG=magenta
 fi
+
+eval "$(direnv hook zsh)"

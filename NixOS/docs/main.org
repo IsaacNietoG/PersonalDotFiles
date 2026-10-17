@@ -408,10 +408,10 @@ ZSH_THEME="agnoster"
 
 Si queremos cambiar de tema en un futuro, podemos hacerlo en base a los temas ya instalados en Oh My ZSH, los cuales podemos encontrar [[https://github.com/ohmyzsh/ohmyzsh/wiki/Themes][aquí]].
 
-Luego vamos a definir algunas cosillas como los plugins a utilizar. Oh My ZSH tiene una selección bastante amplia de plugins, pero yo soy más adepto a crear mis propias funcionalidades; por ahora solamente uso el de git porque me resulta bastante útil para saber en qué branch de un repositorio me encuentro en todo momento.
+Luego vamos a definir algunas cosillas como los plugins a utilizar. Oh My ZSH tiene una selección bastante amplia de plugins, pero yo soy más adepto a crear mis propias funcionalidades; por ahora solamente uso el de git porque me resulta bastante útil para saber en qué branch de un repositorio me encuentro en todo momento. De todas formas, tal vez en flujos de trabajo posteriores terminaré involucrando un plugin o dos.
 
-#+begin_src bash :tangle ../OhMyZsh/.zshrc
-plugins=(git)
+#+begin_src bash :tangle ../OhMyZsh/.zshrc :noweb tangle
+plugins=(git <<pluginsOMZ>>)
 #+end_src
 
 Y, para finalizar con estas configuraciones iniciales, llamamos al script de inicialización de Oh My ZSH.
@@ -3065,6 +3065,27 @@ Esto me podría traer problemas muy serios en un futuro, al no poder distinguir 
 if [[ -n "$CONTAINER_ID" ]]; then
   export AGNOSTER_DIR_BG=magenta
 fi
+#+end_src
+
+
+** Flujo de trabajo de Ciberseguridad
+
+Sea desde mi laptop, desde la máquina virtual, o desde la máquina del trabajo, me gusta que, también para ciberseguridad, mi ritmo de trabajo esté unificado. Para este propósito, no lo unifico bajo este proyecto pero si lo unifico bajo otro proyecto propio: PumaBlackOps.
+
+Por esto, lo que hago en esta sección es hacer los ajustes pertinentes para este propósito. Debido a que este flujo de trabajo se cruza con un sistema operativo imperativo como lo es Kali Linux, esta es una sección de este proyecto que no puede dejar un producto final preparado, como lo hacían el resto de secciones de mi libro. En su lugar, tendré que asumir una instalación Kali Linux con mi proyecto PumaBlackOps instalado, que sourcee el =.zshrc= generado por este proyecto.
+
+Para preparar el =.zshrc=, mi mismo proyecto PumaBlackOps implementa un plugin para OhMyZSH que hace todo el trabajo. Para esto, simplemente agregamos las siguientes lineas en el =.zshrc=
+
+La referencia al plugin dentro de nuestra pestaña de plugins
+
+#+begin_src bash :noweb-ref pluginsOMZ
+pumablackops
+#+end_src
+
+Asi mismo, este proyecto se sirve fuertemente de =direnv= para poder cambiar dinámicamente de target. Por esto, agregamos también soporte para direnv en mi =.zshrc=
+
+#+begin_src bash :tangle ../OhMyZsh/.zshrc
+eval "$(direnv hook zsh)"
 #+end_src
 
 
