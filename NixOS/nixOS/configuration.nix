@@ -314,6 +314,18 @@
     ];
   };
 
+services.openssh = {
+  enable = true;
+  settings = {
+    PasswordAuthentication = false;
+    KbdInteractiveAuthentication = false;
+    PermitRootLogin = "no";
+    AllowUsers = [ "mrtaichi" ];
+    MaxAuthTries = 3;
+    PerSourcePenalties = "crash:3600s authfail:3600s max:86400s";
+  };
+};
+
   programs.zsh = {
     enable = true; # Enable Zsh
   ohMyZsh = {

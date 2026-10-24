@@ -312,6 +312,44 @@ Y el primer cronjob que voy a declarar es que cada 2 semanas corra el garbage co
 
 #+end_src
 
+** SSH
+
+Por motivos de mantenimiento (y para emergencias) siempre mantengo un acceso SSH en mis computadoras para cualquier necesidad que pueda surgir relacionada a lo que sea, desde recuperar algunos archivos que no tenga en la computadora en la que esté pero en otra sí, hasta algunos detalles ya más privados de cómo funciona mi flujo de trabajo de varios dispositivos.
+
+Para habilitar esto en NixOS, empiezo definiendo que el servicio de SSH debe estar activo.
+
+#+begin_src nix :tangle ../nixOS/configuration.nix :noweb tangle
+services.openssh = {
+  enable = true;
+  settings = {
+    <<configuracionesSSH>>
+  };
+};
+#+end_src
+
+Luego, configuramos el servicio de la siguiente forma:
+
+Primero, deshabilitamos la autenticación por contraseña. A todos mis equipos solo accederé mediante pares de llaves, nunca mediante contraseñas porque, aunque estoy bastante seguro de que mis contraseñas no aparecen en ninguna lista, no quiero tentar mi suerte.  De la misma forma, desactivo los métodos de autenticación interactivos por teclado. 
+
+#+begin_src nix :noweb-ref configuracionesSSH
+PasswordAuthentication = false;
+KbdInteractiveAuthentication = false;
+#+end_src
+
+Luego, desactivamos el inicio de sesión como root, análogo a tema seguridad. Y hago explícito que sólo mi usuario puede autenticarse usando SSH.
+
+#+begin_src nix :noweb-ref configuracionesSSH
+PermitRootLogin = "no";
+AllowUsers = [ "mrtaichi" ];
+#+end_src
+
+Y finalmente, agregamos penalizaciones para intentos de sesión fallidos. Es muy poco probable que una exposición de SSH mía salga fuera de una VPN o red local, pero por si acaso, no quiero ninguna sorpresa.
+
+#+begin_src nix :noweb-ref configuracionesSSH
+MaxAuthTries = 3;
+PerSourcePenalties = "crash:3600s authfail:3600s max:86400s";
+#+end_src
+
 ** Configuraciones privadas
 
 Una cosa bastante interesante de NixOS es que nos permite definir nuestra configuración a través de varios archivos .nix.
