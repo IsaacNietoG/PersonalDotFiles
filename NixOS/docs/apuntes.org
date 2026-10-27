@@ -13,6 +13,7 @@ substitutersFlakes
 publicKeysFlakes
 aliasesCLI
 pluginsHyprland
+configuracionesSSH
 
 
 * Lista de cosas x hacer
